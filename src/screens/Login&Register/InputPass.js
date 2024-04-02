@@ -1,52 +1,63 @@
 import { View,Text,TouchableOpacity,TextInput, Image, Alert } from "react-native";
 import { AntDesign, Entypo, Feather, FontAwesome5 } from '@expo/vector-icons';
 import { Ionicons } from '@expo/vector-icons';
-import styles from "./StyleOTP";
+import styles from "./StyleInputPass";
 import { useState } from "react";
+import { useNavigation } from "@react-navigation/native";
 // Import FireBase
-const  OTP =()=>{
+
+
+function InputPass(){
+    const [isPassword,setIsPassword] = useState(true);
+    const [isPasswordAgain,setIsPasswordAgain] = useState(true);
     const [phone,setPhone] = useState("");
     const [userName,setuserName] = useState("");
-    const [otp, setOTP] = useState("");
+    const [passWord,setPassWord] = useState("");
+    const [passWordAgain,setPassWordAgain] = useState("");
+    
+    const navigation = useNavigation()
 
     const hanldPressDashBoard = () => {
+        navigation.navigate("OTP");
 
     };
+    
+    const hanldPressPass = () => {
 
+
+    };
+    const hanldPressPassAgain = () => {
    
-    // Connect FireBase
-
-    const regexOTP = /^\d{6}$/; // Biểu thức chính quy kiểm tra 6 số
-    const hanldPressRegister = () => {
-        if (otp === "") {
-            Alert.alert("Thông báo", "Mã OTP không được rỗng");
-        } else if (!regexOTP.test(otp)) {
-            Alert.alert("Thông báo", "Mã OTP không hợp lệ");
-        } else {
-            // sendPhoneVerification(auth.currentUser)
-            //     .then(() => {
-            //         Alert.alert("Thông báo", `Đăng ký thành công ! ${'\n'}Mời bạn kiểm tra điện thoại để xác nhận`);
-                    setOTP("");
-                //    navigation.navigate("InputPass", { phone: "123" });
-                // })
-                // .catch(error => {
-                //     Alert.alert("Thông báo", "Xảy ra lỗi! \n Mời bạn thử lại");
-                // });
-        }
-    }
+    };
+    const hanldPressRegister = ()=>{
+           
+             if(passWord != passWordAgain) {
+                Alert.alert("Thông báo","Mật khẩu xác nhận không giống với mật khẩu trên")
+            }
+            else if(passWord == "") {
+                Alert.alert("Thông báo","Mời bạn nhập mật khẩu")
+            }
+            else 
+            {
                 // createUserWithPhoneAndPassword(auth,phone,passWord)
                 // .then((userCredential)=>{
                 //     var user = userCredential.user;
-                    // sendPhoneVerification(user);
+                //     sendPhoneVerification(user);
                 //     Alert.alert("Thông báo",`Đăng ký thành công ! ${'\n'}Mời bạn kiểm tra điện thoại để xác nhận`);
                 //     setPhone("");
+                //     setPassWord("");
+                //     setPassWordAgain("");
                 //     setuserName("");
-                    // navigation.navigate("InputPass");
+                   navigation.navigate("InputProfile");
                 // })
                 // .catch(error =>{
                 //     Alert.alert("Thông báo","Xảy ra lỗi! \n Mời bạn nhập lại tài khoản và mật khẩu")
                 // })
-
+            }
+            
+            
+        }
+    
 
     return (
 
@@ -57,11 +68,11 @@ const  OTP =()=>{
                         <Ionicons name="arrow-back" size={30} color="#fff" />
                     </TouchableOpacity>
                     <View style={{width:"73%",justifyContent:'center',paddingTop:10,}}>
-                        <Text style={{fontSize:22,color:'white',}}>Đăng ký</Text>
+                        <Text style={{fontSize:22,color:'white',}}>Đăng Ký</Text>
                     </View>
             </View>
             <View style={styles.containerText}>
-                <Text style={{fontSize:18,textAlign:'center'}}>Vui lòng nhập mã OTP để xác thực số điện thoại</Text>
+                <Text style={{fontSize:18,textAlign:'center'}}>Vui lòng nhập mật khẩu để đăng ký tài khoản</Text>
             </View>
             <View style={styles.containerInput}>
                 {/* <TextInput onChangeText={x=>setuserName(x)} value={userName} placeholder="Vui lòng nhập Tên người dùng" style={{marginLeft:15,marginRight:15,height:50,fontSize:22,borderBottomWidth:1,}}/> */}
@@ -70,7 +81,7 @@ const  OTP =()=>{
                         <Feather name="phone" size={32} color="black" />
                     </View>
                     <TextInput
-  onChangeText={x => setPhone(x)} value={"1234"}
+  onChangeText={x => setPhone(x)} value={"12"}
   style={{
     marginRight: 15,
     height: 50,
@@ -89,33 +100,43 @@ const  OTP =()=>{
                     <View style={{flex:0.15,alignItems:'center',}}>
                         <FontAwesome5 name="keyboard" size={24} color="black" />
                     </View>
-                    <TextInput onChangeText={x=>setOTP(x)} value={otp}  placeholder="Vui lòng nhập mã OTP" style={{height:50,fontSize:22,flex:0.7}} keyboardType="numeric" maxLength={6}/>
-                    {/* <TouchableOpacity style={{justifyContent:'center',alignItems:'center',flex:0.15}} onPress={hanldPressPass}>
+                    <TextInput onChangeText={x=>setPassWord(x)} value={passWord} secureTextEntry={isPassword}  placeholder="Vui lòng nhập mật khẩu" style={{height:50,fontSize:22,flex:0.7}}/>
+                    <TouchableOpacity style={{justifyContent:'center',alignItems:'center',flex:0.15}} onPress={hanldPressPass}>
                         {
                             (isPassword)? <Entypo name="eye" size={24} color="black" /> : <Entypo name="eye-with-line" size={24} color="black" />
                         }
-                    </TouchableOpacity> */}
+                    </TouchableOpacity>
                 </View>
                 
-{/* 
-                <TouchableOpacity onPress={hanldPressLogin} style={{marginTop:25,alignItems:'center',width:"100%"}} >
-                    <View style={{display:'flex',flexDirection:'row'}}>
-                        <Text style={{fontSize:20,marginRight:10,}}> Đã có tài khoản?</Text>
-                        <Text style={{fontSize:22,fontWeight:'bold',marginRight:10,color:'#F4A460'}}> Đăng nhập</Text>
-                        
+
+                <View style={{display:'flex',flexDirection:'row',borderWidth:1,marginLeft:10,marginRight:10,marginTop:10,borderRadius:20,backgroundColor:"#DCDCDC",alignItems:"center"}}>
+                    <View style={{flex:0.15,alignItems:'center',}}>
+                        <FontAwesome5 name="keyboard" size={24} color="black" />
                     </View>
-            </TouchableOpacity> */}
+                    <TextInput onChangeText={x=>setPassWordAgain(x)} value={passWordAgain} secureTextEntry={isPasswordAgain}  placeholder="Vui lòng nhập lại mật khẩu" style={{height:50,fontSize:22,flex:0.7}}/>
+                    <TouchableOpacity style={{justifyContent:'center',alignItems:'center',flex:0.15}} onPress={hanldPressPassAgain}>
+                        {
+                            (isPasswordAgain)? <Entypo name="eye" size={24} color="black" /> : <Entypo name="eye-with-line" size={24} color="black" />
+                        }
+                    </TouchableOpacity>
+                </View>
+                
+
             </View>
             
             <View style={styles.containerBottom}>
                 <TouchableOpacity onPress={hanldPressRegister} style={styles.bottom} >
-                    <Text style={{fontSize:22, color:'#fff',fontWeight:'bold'}}> Xác nhận</Text>
+                    <Text style={{fontSize:22, color:'#fff',fontWeight:'bold'}}> Đăng ký</Text>
                 </TouchableOpacity>
             </View>
-            
+
+            {/* 
+             */}
+
+         
 
         </View>
     );
 }
 
-export default OTP;
+export default InputPass;

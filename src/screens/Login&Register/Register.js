@@ -15,10 +15,12 @@ const isPassword = true;
 const navigation = useNavigation()
     // Connect Firebase
     const hanldPressDashBoard = () => {
+        navigation.navigate("DashBoard");
       
     };
 
     const hanldPressLogin = () => {
+        
      
     };
 
@@ -32,6 +34,7 @@ const navigation = useNavigation()
    }
 
     const hanldPressRegister = async ()  => {
+        navigation.navigate("OTP");
     
     }
 const handlPressPass  =()=>{}
@@ -65,33 +68,7 @@ const handlPressPass  =()=>{}
                     <TextInput onChangeText={x=>setPhone(x)} value={phone} placeholder="Vui lòng nhập số điện thoại" style={{marginRight:15,height:50,fontSize:22,flex:0.85}} keyboardType="phone-pad" id="phonenumber"/>
                 </View>
 
-
-                 <View style={{display:'flex',flexDirection:'row',borderWidth:1,marginLeft:10,marginRight:10,marginTop:10,borderRadius:20,backgroundColor:"#DCDCDC",alignItems:"center"}}>
-                    <View style={{flex:0.15,alignItems:'center',}}>
-                        <FontAwesome5 name="keyboard" size={24} color="black" />
-                    </View>
-                    <TextInput onChangeText={x=>setPassword(x)} value={password} secureTextEntry={isPassword}  placeholder="Vui lòng nhập mật khẩu" style={{height:50,fontSize:22,flex:0.7}}/>
-                    <TouchableOpacity style={{justifyContent:'center',alignItems:'center',flex:0.15}} onPress={handlPressPass}>
-                        {
-                            (isPassword)? <Entypo name="eye" size={24} color="black" /> : <Entypo name="eye-with-line" size={24} color="black" />
-                        }
-                    </TouchableOpacity>
-                </View>
-                
-{/*                  <View style={{display:'flex',flexDirection:'row',borderWidth:1,marginLeft:10,marginRight:10,marginTop:10,borderRadius:20,backgroundColor:"#DCDCDC",alignItems:"center"}}>
-                    <View style={{flex:0.15,alignItems:'center',}}>
-                        <FontAwesome5 name="keyboard" size={24} color="black" />
-                    </View>
-                    <TextInput onChangeText={x=>setPassWordAgain(x)} value={passWordAgain} secureTextEntry={isPasswordAgain}  placeholder="Vui lòng nhập lại mật khẩu" style={{height:50,fontSize:22,flex:0.7}}/>
-                    <TouchableOpacity style={{justifyContent:'center',alignItems:'center',flex:0.15}} onPress={hanldPressPassAgain}>
-                        {
-                            (isPasswordAgain)? <Entypo name="eye" size={24} color="black" /> : <Entypo name="eye-with-line" size={24} color="black" />
-                        }
-                    </TouchableOpacity>
-                </View> */}
-                
-
-                <TouchableOpacity onPress={()=>{ navigation.navigate("Login")}} style={{marginTop:25,alignItems:'center',width:"100%"}} >
+                <TouchableOpacity onPress={(hanldPressLogin)=>{ navigation.navigate("Login")}} style={{marginTop:25,alignItems:'center',width:"100%"}} >
                     <View style={{display:'flex',flexDirection:'row'}}>
                         <Text style={{fontSize:20,marginRight:10,}}> Đã có tài khoản?</Text>
                         <Text style={{fontSize:22,fontWeight:'bold',marginRight:10,color:'#F4A460'}}> Đăng nhập</Text>

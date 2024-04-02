@@ -21,11 +21,14 @@ function Login(){
     };
 
     const hanldPressForgotPasswrod = ()=>{
+        navigation.navigate("ForgotPassword");
         
     }
-    const hanldPressDashBoard=()=>{}
+    const hanldPressDashBoard = () => {
+        navigation.navigate("DashBoard");
+    };
     const hanldPressLogin = ()=>{
-      
+        // navigation.navigate("Home");
     }
     const hanldPressRegister =()=>{}
     return (
