@@ -4,6 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import styles from "./StyleLogin";
 import { useEffect, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
+import { apiLogin } from "../../apis/api";
 
 function Login(){
     //UseState
@@ -27,8 +28,16 @@ function Login(){
     const hanldPressDashBoard = () => {
         navigation.navigate("DashBoard");
     };
-    const hanldPressLogin = ()=>{
-        // navigation.navigate("Home");
+    const hanldPressLogin = async () =>{  
+        try {
+            const res = await apiLogin.login({
+                username: phone,
+                password:passWord
+            })
+            Alert.alert('Login successful',res.data)
+        } catch (error) {
+            Alert.alert('Mật khẩu hoặc tài khoản không đúng')
+        }
     }
     const hanldPressRegister =()=>{}
     return (

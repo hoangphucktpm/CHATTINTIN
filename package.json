@@ -19,7 +19,7 @@
     "@react-navigation/native-stack": "^6.9.26",
     "@react-navigation/stack": "^6.3.29",
     "@stomp/stompjs": "^7.0.0",
-    "axios": "^1.6.7",
+    "axios": "^1.6.8",
     "date-fns": "^3.6.0",
     "expo": "~49.0.15",
     "expo-barcode-scanner": "~12.5.3",
