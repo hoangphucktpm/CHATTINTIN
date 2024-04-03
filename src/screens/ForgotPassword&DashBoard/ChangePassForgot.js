@@ -1,44 +1,47 @@
-import { View, Text, TouchableOpacity, TextInput, Alert, Image } from "react-native";
+import { View, Text, TouchableOpacity, TextInput, Image, Alert } from "react-native";
 import { AntDesign, Entypo, Feather, FontAwesome5 } from "@expo/vector-icons";
 import { Ionicons } from "@expo/vector-icons";
-import styles from "./StyleLogin";
-import { useEffect, useState } from "react";
+
+import { useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 import { api } from "../../apis/api";
+import styles from "../Login&Register/StyleInputPass";
+// Import FireBase
 
-function Login() {
-    //UseState
-    const navigation = useNavigation();
-    const [isPassword, setPassword] = useState(true);
-    const [phone, setPhone] = useState("");
+function ChangePassForgot(props) {
+    const [isPassword, setIsPassword] = useState(true);
+    const [isPasswordAgain, setIsPasswordAgain] = useState(true);
+
     const [passWord, setPassWord] = useState("");
-    //UseEffect
-    const hanldPress = () => {
-        if (isPassword) {
-            setPassword(false);
+    const [passWordAgain, setPassWordAgain] = useState("");
+
+    const navigation = useNavigation();
+    const { phoneNumber } = props?.route?.params;
+    const hanldPressDashBoard = () => {
+        navigation.navigate("OTP");
+    };
+
+    const hanldPressPass = () => {};
+    const hanldPressPassAgain = () => {};
+    const hanldChangePassword = async () => {
+        if (passWord == "") {
+            Alert.alert("Thông báo", "Mời bạn nhập mật khẩu mới");
         } else {
-            setPassword(true);
+            try {
+                const res = await api.updatePassword({
+                    username: phoneNumber,
+                    newpassword: passWord,
+                });
+                if (res?.data) {
+                    Alert.alert("Đổi mật khẩu thành công!", "Vui lòng đăng nhập lại!");
+                    navigation.navigate("Login");
+                }
+            } catch (error) {
+                Alert.alert(error.message);
+            }
         }
     };
 
-    const hanldPressForgotPasswrod = () => {
-        navigation.navigate("ForgotPassword");
-    };
-    const hanldPressDashBoard = () => {
-        navigation.navigate("DashBoard");
-    };
-    const hanldPressLogin = async () => {
-        try {
-            const res = await api.login({
-                username: phone,
-                password: passWord,
-            });
-            Alert.alert("Login successful", res.data);
-        } catch (error) {
-            Alert.alert("Mật khẩu hoặc tài khoản không đúng");
-        }
-    };
-    const hanldPressRegister = () => {};
     return (
         <View style={styles.container}>
             <View style={styles.containerTabBar}>
@@ -49,13 +52,12 @@ function Login() {
                     <Ionicons name="arrow-back" size={30} color="#fff" />
                 </TouchableOpacity>
                 <View style={{ width: "73%", justifyContent: "center", paddingTop: 10 }}>
-                    <Text style={{ fontSize: 22, color: "white" }}>Đăng nhập</Text>
+                    <Text style={{ fontSize: 22, color: "white" }}>Quên mật khẩu</Text>
                 </View>
             </View>
-            <View style={styles.containerText}>
-                <Text style={{ fontSize: 18 }}>Vui lòng nhập số điện thoại và mật khẩu để đăng nhập</Text>
-            </View>
+
             <View style={styles.containerInput}>
+                {/* <TextInput onChangeText={x=>setuserName(x)} value={userName} placeholder="Vui lòng nhập Tên người dùng" style={{marginLeft:15,marginRight:15,height:50,fontSize:22,borderBottomWidth:1,}}/> */}
                 <View
                     style={{
                         display: "flex",
@@ -66,21 +68,26 @@ function Login() {
                         borderRadius: 20,
                         backgroundColor: "#DCDCDC",
                         alignItems: "center",
-                        marginBottom: 10,
-                        marginTop: -50,
                     }}
                 >
                     <View style={{ flex: 0.15, alignItems: "center" }}>
                         <Feather name="phone" size={32} color="black" />
                     </View>
                     <TextInput
-                        onChangeText={(x) => setPhone(x)}
-                        value={phone}
-                        placeholder="Vui lòng nhập số điện thoại"
-                        style={{ marginRight: 15, height: 50, fontSize: 22, flex: 0.85 }}
+                        value={phoneNumber}
+                        style={{
+                            marginRight: 15,
+                            height: 50,
+                            fontSize: 22,
+                            flex: 0.85,
+                            color: "black",
+                            fontWeight: "bold",
+                        }}
                         keyboardType="phone-pad"
+                        editable={false}
                     />
                 </View>
+
                 <View
                     style={{
                         display: "flex",
@@ -101,12 +108,12 @@ function Login() {
                         onChangeText={(x) => setPassWord(x)}
                         value={passWord}
                         secureTextEntry={isPassword}
-                        placeholder="Vui lòng nhập mật khẩu"
+                        placeholder="nhập mật khẩu mới"
                         style={{ height: 50, fontSize: 22, flex: 0.7 }}
                     />
                     <TouchableOpacity
                         style={{ justifyContent: "center", alignItems: "center", flex: 0.15 }}
-                        onPress={hanldPress}
+                        onPress={hanldPressPass}
                     >
                         {isPassword ? (
                             <Entypo name="eye" size={24} color="black" />
@@ -115,38 +122,18 @@ function Login() {
                         )}
                     </TouchableOpacity>
                 </View>
-                <TouchableOpacity style={{ margin: 15, marginTop: 25 }} onPress={hanldPressForgotPasswrod}>
-                    <Text style={{ fontSize: 20, color: "#63B8FF", fontWeight: "bold" }}>Lấy lại mật khẩu</Text>
-                </TouchableOpacity>
             </View>
+
             <View style={styles.containerBottom}>
-                <TouchableOpacity onPress={hanldPressLogin} style={styles.bottom}>
-                    <Text style={{ fontSize: 22, color: "#fff", fontWeight: "bold" }}> Đăng nhập</Text>
+                <TouchableOpacity onPress={hanldChangePassword} style={styles.bottom}>
+                    <Text style={{ fontSize: 22, color: "#fff", fontWeight: "bold" }}> Đăng ký</Text>
                 </TouchableOpacity>
             </View>
 
-            <View
-                style={{
-                    flex: 0.15,
-                    justifyContent: "center",
-                    alignItems: "center",
-                    display: "flex",
-                    flexDirection: "row",
-                }}
-            >
-                <Text style={{ fontSize: 20 }}>Chưa có tài khoản?</Text>
-                <TouchableOpacity
-                    onPress={() => {
-                        navigation.navigate("Register");
-                    }}
-                >
-                    <Text style={{ fontSize: 22, color: "#F4A460", fontWeight: "bold" }}>Đăng ký</Text>
-                </TouchableOpacity>
-            </View>
             {/*
              */}
         </View>
     );
 }
 
-export default Login;
+export default ChangePassForgot;
