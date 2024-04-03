@@ -189,4 +189,4 @@ function AddFriends() {
   )
 }
 
-export default AddFriends
+export default AddFriends;

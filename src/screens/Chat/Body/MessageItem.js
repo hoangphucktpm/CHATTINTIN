@@ -88,4 +88,4 @@ const hanldPressIcon = ()=>{
     )
   }
 
-export default MessageItem
+export default MessageItem;

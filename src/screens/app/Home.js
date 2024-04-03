@@ -1,8 +1,6 @@
 // import React, { useEffect, useRef, useState } from "react";
 // import styles from "./App_Style";
 // import { StyleSheet, Text, View, TextInput, Button, SafeAreaView } from "react-native";
-// import Search from "../Search/Search";
-// import ListFriend from "../ListFriend/ListFriend";
 // import Footer from "../Footer/Footer";
 // import { useSelector } from "react-redux";
 // import { useDispatch } from "react-redux";

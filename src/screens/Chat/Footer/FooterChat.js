@@ -106,4 +106,4 @@ function FooterChat (){
       </KeyboardAvoidingView>
     )
   }
-export default FooterChat
+export default FooterChat;

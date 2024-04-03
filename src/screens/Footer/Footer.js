@@ -14,8 +14,9 @@ function Footer() {
     const navigation  = useNavigation();
     // const dispatch = useDispatch();
     // const token = tokenService.getAccessToken();
-    // const hanldPress = () =>{
-    //     navigation.navigate("Home");
+    const hanldPress = () =>{
+        navigation.navigate("Home");
+    }
     //     var user = userAPI.getUserInfo()(token);
     //     dispatch(user);
     // }
@@ -24,7 +25,7 @@ function Footer() {
         <TouchableOpacity onPress={hanldPress} style={styles.containerIcon}>
             <AntDesign name="message1" size={20} color="grey" />
         </TouchableOpacity>
-        <TouchableOpacity  onPress={()=>navigation.navigate("Contracts")} style={styles.containerIcon}>
+        <TouchableOpacity  onPress={()=>navigation.navigate("Contacts")} style={styles.containerIcon}>
             <FontAwesome5 name="user-friends" size={20} color="grey" />
         </TouchableOpacity>
         <TouchableOpacity style={styles.containerIcon}>
@@ -37,4 +38,4 @@ function Footer() {
   )
 }
 
-export default Footer
+export default Footer;

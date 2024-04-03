@@ -33,7 +33,8 @@ function Login() {
                 username: phone,
                 password: passWord,
             });
-            Alert.alert("Login successful", res.data);
+            Alert.alert("Đăng nhập thành công", res.data);
+            navigation.navigate("Home");
         } catch (error) {
             Alert.alert("Mật khẩu hoặc tài khoản không đúng");
         }

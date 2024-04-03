@@ -7,7 +7,9 @@ const styles = StyleSheet.create({
         fontSize:24,
         padding:10,
         paddingLeft:30,
-        color:"white"
+        color:"white",
+        fontWeight:'bold',
+        textAlign:'center',
     }, 
     container:{
         flex:1,
@@ -85,10 +87,8 @@ const styles = StyleSheet.create({
         backgroundColor:'#fff',
         flex:1,
     },
-   
-    
     
    
     
 });
-export default styles
+export default styles;

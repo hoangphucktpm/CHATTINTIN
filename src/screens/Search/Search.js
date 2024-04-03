@@ -4,7 +4,7 @@ import styles from './StyleSearch'
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Ionicons } from '@expo/vector-icons';
 import { EvilIcons } from '@expo/vector-icons'; 
-import { SafeAreaView } from '@react-navigation/native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 function Search() {
   const navigation = useNavigation();
@@ -35,4 +35,4 @@ function Search() {
   )
 }
 
-export default Search
+export default Search;

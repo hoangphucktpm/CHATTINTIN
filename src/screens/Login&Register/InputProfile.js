@@ -8,6 +8,9 @@ import { RadioButton } from "react-native-paper";
 import { Calendar } from "react-native-calendars";
 import { Modal } from "react-native";
 import { format } from "date-fns";
+import DateTimePicker from '@react-native-community/datetimepicker'; // import DateTimePicker
+import { useNavigation } from "@react-navigation/native";
+
 import { api } from "../../apis/api";
 
 const InputProfile = (props) => {
@@ -15,21 +18,32 @@ const InputProfile = (props) => {
     const [gender, setGender] = useState("");
     const [avatarImage, setAvatarImage] = useState(
         "https://i.pinimg.com/originals/1e/0b/9e/1e0b9e1e4b2b5a8f3a9f3e3b5e4b4f1b.jpg"
+        
     );
 
+    const navigation = useNavigation();
+
     const [birthday, setBirthday] = useState(new Date()); // Khởi tạo birthday với giá trị mặc định là ngày hiện tại
-    const [showCalendar, setShowCalendar] = useState(false);
+    // const [showCalendar, setShowCalendar] = useState(false);
+    const [showDatePicker, setShowDatePicker] = useState(false); // State for showing date picker
     const [selectedDate, setSelectedDate] = useState("");
-    const { idNewUser } = props?.route?.params;
-    const handleCalendarSelect = (date) => {
-        setBirthday(new Date(date.timestamp)); // Cập nhật ngày sinh với ngày được chọn từ lịch
-        setShowCalendar(false); // Ẩn lịch sau khi chọn ngày
+    // const { idNewUser } = props?.route?.params;
+
+
+
+
+    const handleDateChange = (event, selectedDate) => {
+        const currentDate = selectedDate || birthday;
+        setShowDatePicker(false); // Close date picker
+        setBirthday(currentDate);
+      };
+
+
+    // console.log("idnew", idNewUser);
+
+    const hanldPressGoBack = () => {
+        navigation.navigate("InputPass");
     };
-    console.log("idnew", idNewUser);
-
-    const hanldPressGoBack = () => {};
-
-    const hanldPressSignOut = () => {};
 
     const hanldPressRegister = async () => {
         if (!name) {
@@ -98,18 +112,19 @@ const InputProfile = (props) => {
                     <Text style={{ fontSize: 24, color: "white" }}>Cập nhật thông tin</Text>
                 </View>
             </View>
+
             <ScrollView style={{ paddingBottom: 0 }}>
-                <View style={styles.containerBody}>
-                    <ImageBackground
-                        source={{
-                            uri: "https://i.pinimg.com/originals/1e/0b/9e/1e0b9e1e4b2b5a8f3a9f3e3b5e4b4f1b.jpg",
-                        }}
-                        style={styles.containerBody_Top}
-                    >
-                        <TouchableOpacity onPress={handleAvatarPress}>
-                            <Image style={styles.containerBody_Top_Avt} source={{ uri: avatarImage }} />
-                        </TouchableOpacity>
-                    </ImageBackground>
+        <View style={styles.containerBody}>
+          <ImageBackground
+            source={{
+              uri: "https://i.pinimg.com/originals/1e/0b/9e/1e0b9e1e4b2b5a8f3a9f3e3b5e4b4f1b.jpg",
+            }}
+            style={styles.containerBody_Top}
+          >
+            <TouchableOpacity onPress={handleAvatarPress}>
+              <Image style={styles.containerBody_Top_Avt} source={{ uri: avatarImage }} />
+            </TouchableOpacity>
+          </ImageBackground>
 
                     <View style={styles.containerInput}>
                         <View
@@ -153,57 +168,38 @@ const InputProfile = (props) => {
                     </View>
 
                     <View style={styles.containerInput}>
-                        <View
-                            style={{
-                                display: "flex",
-                                flexDirection: "row",
-                                borderWidth: 2,
-                                marginRight: 10,
-                                marginLeft: 10,
-                                borderRadius: 20,
-                                backgroundColor: "#fff",
-                                alignItems: "center",
-                            }}
-                        >
-                            <View style={{ flex: 0.15, alignItems: "center" }}></View>
-
-                            <View style={styles.container}>
-                                {showCalendar && (
-                                    <View style={styles.calendarContainer}>
-                                        <Calendar onDayPress={handleCalendarSelect} />
-                                    </View>
-                                )}
-                            </View>
-
-                            {/* Sửa thành Text */}
-                            <Text style={{ fontSize: 22, marginRight: 180 }}>{format(birthday, "dd-MM-yyyy")}</Text>
-                            <TouchableOpacity onPress={() => setShowCalendar(true)}>
-                                <Feather name="calendar" size={32} color="black" />
-                            </TouchableOpacity>
-                        </View>
-                        <Modal
-                            visible={showCalendar}
-                            transparent={true}
-                            animationType="slide"
-                            onRequestClose={() => setShowCalendar(false)}
-                        >
-                            <View style={{ flex: 1, justifyContent: "flex-end" }}>
-                                <View style={{ backgroundColor: "#fff", padding: 20 }}>
-                                    <Calendar onDayPress={handleCalendarSelect} />
-                                </View>
-                            </View>
-                        </Modal>
-                    </View>
-                </View>
-            </ScrollView>
-
-            <View style={styles.containerBottom}>
-                <TouchableOpacity onPress={hanldPressRegister} style={styles.bottom}>
-                    <Text style={{ fontSize: 22, color: "#fff", fontWeight: "bold" }}> Hoàn tất </Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <Text style={{ fontSize: 20, marginRight: 10, marginLeft: 10 }}>Ngày sinh:</Text>
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <Text style={{ fontSize: 22, marginLeft: 10, marginRight: 10 }}>
+                  {format(birthday, 'dd-MM-yyyy')}
+                </Text>
+                <TouchableOpacity onPress={() => setShowDatePicker(true)}>
+                  <Feather name="calendar" size={32} color="black" />
                 </TouchableOpacity>
+              </View>
             </View>
+            {showDatePicker && (
+              <DateTimePicker
+                value={birthday}
+                mode="date"
+                display="default"
+                onChange={handleDateChange}
+              />
+            )}
+          </View>
+
         </View>
-    );
-};
+      </ScrollView>
+
+      <View style={styles.containerBottom}>
+        <TouchableOpacity onPress={hanldPressRegister} style={styles.bottom} >
+          <Text style={{ fontSize: 22, color: '#fff', fontWeight: 'bold' }}> Hoàn tất </Text>
+        </TouchableOpacity>
+      </View>
+
+    </View>
+  );
+}
 
 export default InputProfile;

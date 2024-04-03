@@ -12,4 +12,4 @@ function ListFriend(props) {
   )
 }
 
-export default ListFriend
+export default ListFriend;

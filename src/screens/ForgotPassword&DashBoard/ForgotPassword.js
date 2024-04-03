@@ -26,7 +26,7 @@ function ForgotPassword() {
                 username: username,
             });
             if (!res.data.status) {
-                navigation.navigate("ChangePassForgot", { phoneNumber: username });
+                navigation.navigate("OTPPassForgot", { phoneNumber: username });
                 return;
             } else {
                 Alert.alert("Số điện thoại không tồn tại");

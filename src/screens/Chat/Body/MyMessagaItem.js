@@ -113,4 +113,4 @@ function MyMessagaItem ({avatar,name,time,message,type,owner,_id,emoji}) {
         </View>
     )
   }
-export default MyMessagaItem
+export default MyMessagaItem;
