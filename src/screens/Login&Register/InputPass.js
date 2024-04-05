@@ -16,10 +16,6 @@ function InputPass(props) {
 
     const navigation = useNavigation();
     const { phoneNumber } = props?.route?.params;
-    const hanldPressDashBoard = () => {
-        navigation.navigate("OTP");
-    };
-
 
     // mở mật khẩu
     const hanldPressPass = () => {
@@ -37,7 +33,7 @@ function InputPass(props) {
         } else {
             setIsPasswordAgain(true);
         }
-    }
+    };
 
     const hanldPressRegister = async () => {
         if (passWord != passWordAgain) {
@@ -65,7 +61,7 @@ function InputPass(props) {
         <View style={styles.container}>
             <View style={styles.containerTabBar}>
                 <TouchableOpacity
-                    onPress={hanldPressDashBoard}
+                    onPress={() => navigation.goBack()}
                     style={{ paddingLeft: 10, paddingRight: 10, justifyContent: "center", paddingTop: 10 }}
                 >
                     <Ionicons name="arrow-back" size={30} color="#fff" />
