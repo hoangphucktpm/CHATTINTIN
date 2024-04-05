@@ -2,7 +2,7 @@ import axios from "axios";
 
 export const http = axios.create({
     // timeout: 30000,
-    baseURL: 'http://172.20.10.5:8080'
+    baseURL: "http://172.16.3.223:8080",
 });
 
 export const api = {
