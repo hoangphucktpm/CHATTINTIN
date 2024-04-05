@@ -24,8 +24,6 @@ import ChangePassForgot from "./src/screens/ForgotPassword&DashBoard/ChangePassF
 import OTPPassForgot from "./src/screens/ForgotPassword&DashBoard/OTPPassForgot";
 
 
-
-
 const App = ()=> {
   const Stack = createNativeStackNavigator()
     const home = "Home"
