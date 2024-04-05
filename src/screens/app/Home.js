@@ -16,9 +16,13 @@ import { View } from "react-native";
 import Search from "../Search/Search";
 import ListFriend from "../ListFriend/ListFriend";
 import Footer from "../Footer/Footer";
+import { useRoute } from "@react-navigation/native";
 
 
 function Home(props) {
+    const route = useRoute();
+    const {phone} = route.params;
+    // navigation.navigate('MyProfile', {phone: phone});
     // const userState = useSelector(state => state.user);
     // const roomState = useSelector(state => state.room);
     // const [socket, setSocket] = useState(null);
@@ -111,7 +115,7 @@ function Home(props) {
     //     };
     //     // }
     // }, [token]);
-
+    console.log(phone)
     return (
         <View style={styles.container}>
             <View style={styles.containerItem}>
@@ -119,7 +123,7 @@ function Home(props) {
                 <View style ={styles.containerList}>
                     <ListFriend {...props} style={styles.main} />
                 </View>
-                <Footer style={styles.footer}/>
+                <Footer phone={phone} style={styles.footer}/>
             </View>
             
         </View>

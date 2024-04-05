@@ -33,12 +33,16 @@ function Login() {
                 username: phone,
                 password: passWord,
             });
-            Alert.alert("Đăng nhập thành công", res.data);
-            navigation.navigate("Home");
+            // Chỉ hiện thông báo lên thôi
+            Alert.alert("Đăng nhập thành công");
+            navigation.navigate("Home",{phone:phone});
         } catch (error) {
             Alert.alert("Mật khẩu hoặc tài khoản không đúng");
         }
     };
+
+
+
     const hanldPressRegister = () => {};
     return (
         <View style={styles.container}>
@@ -139,6 +143,7 @@ function Login() {
                 <TouchableOpacity
                     onPress={() => {
                         navigation.navigate("Register");
+                        navigation.navigate('MyProfile', {phone: phone});
                     }}
                 >
                     <Text style={{ fontSize: 22, color: "#F4A460", fontWeight: "bold" }}>Đăng ký</Text>

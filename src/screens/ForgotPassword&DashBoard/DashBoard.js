@@ -14,12 +14,12 @@ function DashBoard(){
     };
     return (
         <SafeAreaView style={styles.container}>
-            <Image source={require('../../../assets/logo.jpg')} style={{height:70,width:150,marginTop:20,}}/>
-            <View style={{height:400,width:"100%",marginTop:40,}}>
+            <Image source={require('../../../assets/logo.jpg')} style={{height:100,width:220,marginTop:10,}}/>
+            <View style={{height:400,width:"100%",marginTop:100,}}>
                 <PagerView  style={styles.viewPager} initialPage={0}>
                     <View style={styles.page} key="1">
-                        <Image source={{url:'https://i.ytimg.com/vi/OpV0R1ANQhM/maxresdefault.jpg'}} style={{height:300,width:"100%"}}/>
-                        <Text style={{textAlign:'center',marginTop:20,fontSize:22, color:'grey',paddingLeft:10,paddingRight:10,}}>Chào mừng đã đến với mạng xã hội của chúng tôi</Text>
+                    <Image source={require('../../../assets/logo1.png')} style={{height:300,width:"100%"}}/> 
+                        <Text style={{textAlign:'center',marginTop:20,fontSize:22, color:'grey',paddingLeft:10,paddingRight:10,}}> Chào mừng bạn đến với ứng dụng chat TinTin của chúng tôi</Text>
                         <View style={{marginTop:10,display:'flex',flexDirection:'row'}}>
                             <View style={{marginRight:5,}}>
                                 <TouchableOpacity style={{paddingTop:10,paddingRight:10,backgroundColor:'#1E90FF',borderRadius:20,borderWidth:1,}}>
@@ -34,8 +34,8 @@ function DashBoard(){
                         </View>
                     </View>
                     <View style={styles.page} key="2">
-                        <Image source={{url:'https://blog.bonus.ly/hs-fs/hubfs/group-of-team-members-debating.png?width=600&name=group-of-team-members-debating.png'}} style={{height:300,width:"100%"}}/>
-                        <Text style={{textAlign:'center',marginTop:20,fontSize:22, color:'grey',paddingLeft:10,paddingRight:10,}}>Chúng tôi giúp kết nối với các bạn bè trên khắp đất nước Việt Nam</Text>
+                    <Image source={require('../../../assets/logo2.png')} style={{height:300,width:"100%"}}/> 
+                        <Text style={{textAlign:'center',marginTop:20,fontSize:22, color:'grey',paddingLeft:10,paddingRight:10,}}> Ứng dụng chat TinTin giúp bạn kết nối với bạn bè, người thân</Text>
                         <View style={{marginTop:10,display:'flex',flexDirection:'row'}}>
                             <View style={{marginRight:5,}}>
                                 <TouchableOpacity style={{paddingTop:10,paddingRight:10,backgroundColor:'#fff',borderRadius:20,borderWidth:1,}}>
@@ -50,8 +50,8 @@ function DashBoard(){
                         </View>
                     </View>
                     <View style={styles.page} key="3">
-                        <Image source={{url:'https://jobsgo.vn/blog/wp-content/uploads/2019/09/business-development-2.jpg'}} style={{height:300,width:"100%"}}/>
-                        <Text style={{textAlign:'center',marginTop:20,fontSize:22, color:'grey',paddingLeft:10,paddingRight:10,}}>Chúng tôi giúp kết nối với các doanh nghiệp khắp đất nước Việt Nam</Text>
+                    <Image source={require('../../../assets/logo3.png')} style={{height:300,width:"100%"}}/> 
+                        <Text style={{textAlign:'center',marginTop:20,fontSize:22, color:'grey',paddingLeft:10,paddingRight:10,}}> TinTin giúp bạn chia sẻ hình ảnh, video, tin nhắn một cách dễ dàng</Text>
                         <View style={{marginTop:10,display:'flex',flexDirection:'row'}}>
                             <View style={{marginRight:5,}}>
                                 <TouchableOpacity style={{paddingTop:10,paddingRight:10,backgroundColor:'#fff',borderRadius:20,borderWidth:1,}}>

@@ -10,10 +10,11 @@ import { NavigationContainer, useNavigation } from '@react-navigation/native';
 // import tokenService from '../../services/token.service';
 
 
-function Footer() {
+function Footer(props) {
     const navigation  = useNavigation();
     // const dispatch = useDispatch();
     // const token = tokenService.getAccessToken();
+    
     const hanldPress = () =>{
         navigation.navigate("Home");
     }
@@ -31,7 +32,7 @@ function Footer() {
         <TouchableOpacity style={styles.containerIcon}>
             <AntDesign name="clockcircleo" size={20} color="grey" />
         </TouchableOpacity>
-        <TouchableOpacity  onPress={()=>navigation.navigate("MyProfile")} style={styles.containerIcon}>
+        <TouchableOpacity  onPress={()=>navigation.navigate("MyProfile",{phone:props?.phone})} style={styles.containerIcon}>
             <FontAwesome name="user" size={20} color="grey" />
         </TouchableOpacity>
     </View>

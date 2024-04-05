@@ -2,44 +2,81 @@ import { ScrollView, View, Text, TouchableOpacity, Image, ImageBackground, TextI
 import React, { useState } from "react";
 import styles from "./StyleProfile";
 import { Ionicons } from "@expo/vector-icons";
-import * as ImagePicker from "react-native-image-picker";
 import { Feather } from "@expo/vector-icons";
 import { RadioButton } from "react-native-paper";
-import { Calendar } from "react-native-calendars";
-import { Modal } from "react-native";
 import { format } from "date-fns";
-import DateTimePicker from '@react-native-community/datetimepicker'; // import DateTimePicker
+import DateTimePicker from '@react-native-community/datetimepicker';
 import { useNavigation } from "@react-navigation/native";
+import { launchImageLibrary } from "react-native-image-picker";
+import { PermissionsAndroid, Platform } from "react-native";
+import { differenceInYears } from 'date-fns';
+
 
 import { api } from "../../apis/api";
 
 const InputProfile = (props) => {
     const [name, setName] = useState("");
     const [gender, setGender] = useState("");
-    const [avatarImage, setAvatarImage] = useState(
-        "https://i.pinimg.com/originals/1e/0b/9e/1e0b9e1e4b2b5a8f3a9f3e3b5e4b4f1b.jpg"
-        
-    );
-
+    const [avatarImage, setAvatarImage] = useState('https://products111.s3.ap-southeast-1.amazonaws.com/Avatar0366775345.jpeg');
     const navigation = useNavigation();
 
-    const [birthday, setBirthday] = useState(new Date()); // Khởi tạo birthday với giá trị mặc định là ngày hiện tại
-    // const [showCalendar, setShowCalendar] = useState(false);
-    const [showDatePicker, setShowDatePicker] = useState(false); // State for showing date picker
-    const [selectedDate, setSelectedDate] = useState("");
-    // const { idNewUser } = props?.route?.params;
+    const [birthday, setBirthday] = useState(new Date());
+    const [showDatePicker, setShowDatePicker] = useState(false);
+    const { idNewUser } = props?.route?.params;
 
-
-
+    
 
     const handleDateChange = (event, selectedDate) => {
         const currentDate = selectedDate || birthday;
-        setShowDatePicker(false); // Close date picker
-        setBirthday(currentDate);
-      };
+        setShowDatePicker(false);
+        const isoString = currentDate.toISOString();
+        const dateString = isoString.split('T')[0]; // Tách ngày tháng năm từ chuỗi ISO 8601
+        setBirthday(dateString);
+    };
+    
 
-
-    // console.log("idnew", idNewUser);
+    const handleAvatarPress = async () => {
+        try {
+            const permissionsGranted = await requestPermissions();
+            if (permissionsGranted) {
+                const result = await openImagePicker();
+                if (!result.didCancel) {
+                    setAvatarImage(result.assets[0].uri);
+                }
+            } else {
+                console.log("Người dùng từ chối cấp quyền truy cập camera và thư viện ảnh");
+            }
+        } catch (error) {
+            console.log("Đã xảy ra lỗi khi xử lý ảnh:", error);
+        }
+    };
+    
+    const requestPermissions = async () => {
+        try {
+            if (Platform.OS === "android") {
+                const cameraPermission = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.CAMERA);
+                const photoPermission = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE);
+                return cameraPermission === PermissionsAndroid.RESULTS.GRANTED && photoPermission === PermissionsAndroid.RESULTS.GRANTED;
+            } else {
+                return true;
+            }
+        } catch (error) {
+            console.log("Đã xảy ra lỗi khi yêu cầu quyền:", error);
+            return false;
+        }
+    };
+    
+    const openImagePicker = () => {
+        return new Promise((resolve, reject) => {
+            const options = {
+                mediaType: "photo",
+                cameraType: "back",
+            };
+            launchImageLibrary(options, (response) => {
+                resolve(response);
+            });
+        });
+    };
 
     const hanldPressGoBack = () => {
         navigation.navigate("InputPass");
@@ -54,38 +91,53 @@ const InputProfile = (props) => {
             Alert.alert("Vui lòng chọn giới tính!");
             return;
         }
+        if (!avatarImage) {
+            Alert.alert("Vui lòng chọn ảnh đại diện!");
+            return;
+        }
+        if (!birthday) {
+            Alert.alert("Vui lòng chọn ngày sinh!");
+            return;
+        }
+        
+        if (birthday > new Date()) {
+            Alert.alert("Ngày sinh không hợp lệ!");
+            return;
+        }
+
+        const age = differenceInYears(new Date(), new Date(birthday));
+        if (age <16) {
+            Alert.alert("Tuổi phải lớn hơn hoặc bằng 16!");
+            return;
+        }
+
+        else {
+            Alert.alert("Đăng ký thành công");
+            navigation.navigate("Login");
+        }
+
+        const formData = new FormData();
+        formData.append('id', 1);
+        formData.append('image', {
+            uri: avatarImage,
+            type: 'image/jpeg',
+            name: 'photo.jpg',
+        });        
 
         try {
             const res = await api.updateInfo(idNewUser, {
                 fullname: name,
-                sex: gender,
-                birthday: birthday,
-                // file: avatarImage,
+                sex: gender ,
+                birthday: birthday.toString(0, 10),
+                image: formData,
             });
-            console.log(res?.data);
+            console.log(res);
         } catch (error) {
             Alert.alert(error.message);
         }
     };
 
-    const handleAvatarPress = () => {
-        pickImage();
-    };
-
-    const pickImage = async () => {
-        let result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.All,
-            allowsEditing: true,
-            aspect: [3, 4],
-            quality: 1,
-        });
-
-        if (!result.cancelled) {
-            setImage(result.uri);
-        }
-    };
-
-    console.log(name);
+    console.log("birthday", birthday);
 
     return (
         <View style={styles.container}>
@@ -114,17 +166,16 @@ const InputProfile = (props) => {
             </View>
 
             <ScrollView style={{ paddingBottom: 0 }}>
-        <View style={styles.containerBody}>
-          <ImageBackground
-            source={{
-              uri: "https://i.pinimg.com/originals/1e/0b/9e/1e0b9e1e4b2b5a8f3a9f3e3b5e4b4f1b.jpg",
-            }}
-            style={styles.containerBody_Top}
-          >
-            <TouchableOpacity onPress={handleAvatarPress}>
-              <Image style={styles.containerBody_Top_Avt} source={{ uri: avatarImage }} />
-            </TouchableOpacity>
-          </ImageBackground>
+                <View style={styles.containerBody}>
+                    <ImageBackground style={styles.containerBody_Top}>
+                        <TouchableOpacity onPress={handleAvatarPress}>
+                            {avatarImage ? (
+                                <Image style={styles.containerBody_Top_Avt} source={{ uri: avatarImage }} />
+                            ) : (
+                                <Image style={styles.containerBody_Top_Avt} source={require('../../../assets/avata.jpg')} />
+                            )}
+                        </TouchableOpacity>
+                    </ImageBackground>
 
                     <View style={styles.containerInput}>
                         <View
@@ -159,47 +210,50 @@ const InputProfile = (props) => {
 
                     <View style={{ flexDirection: "row", alignItems: "center", marginLeft: 10, marginTop: 10 }}>
                         <Text style={{ fontSize: 20, marginRight: 10 }}>Giới tính:</Text>
-                        <RadioButton.Group onValueChange={(value) => setGender(value)} value={gender}>
-                            <View style={{ flexDirection: "row", alignItems: "center" }}>
-                                <RadioButton.Item label="Nam" value="male" />
-                                <RadioButton.Item label="Nữ" value="female" />
-                            </View>
-                        </RadioButton.Group>
+                        <RadioButton.Group onValueChange={(value) => {
+    console.log("Selected gender:", value);
+    setGender(value);
+}} value={gender}>
+    <View style={{ flexDirection: "row", alignItems: "center" }}>
+        <RadioButton.Item label="Nam" value="male" />
+        <RadioButton.Item label="Nữ" value="female" />
+    </View>
+</RadioButton.Group>
+
                     </View>
 
                     <View style={styles.containerInput}>
-            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-              <Text style={{ fontSize: 20, marginRight: 10, marginLeft: 10 }}>Ngày sinh:</Text>
-              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <Text style={{ fontSize: 22, marginLeft: 10, marginRight: 10 }}>
-                  {format(birthday, 'dd-MM-yyyy')}
-                </Text>
-                <TouchableOpacity onPress={() => setShowDatePicker(true)}>
-                  <Feather name="calendar" size={32} color="black" />
+                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                            <Text style={{ fontSize: 20, marginRight: 10, marginLeft: 10 }}>Ngày sinh:</Text>
+                            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                <Text style={{ fontSize: 22, marginLeft: 10, marginRight: 10 }}>
+                                    {format(birthday, 'MM-dd-yyyy')}
+                                </Text>
+                                <TouchableOpacity onPress={() => setShowDatePicker(true)}>
+                                    <Feather name="calendar" size={32} color="black" />
+                                </TouchableOpacity>
+                            </View>
+                        </View>
+                        {showDatePicker && (
+                            <DateTimePicker
+                                value={birthday}
+                                mode="date"
+                                display="default"
+                                onChange={handleDateChange}
+                            />
+                        )}
+                    </View>
+                </View>
+            </ScrollView>
+
+            <View style={styles.containerBottom}>
+                <TouchableOpacity onPress={hanldPressRegister} style={styles.bottom} >
+                    <Text style={{ fontSize: 22, color: '#fff', fontWeight: 'bold' }}> Hoàn tất </Text>
                 </TouchableOpacity>
-              </View>
             </View>
-            {showDatePicker && (
-              <DateTimePicker
-                value={birthday}
-                mode="date"
-                display="default"
-                onChange={handleDateChange}
-              />
-            )}
-          </View>
 
         </View>
-      </ScrollView>
-
-      <View style={styles.containerBottom}>
-        <TouchableOpacity onPress={hanldPressRegister} style={styles.bottom} >
-          <Text style={{ fontSize: 22, color: '#fff', fontWeight: 'bold' }}> Hoàn tất </Text>
-        </TouchableOpacity>
-      </View>
-
-    </View>
-  );
+    );
 }
 
 export default InputProfile;

@@ -15,10 +15,15 @@ function ForgotPassword() {
 
     // Connect FireBase
 
-    const regexEmail = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+    const sdt = /^84\d{9}$/;
+
     const hanldPressLinkResert = async () => {
         if (!username) {
             Alert.alert("Vui lòng nhập số điện thoại");
+            return;
+        }
+        if (!sdt.test(username)) {
+            Alert.alert("Số điện thoại không đúng định dạng");
             return;
         }
         try {

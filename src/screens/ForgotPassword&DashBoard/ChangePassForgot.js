@@ -19,13 +19,24 @@ function ChangePassForgot(props) {
         navigation.navigate("OTP");
     };
 
+      // mở mật khẩu
     const handlePressPass = () => {
-        setIsPassword(!isPassword);
+        if (isPassword) {
+            setIsPassword(false);
+        } else {
+            setIsPassword(true);
+        }
     };
 
+    // mở mật khẩu
     const handlePressPassAgain = () => {
-        setIsPasswordAgain(!isPasswordAgain);
-    };
+        if (isPasswordAgain) {
+            setIsPasswordAgain(false);
+        } else {
+            setIsPasswordAgain(true);
+        }
+    }
+
 
   
     const handleChangePassword = async () => {
@@ -85,7 +96,7 @@ function ChangePassForgot(props) {
                     </View>
                     <TextInput onChangeText={(x) => setPassWordAgain(x)} value={passWordAgain} secureTextEntry={isPasswordAgain} placeholder="Vui lòng nhập lại mật khẩu mới" style={{ height: 50, fontSize: 22, flex: 0.7 }} />
                     <TouchableOpacity style={{ justifyContent: "center", alignItems: "center", flex: 0.15 }} onPress={handlePressPassAgain}>
-                        {isPasswordAgain ? <Entypo name="eye" size={24} color="black" /> : <Entypo name="eye-with-line" size={24} color="black" />}
+                        {isPasswordAgain ? ( <Entypo name="eye" size={24} color="black" /> ) : ( <Entypo name="eye-with-line" size={24} color="black" /> )}
                     </TouchableOpacity>
                 </View>
             </View>

@@ -20,8 +20,25 @@ function InputPass(props) {
         navigation.navigate("OTP");
     };
 
-    const hanldPressPass = () => {};
-    const hanldPressPassAgain = () => {};
+
+    // mở mật khẩu
+    const hanldPressPass = () => {
+        if (isPassword) {
+            setIsPassword(false);
+        } else {
+            setIsPassword(true);
+        }
+    };
+
+    // mở mật khẩu
+    const hanldPressPassAgain = () => {
+        if (isPasswordAgain) {
+            setIsPasswordAgain(false);
+        } else {
+            setIsPasswordAgain(true);
+        }
+    }
+
     const hanldPressRegister = async () => {
         if (passWord != passWordAgain) {
             Alert.alert("Thông báo", "Mật khẩu xác nhận không giống với mật khẩu trên");

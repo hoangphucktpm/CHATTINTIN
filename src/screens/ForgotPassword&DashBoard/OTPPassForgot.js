@@ -14,8 +14,22 @@ const OTPPassForgot = (props) => {
     const { phoneNumber } = props?.route?.params;
     const navigation = useNavigation();
     const hanldPressDashBoard = () => {
-        navigation.navigate("ForgotPassword");
+        Alert.alert("Thông báo", "Bạn có chắc chắn muốn thoát không ?", [
+            {
+                text: "Có",
+                onPress: () => {
+                    navigation.navigate("Login");
+                },
+            },
+            {
+                text: "Không",
+                onPress: () => {
+                    return;
+                },
+            },
+        ]);
     };
+
 
     // Connect FireBase
 

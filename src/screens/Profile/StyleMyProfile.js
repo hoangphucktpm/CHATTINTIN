@@ -130,18 +130,80 @@ const styles = StyleSheet.create({
         paddingRight:10,
         marginTop:10,
     },
-    bottom:{
-        flex:1,
-        height:60,
-        backgroundColor:'#1C86EE',
-        marginBottom:100,
-        borderRadius:100,
-        justifyContent:'center',
-        alignItems:'center',
-        marginRight:60,
-        marginLeft:60,
-    },
-    
-    
+    bottom2: {
+        flex: 1,
+        height: 60,
+        backgroundColor: '#1C86EE',
+        marginBottom: 20,
+        marginTop: 39,
+        borderRadius: 100,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginLeft: 20,
+        marginRight: 20, 
+        
+      },
+      bottom2: {
+        flex: 1,
+        height: 60,
+        backgroundColor: '#1C86EE',
+        marginBottom: 10,
+        borderRadius: 100,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginLeft: 10,
+        marginRight: 10, 
+        
+      },
+      bottom3: {
+        flex: 1,
+        height: 60,
+        backgroundColor: '#1C86EE',
+        marginBottom: 20,
+        borderRadius: 100,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginLeft: 20,
+        marginRight: 20, 
+        
+      },
+    bottom: {
+        flex: 1,
+        height: 60,
+        backgroundColor: '#1C86EE',
+        borderRadius: 100,
+        marginTop: 150,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginLeft: 20,
+        marginRight: 20, 
+      },
+      
+
+    modalWrapper: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: "rgba(0, 0, 0, 0.5)",
+      },
+      centeredView: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+      },
+
+      modalView: {
+        backgroundColor: "white",
+        borderRadius: 10,
+        padding: 20,
+        width: "80%",
+        alignItems: "center",
+      },
+      modalText: {
+        fontSize: 18,
+        marginBottom: 20,
+        textAlign: "center",
+        
+      },
 })
 export default styles;

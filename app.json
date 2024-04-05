@@ -8,7 +8,7 @@
         "userInterfaceStyle": "light",
         "plugins": ["@react-native-firebase/app", "@react-native-firebase/auth"],
         "splash": {
-            "image": "./assets/splash.png",
+            "image": "./assets/icon.png",
             "resizeMode": "contain",
             "backgroundColor": "#ffffff"
         },

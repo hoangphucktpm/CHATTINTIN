@@ -14,7 +14,7 @@ const Register = () => {
     const [password, setPassword] = useState("");
 
     const isPassword = true;
-    const regexPhone = /^0\d{9}$/;
+    const regexPhone = /^84\d{9}$/;
     const navigation = useNavigation();
     // Connect Firebase
     const hanldPressDashBoard = () => {
@@ -34,6 +34,12 @@ const Register = () => {
             Alert.alert("Vui lòng nhập số điện thoại");
             return;
         }
+        if (!regexPhone.test(phone)) {
+            Alert.alert("Số điện thoại không đúng định dạng");
+            return;
+        }
+
+        
         try {
             const res = await api.checkUserExist({
                 username: phone,
@@ -42,10 +48,11 @@ const Register = () => {
                 navigation.navigate("OTP", { phoneNumber: phone });
                 return;
             } else {
-                Alert.alert(res.data.message);
+                
+                Alert.alert("Số điện thoại đã tồn tại");
             }
         } catch (error) {
-            Alert.alert(error.message);
+            Alert.alert("Lỗi", error.message);
         }
     };
     const handlPressPass = () => {};
