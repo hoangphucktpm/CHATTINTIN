@@ -1,76 +1,46 @@
-import {StyleSheet} from 'react-native'
-
+import {StyleSheet} from 'react-native';
 const styles = StyleSheet.create({
-    
     container:{
         flex:1,
-   
+        backgroundColor:'#fff'
     },
-    containerHeader :{
-        display:'flex',
-        width: '100%',
-        flex:0.08,
-        borderColor:'#ccc',
-        borderWidth:1,
-        flexDirection:'row',
-        backgroundColor:'#0091ff'
-    }, 
+    
+    containerTabBar:{
+    height: "8%",
+    padding:5,
+    backgroundColor: '#1E90FF',
+    display:'flex',
+    flexDirection:'row',
+    },
     containerText:{
-        flex:0.8,
-        justifyContent:'flex-end',
-    },  
-    text:{
-        width:'100%',
-        fontSize:24,
-        padding:10,
-        paddingLeft:10,
-        color:"white"
-    }, 
-    containerBody:{
-        flex:1,
+        height:"5%",
+        backgroundColor:'#F5FFFA',
+        justifyContent:'center',
+        alignItems:'center',
     },
-    containerBody_SearchFriend:{
-        flex:0.4,
+    containerInput:{
+        marginTop:20,
+        width: "80%",
     },
-    containerBody_SearchFriend_Input:{
+    containerBottom:{
         display:'flex',
         flexDirection:'row',
-        flex:0.3,
-        marginRight:10,
-        marginBottom:10,
+        justifyContent:'center',
+        paddingRight:10,
+        marginTop:30,
     },
+    
     bottom:{
-        padding:15,
+        flex:1,
+        height:60,
         backgroundColor:'#1C86EE',
+        marginBottom:100,
         borderRadius:100,
         justifyContent:'center',
         alignItems:'center',
-        flex:0.1,
-    },
-    itemFriend_avatar:{
-        marginRight:15,
-        marginLeft:20,
-    },
-    itemFriend_avatar_avatar:{
-        width:50,
-        height:50,
-        borderRadius: 50,
-    },
-    containerBody_AcpFriends:{
-        flex:0.6,
-    },
-    buttonAcp:{
-        backgroundColor:"#B9D3EE",
-        paddingLeft:10,
-        paddingRight:10,
-        paddingTop:10,
-        paddingBottom:10,
-    },
-    containerIcon:{
-        justifyContent:'flex-end',
-        justifyContent:'center',
-        alignItems:'center',
-        marginLeft:10,
-    },
+        marginRight:60,
+        marginLeft:60,
+    }
 });
+
 export default styles;

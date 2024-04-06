@@ -34,8 +34,32 @@ const styles = StyleSheet.create({
         alignItems:'center',
         marginRight:5,
     },
+    
+    containerInput:{
+        flex:0.8,
+        justifyContent:'center',
+        alignItems:'center',
+        marginLeft:10,
+        shadowColor :'#000',
+        shadowOffset:{width:0,height:2},
+        shadowOpacity:0.25,
+        shadowRadius:3.84,
+        borderRadius:20,
+        
+    },
+    input:{
+        width:'90%',
+        height:40,
+        backgroundColor:'#0091ff',
+        borderRadius:20,
+        color:'#fff',
+        paddingLeft:10,
+    },
+
+
     iconSeach:{
-        margin: 'auto',
+        marginBottom:9,
+
     },
     containerIconRight:{
         flex:0.2,
@@ -55,8 +79,40 @@ const styles = StyleSheet.create({
         flexDirection:"row",
         flex:0.5,
         alignItems:'center',
+        // khung bao ngoai hinh chu nhat
+        borderColor:'#ccc',
+        borderWidth:2,
+        borderRadius:5,
+        marginTop:5,
+        // marginLeft:10,
+        // marginRight:10,
+        backgroundColor:'#fff',
+        shadowColor :'#000',
+        shadowOffset:{width:0,height:2},
+        shadowOpacity:0.25,
+        shadowRadius:3.84,
 
     },
+
+    itemFriend_actions:{
+        display:'flex',
+        flexDirection:'row',
+        justifyContent:'flex-end',
+        flex:1,
+        marginRight:10,
+    },
+    acceptButton:{
+        borderRadius:5,
+        padding:5,
+        marginRight:5,
+    },
+
+    rejectButton:{
+        borderRadius:5,
+        padding:5,
+    },
+
+
     containerItem:{
         display:'flex',
         flexDirection:'row',
@@ -85,7 +141,7 @@ const styles = StyleSheet.create({
    
     touchHightLight:{
         backgroundColor:'#fff',
-        flex:1,
+        padding:10,
     },
     
    
