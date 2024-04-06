@@ -18,116 +18,113 @@ import ListFriend from "../ListFriend/ListFriend";
 import Footer from "../Footer/Footer";
 import { useRoute } from "@react-navigation/native";
 
-
 function Home(props) {
-    const route = useRoute();
-    const {phone} = route.params;
-    // navigation.navigate('MyProfile', {phone: phone});
-    // const userState = useSelector(state => state.user);
-    // const roomState = useSelector(state => state.room);
-    // const [socket, setSocket] = useState(null);
+  const route = useRoute();
+  const { phone } = route.params;
+  // navigation.navigate('MyProfile', {phone: phone});
+  // const userState = useSelector(state => state.user);
+  // const roomState = useSelector(state => state.room);
+  // const [socket, setSocket] = useState(null);
 
-    // const rooms = userState.rooms;
-    
-    // const dispatch = useDispatch();
-    // const token = tokenService.getAccessToken();
-    // const roomId = useRef(roomState._id);
-    // useEffect(() => {
-    //     roomId.current = roomState._id;
-    // });
-    // const message = useRef(roomState.messageSent);
-    // useEffect(() => {
-    //     message.current = roomState.messageSent;
-    // });
-    // useEffect(() => {
-    //     if (userState.is_login) {
-    //         dispatch(userAPI.getUserInfo()(tokenService.getAccessToken()));
-    //     }
-    // }, []);
-    // useEffect(() => {
-    //     newSocket.disconnect();
-    //     newSocket = io("http://54.254.183.128");
-    //     newSocket?.on("server-send-message", function (data) {
-    //         if (roomId.current === data.roomId) {
-    //             dispatch(roomAPI.updateListChat()(data));
-    //         }    
-    //     });
-    //     newSocket?.on("connect", () => {
-    //         console.log("connecting");
-    //         newSocket.emit("start", { token: token });
-    //     });
-    //     newSocket?.on("disconnect", () => {
-    //         console.log("disconnect");
-    //     });
+  // const rooms = userState.rooms;
 
-    //     // socket request add friend
+  // const dispatch = useDispatch();
+  // const token = tokenService.getAccessToken();
+  // const roomId = useRef(roomState._id);
+  // useEffect(() => {
+  //     roomId.current = roomState._id;
+  // });
+  // const message = useRef(roomState.messageSent);
+  // useEffect(() => {
+  //     message.current = roomState.messageSent;
+  // });
+  // useEffect(() => {
+  //     if (userState.is_login) {
+  //         dispatch(userAPI.getUserInfo()(tokenService.getAccessToken()));
+  //     }
+  // }, []);
+  // useEffect(() => {
+  //     newSocket.disconnect();
+  //     newSocket = io("http://54.254.183.128");
+  //     newSocket?.on("server-send-message", function (data) {
+  //         if (roomId.current === data.roomId) {
+  //             dispatch(roomAPI.updateListChat()(data));
+  //         }
+  //     });
+  //     newSocket?.on("connect", () => {
+  //         console.log("connecting");
+  //         newSocket.emit("start", { token: token });
+  //     });
+  //     newSocket?.on("disconnect", () => {
+  //         console.log("disconnect");
+  //     });
 
-    //     newSocket.on("send-friend-invite", function (data) {
-    //         dispatch(
-    //             userAPI.updateListRequestAddFriend()(data.friendInvite.user)
-    //         );
-    //     });
-    //     // send icon vs thu tin nhan
-    //     newSocket.on("react-message", function (data) {
-    //         if (roomId.current === data.roomId) {
-    //             dispatch(roomAPI.updateChangeIconMessage()(data));
-    //         }
-    //     });
+  //     // socket request add friend
 
+  //     newSocket.on("send-friend-invite", function (data) {
+  //         dispatch(
+  //             userAPI.updateListRequestAddFriend()(data.friendInvite.user)
+  //         );
+  //     });
+  //     // send icon vs thu tin nhan
+  //     newSocket.on("react-message", function (data) {
+  //         if (roomId.current === data.roomId) {
+  //             dispatch(roomAPI.updateChangeIconMessage()(data));
+  //         }
+  //     });
 
-    //     newSocket.on("unsend-message", function (data) {
-    //         console.log(data);
-    //         console.log(data.roomId);
-    //         console.log(roomState._id);
-    //         if (roomId.current === data.roomId) {
-    //             console.log("vào");
+  //     newSocket.on("unsend-message", function (data) {
+  //         console.log(data);
+  //         console.log(data.roomId);
+  //         console.log(roomState._id);
+  //         if (roomId.current === data.roomId) {
+  //             console.log("vào");
 
-    //             dispatch(roomAPI.updateChangeMessage()(data));
-    //         }
-    //     });
+  //             dispatch(roomAPI.updateChangeMessage()(data));
+  //         }
+  //     });
 
-    //     // call video
+  //     // call video
 
-    //     // navigator.mediaDevices
-    //     //     .getUserMedia({ video: true, audio: true })
-    //     //     .then((stream) => {
-    //     //         setStream(stream);
-    //     //         myVideo.current.srcObject = stream;
-    //     //     });
+  //     // navigator.mediaDevices
+  //     //     .getUserMedia({ video: true, audio: true })
+  //     //     .then((stream) => {
+  //     //         setStream(stream);
+  //     //         myVideo.current.srcObject = stream;
+  //     //     });
 
-    //     // newSocket.on("me", (id) => {
-    //     //     setMe(id);
-    //     // });
+  //     // newSocket.on("me", (id) => {
+  //     //     setMe(id);
+  //     // });
 
-    //     // newSocket.on("callUser", (data) => {
-    //     //     setReceivingCall(true);
-    //     //     setCaller(data.from);
-    //     //     setName(data.name);
-    //     //     setCallerSignal(data.signal);
-    //     // });
+  //     // newSocket.on("callUser", (data) => {
+  //     //     setReceivingCall(true);
+  //     //     setCaller(data.from);
+  //     //     setName(data.name);
+  //     //     setCallerSignal(data.signal);
+  //     // });
 
-    //     // call video
+  //     // call video
 
-    //     return () => {
-    //         newSocket?.off("connect");
-    //         newSocket?.off("disconnect");
-    //         newSocket?.off("server-send-message");
-    //     };
-    //     // }
-    // }, [token]);
-    console.log(phone)
-    return (
-        <View style={styles.container}>
-            <View style={styles.containerItem}>
-                <Search style ={styles.containerSearch}/>
-                <View style ={styles.containerList}>
-                    <ListFriend {...props} style={styles.main} />
-                </View>
-                <Footer phone={phone} style={styles.footer}/>
-            </View>
-            
+  //     return () => {
+  //         newSocket?.off("connect");
+  //         newSocket?.off("disconnect");
+  //         newSocket?.off("server-send-message");
+  //     };
+  //     // }
+  // }, [token]);
+
+  return (
+    <View style={styles.container}>
+      <View style={styles.containerItem}>
+        <Search style={styles.containerSearch} />
+        <View style={styles.containerList}>
+          <ListFriend {...props} style={styles.main} />
         </View>
-    );
+        <Footer phone={phone} style={styles.footer} />
+      </View>
+    </View>
+  );
 }
 
 export default Home;

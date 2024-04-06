@@ -1922,7 +1922,7 @@
 
 "@react-native-community/datetimepicker@7.2.0":
   version "7.2.0"
-  resolved "https://registry.yarnpkg.com/@react-native-community/datetimepicker/-/datetimepicker-7.2.0.tgz#db8c03dbf49bf3c24b06b617a8467d8b05511f62"
+  resolved "https://registry.npmjs.org/@react-native-community/datetimepicker/-/datetimepicker-7.2.0.tgz"
   integrity sha512-dO1sQy83M/EvnHE2egto05iwXZX7EYn5f/VDMp6afZFRFXRiRo7CzB3VFg4B55gJRJMNBv06NYMLPM3SlpnEGQ==
   dependencies:
     invariant "^2.2.4"
@@ -4246,7 +4246,7 @@ expo-constants@~14.4.2:
 
 expo-dev-client@~2.4.13:
   version "2.4.13"
-  resolved "https://registry.yarnpkg.com/expo-dev-client/-/expo-dev-client-2.4.13.tgz#cf8c829e2f815b273db44c17e513d5410af5b7fa"
+  resolved "https://registry.npmjs.org/expo-dev-client/-/expo-dev-client-2.4.13.tgz"
   integrity sha512-EBNJlPntw+DZy7mKxYvpdrmE2GU4YjcEpxSLpwNn2GDwy7e2xXAC2k/25E13BGy3yKPLo1iBXNgB01uleIDdVg==
   dependencies:
     expo-dev-launcher "2.4.15"
@@ -4257,7 +4257,7 @@ expo-dev-client@~2.4.13:
 
 expo-dev-launcher@2.4.15:
   version "2.4.15"
-  resolved "https://registry.yarnpkg.com/expo-dev-launcher/-/expo-dev-launcher-2.4.15.tgz#298ac56b523f77c40523453224f75dcc894198bc"
+  resolved "https://registry.npmjs.org/expo-dev-launcher/-/expo-dev-launcher-2.4.15.tgz"
   integrity sha512-6oF4NsxlKwuafnyIZvVtMp4OTxRu4Arsw6qJ9s4jDjZuGJtGwgEj9ux3R0YLkDPs8xhsK9Awp0q17RqbQzs1qg==
   dependencies:
     expo-dev-menu "3.2.3"
@@ -4266,12 +4266,12 @@ expo-dev-launcher@2.4.15:
 
 expo-dev-menu-interface@1.3.0:
   version "1.3.0"
-  resolved "https://registry.yarnpkg.com/expo-dev-menu-interface/-/expo-dev-menu-interface-1.3.0.tgz#51b6be8c6e0ce73e414ac7a545998dfad0dfdb80"
+  resolved "https://registry.npmjs.org/expo-dev-menu-interface/-/expo-dev-menu-interface-1.3.0.tgz"
   integrity sha512-WtRP7trQ2lizJJTTFXUSGGn1deIeHaYej0sUynvu/uC69VrSP4EeSnYOxbmEO29kuT/MsQBMGu0P/AkMQOqCOg==
 
 expo-dev-menu@3.2.3:
   version "3.2.3"
-  resolved "https://registry.yarnpkg.com/expo-dev-menu/-/expo-dev-menu-3.2.3.tgz#31c102251d94e9a35fac667cefdbaeae7b1e1375"
+  resolved "https://registry.npmjs.org/expo-dev-menu/-/expo-dev-menu-3.2.3.tgz"
   integrity sha512-DneF3okTC4AAfAZgaOIylQ/UngSO8SnUT6bRV6nHhJU/jQS1OIP1cZoNW23I100+2yj6x6mobL21PxyiI5VA8g==
   dependencies:
     expo-dev-menu-interface "1.3.0"
@@ -4279,7 +4279,7 @@ expo-dev-menu@3.2.3:
 
 expo-dev-menu@3.2.4:
   version "3.2.4"
-  resolved "https://registry.yarnpkg.com/expo-dev-menu/-/expo-dev-menu-3.2.4.tgz#25ba1efe70bf74ab2d7804eab54212785cd2a01a"
+  resolved "https://registry.npmjs.org/expo-dev-menu/-/expo-dev-menu-3.2.4.tgz"
   integrity sha512-jPvEY4xGTsiVL6A8M6xThNG+tgCHKlDaWqmWHT+wy2EXgFf/7zE0daVYoFms0KJ1XtZc+/DmDRgIPTR86qIGTg==
   dependencies:
     expo-dev-menu-interface "1.3.0"
@@ -4313,7 +4313,7 @@ expo-image-picker@~14.3.2:
 
 expo-json-utils@~0.7.0:
   version "0.7.1"
-  resolved "https://registry.yarnpkg.com/expo-json-utils/-/expo-json-utils-0.7.1.tgz#efe315c982113204be46419cbc26d4d9a2af145f"
+  resolved "https://registry.npmjs.org/expo-json-utils/-/expo-json-utils-0.7.1.tgz"
   integrity sha512-L0lyH8diXQtV0q5BLbFlcoxTqPF5im79xDHPhybB0j36xYdm65hjwRJ4yMrPIN5lR18hj48FUZeONiDHRyEvIg==
 
 expo-keep-awake@~12.3.0:
@@ -4323,7 +4323,7 @@ expo-keep-awake@~12.3.0:
 
 expo-manifests@~0.7.0:
   version "0.7.2"
-  resolved "https://registry.yarnpkg.com/expo-manifests/-/expo-manifests-0.7.2.tgz#77c2d9476e8130fc9ca6d4274fa1a5495d34358e"
+  resolved "https://registry.npmjs.org/expo-manifests/-/expo-manifests-0.7.2.tgz"
   integrity sha512-xlhL0XI2zw3foJ0q2Ra4ieBhU0V2yz+Rv6GpVEaaIHFlIC/Dbx+mKrX5dgenZEMERr/MG7sRJaRbAVB2PaAYhA==
   dependencies:
     expo-json-utils "~0.7.0"
@@ -4365,7 +4365,7 @@ expo-status-bar@~1.6.0:
 
 expo-updates-interface@~0.10.0:
   version "0.10.1"
-  resolved "https://registry.yarnpkg.com/expo-updates-interface/-/expo-updates-interface-0.10.1.tgz#cab075641cd381718ccd9264bf133dc393430a44"
+  resolved "https://registry.npmjs.org/expo-updates-interface/-/expo-updates-interface-0.10.1.tgz"
   integrity sha512-I6JMR7EgjXwckrydDmrkBEX/iw750dcqpzQVsjznYWfi0HTEOxajLHB90fBFqQkUV5i5s4Fd3hYQ1Cn0oMzUbA==
 
 expo-web-browser@~12.3.2:
@@ -4752,7 +4752,7 @@ fs.realpath@^1.0.0:
 
 fsevents@^2.3.2, fsevents@~2.3.2:
   version "2.3.3"
-  resolved "https://registry.yarnpkg.com/fsevents/-/fsevents-2.3.3.tgz#cac6407785d03675a2a5e1a5305c697b347d90d6"
+  resolved "https://registry.npmjs.org/fsevents/-/fsevents-2.3.3.tgz"
   integrity sha512-5xoDfX+fL7faATnagmWPpbFtwh/R77WmMMqqHGS65C3vvB0YHrgF+B1YmZ3441tMj5n63k0212XNoJwzlhffQw==
 
 function-bind@^1.1.2:
@@ -5727,7 +5727,7 @@ lightningcss-darwin-arm64@1.19.0:
 
 lightningcss-darwin-x64@1.19.0:
   version "1.19.0"
-  resolved "https://registry.yarnpkg.com/lightningcss-darwin-x64/-/lightningcss-darwin-x64-1.19.0.tgz#c867308b88859ba61a2c46c82b1ca52ff73a1bd0"
+  resolved "https://registry.npmjs.org/lightningcss-darwin-x64/-/lightningcss-darwin-x64-1.19.0.tgz"
   integrity sha512-Lif1wD6P4poaw9c/4Uh2z+gmrWhw/HtXFoeZ3bEsv6Ia4tt8rOJBdkfVaUJ6VXmpKHALve+iTyP2+50xY1wKPw==
 
 lightningcss-linux-arm-gnueabihf@1.19.0:
@@ -5757,7 +5757,7 @@ lightningcss-linux-x64-musl@1.19.0:
 
 lightningcss-win32-x64-msvc@1.19.0:
   version "1.19.0"
-  resolved "https://registry.npmjs.org/lightningcss-win32-x64-msvc/-/lightningcss-win32-x64-msvc-1.19.0.tgz"
+  resolved "https://registry.yarnpkg.com/lightningcss-win32-x64-msvc/-/lightningcss-win32-x64-msvc-1.19.0.tgz#0854dbd153035eca1396e2227c708ad43655a61c"
   integrity sha512-C+VuUTeSUOAaBZZOPT7Etn/agx/MatzJzGRkeV+zEABmPuntv1zihncsi+AyGmjkkzq3wVedEy7h0/4S84mUtg==
 
 lightningcss@~1.19.0:
@@ -7535,7 +7535,7 @@ react-native-dotenv@^3.4.11:
 
 react-native-image-picker@^7.1.2:
   version "7.1.2"
-  resolved "https://registry.yarnpkg.com/react-native-image-picker/-/react-native-image-picker-7.1.2.tgz#383849d1953caf4578874a1f5e5dd11c737bd5cd"
+  resolved "https://registry.npmjs.org/react-native-image-picker/-/react-native-image-picker-7.1.2.tgz"
   integrity sha512-b5y5nP60RIPxlAXlptn2QwlIuZWCUDWa/YPUVjgHc0Ih60mRiOg1PSzf0IjHSLeOZShCpirpvSPGnDExIpTRUg==
 
 react-native-pager-view@6.2.0:
