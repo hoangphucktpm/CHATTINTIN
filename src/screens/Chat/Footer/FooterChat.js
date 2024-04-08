@@ -5,35 +5,28 @@ import { FontAwesome } from '@expo/vector-icons';
 import { MaterialIcons } from '@expo/vector-icons'; 
 import { SimpleLineIcons } from '@expo/vector-icons'; 
 // import io, { Socket } from "socket.io-client";
-// import { useDispatch } from 'react-redux';
-// import roomAPI from "../../../redux/reducers/Room/roomAPI";
-// import { useSelector } from 'react-redux';
+ import { useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 import * as ImagePicker  from 'expo-image-picker';
+import { setChatList } from '../../../redux/chatSlice';
 // import tokenService from '../../../services/token.service';
-// import axios from 'axios';
 
 function FooterChat (){
-//   const dispatch = useDispatch();
+ const dispatch = useDispatch();
   const [text,setText] = useState("");
-//   const roomState = useSelector(state => state.room);
-//   const userState = useSelector(state => state.user);
-//   const token = tokenService.getAccessToken();
-//   const urlUploadFile = "http://54.254.183.128/api/storages/upload";
-  
-//   const newSocket = io("http://54.254.183.128", {
-//         query: {
-//             // token: useState.accessToken,
-//         },
-//     });
-  const sendMessageSocket = () => {
-      console.log("sendMessage");
 
-      newSocket.emit("client-send-message", {
-          token: accessToken,
-          roomId: roomState._id,
-          content: text,
-          type: "text",
-      });
+ const chatData = useSelector(state => state.room);
+
+  const sendMessageSocket = () => {
+      console.log(text);
+      const data = {
+        content: text,
+      fromSelf: true,
+      };
+
+      dispatch(setChatList(data));
+
+   
   };
   const pickImage = async () => {
     // No permissions request is necessary for launching the image library
@@ -62,12 +55,7 @@ function FooterChat (){
                     },
                 })
                 .then((res) => {
-                    newSocket.emit("client-send-message", {
-                        token: userState.accessToken,
-                        roomId: roomState._id,
-                        content: res.data.url,
-                        type: res.data.type,
-                    });
+                   
                    
                 })
                 .catch((err) => {
@@ -110,11 +98,8 @@ function FooterChat (){
             <SimpleLineIcons name="picture" size={24} color="#0091ff" />
           </TouchableOpacity>
           <TouchableOpacity onPress={()=>{
-            console.log(text)
             sendMessageSocket();
-            dispatch(roomAPI.updateSentMessage()(text));
-            console.log("nhan enter");
-            setText("");
+           
           }}>
             <FontAwesome name="send" size={24} color="#0091ff" />
           </TouchableOpacity>

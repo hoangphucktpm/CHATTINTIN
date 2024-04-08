@@ -1,8 +1,10 @@
 import axios from "axios";
 
+export const myIP = '192.168.1.15'
+
 export const http = axios.create({
   // timeout: 30000,
-  baseURL: "http://172.20.50.31:8080",
+  baseURL: `http://${myIP}:8080`,
 });
 
 export const api = {
@@ -27,4 +29,7 @@ export const api = {
   resetPassword: async (params) => {
     return http.post(`auth/reset-password`, params);
   },
+  getAllFriendRequests: (id) => http.get(`user/get-all-friend-requests/${id}`, {id}),
+  handleFriendRequest: ({ id, type }) => http.post('user/process-friend-request',{ id, type }),
+  handleSendFriendRequest: ({ senderId, receiverId }) => http.post('user/send-friend-request',{ senderId, receiverId }),
 };

@@ -14,24 +14,36 @@ import socket from '../../services/socket';
 import { useEffect } from 'react';
 import { set } from 'date-fns';
 import { useRoute } from '@react-navigation/native';
+import { api } from '../../apis/api';
+import { useSelector } from 'react-redux';
 
 
 function Contacts() {
   const navigation = useNavigation();
+const {user } = useSelector((state) => state.auth);
+
   const [selectedButton, setSelectedButton] = useState(null);
   const [receiverId, setReceiverId] = useState(null);
 
-  const { phone } = useRoute().params || {};
-  console.log('phone:', phone);
-
-
+  const phone = user?.phone
 
 
   // Thêm một state mới để lưu trữ danh sách lời mời kết bạn
 const [friendRequests, setFriendRequests] = useState([]);
+useEffect(() => {
+  if (!user) return navigation.navigate('Login');
+  const getFriendRequests = async () => {
+    
+    const res = await api.getAllFriendRequests(user.ID)
+    console.log('res', res.data)
+    setFriendRequests(res.data)
+  }
+  getFriendRequests()
+}, [user, receiverId])
 
 
 useEffect(() => {
+  console.log('receiverId', receiverId)
   // Listen for a 'friend request received' event from the server
   socket.on('friend request received', (response) => {
     if (response.receiverId === receiverId) {
@@ -39,6 +51,7 @@ useEffect(() => {
 
       // Cập nhật danh sách lời mời kết bạn
       setFriendRequests(prevRequests => [...prevRequests, response]);
+      setReceiverId(null);
     }
   });
 
@@ -86,17 +99,29 @@ useEffect(() => {
         // mở thanh tìm kiếm
     }
 
-    const handleAccept = (id) => {
-      setReceiverId(id);
-        Alert.alert("Đã chấp nhận lời mời kết bạn");
+    const handleAccept =  (id) => {
+      api.handleFriendRequest({id, type:'ACCEPTED'}).then((res) => {
 
+        Alert.alert(res.data.message);
+        setReceiverId(id);
+      }).catch(err => {
+        Alert.alert('Error handle friend requests');
+      
+      })
     }
 
     const handleReject = (id) => {
         // xóa cái item đó 
         // Hiện thông báo đã từ chối
-        setReceiverId(id);
-        Alert.alert("Đã từ chối lời mời kết bạn");
+        api.handleFriendRequest({id, type:'DENIED'}).then((res) => {
+
+          Alert.alert(res.data.message);
+          setReceiverId(id);
+        }).catch(err => {
+          Alert.alert('Error handle friend requests');
+        
+        })
+       
     }
 
     const AddFriend = ()=>{
@@ -147,7 +172,7 @@ useEffect(() => {
 
 
     const renderItem2 = ({item}) => {
-  var imageItem = (item.image == undefined)? "https://hinhgaixinh.com/wp-content/uploads/2021/12/bo-anh-girl-xinh-cap-2.jpg":item.image;
+  var imageItem = item.sender.urlavatar?? "https://hinhgaixinh.com/wp-content/uploads/2021/12/bo-anh-girl-xinh-cap-2.jpg"
 
   return (
     <TouchableHighlight underlayColor={'#E6E6FA'} style={styles.touchHightLight} onPress={() => {
@@ -164,7 +189,7 @@ useEffect(() => {
           </View>
         </View>
         <View style={styles.itemFriend_right}>
-          <Text style={{fontSize:20,}}>{item.name}</Text>
+          <Text style={{fontSize:20, color:'#000'}}>{item.sender.fullname}</Text>
         </View>
         <View style={styles.itemFriend_actions}>
           <TouchableOpacity style={styles.acceptButton} onPress={() => handleAccept(item.id)}>

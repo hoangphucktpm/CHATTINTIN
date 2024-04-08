@@ -22,6 +22,7 @@ import { differenceInYears } from "date-fns";
 
 
 import { api } from "../../apis/api";
+import { storeData } from "../../utils/localStorageConfig";
 
 const InputProfile = (props) => {
   const [name, setName] = useState("");
@@ -137,6 +138,7 @@ const InputProfile = (props) => {
         urlavatar: avatarImage,
       });
       Alert.alert("Đăng ký thành công");
+      await storeData("user-phone", idNewUser);
       navigation.navigate("Home", { phone: idNewUser });
     } catch (error) {
       Alert.alert(error.message);

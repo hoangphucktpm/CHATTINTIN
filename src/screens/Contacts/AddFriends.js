@@ -17,6 +17,7 @@ import { useRoute } from "@react-navigation/native";
 import { api } from "../../apis/api";
 import socket from "../../services/socket";
 import { useEffect } from "react";
+import { useSelector } from "react-redux";
  
 // Import FireBase
 const AddFriends = (props) => {
@@ -25,9 +26,9 @@ const AddFriends = (props) => {
   const [phoneNumber, setPhoneNumber] = useState(""); // Số điện thoại người dùng nhập
   const [searchData, setSearchData] = useState([]); // Dữ liệu tìm kiếm
   const route = useRoute();
-  const phone = route?.params?.phone;
+  const {user} = useSelector((state) => state.auth);
+  const phone =user.phone;
 
-  console.log('phone:', phone);
 
 
   const hanldPressDashBoard = () => {
@@ -50,18 +51,13 @@ const AddFriends = (props) => {
 
 
   const renderItem = ({ item }) => {
-    console.log(item);
     const urlavatar = item.urlavatar || "https://hinhgaixinh.com/wp-content/uploads/2021/12/bo-anh-girl-xinh-cap-2.jpg";
     return (
       <TouchableHighlight
         underlayColor={"#E6E6FA"}
         style={styles.touchHightLight}
         onPress={() => {
-          navigation.navigate("FriendProfile", {
-            phone: item.phone,
-            fullname: item.fullname,
-            urlavatar: item.urlavatar,
-          });
+          navigation.navigate("FriendProfile", item);
         }}
       >
         <View style={styles.containerItem}>

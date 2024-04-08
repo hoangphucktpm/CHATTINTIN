@@ -23,11 +23,17 @@ import { useRoute } from "@react-navigation/native";
 import { differenceInYears } from "date-fns";
 import { launchImageLibrary } from "react-native-image-picker";
 import { PermissionsAndroid, Platform } from "react-native";
+import { useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
+import { removeData } from "../../utils/localStorageConfig";
+import { logout } from "../../redux/authSclice";
 
 
 
 const MyProfile = () => {
   const navigation = useNavigation();
+  const dispatch = useDispatch();
+
   const [fullname, setFullName] = useState("");
   const [idUser, setIdUser] = useState("");
   const [gender, setGender] = useState("");
@@ -45,9 +51,9 @@ const MyProfile = () => {
   const [isPasswordVisibleNew, setPasswordVisibleNew] = useState(false); // State for password visibility
 
 
-  useEffect(() => {
-    loadUserProfile();
-  }, []);
+  // useEffect(() => {
+  //   loadUserProfile();
+  // }, []);
 
   const handleDateChange = (event, selectedDate) => {
     const currentDate = selectedDate || birthday;
@@ -133,30 +139,45 @@ const MyProfile = () => {
 
 
 
+  const {user} = useSelector((state) => state.auth);
   const route = useRoute();
-  const phone = route?.params?.phone;
+  const phone = user?.phone;
+
+  useEffect(() => {
+    if (!user) return navigation.navigate("Login");
+    console.log(user);
+    setFullName(user.fullname);
+          setGender(user.ismale);
+          const formattedBirthday = new Date(user.birthday);
+          setBirthday(formattedBirthday);
+          setBirthday(new Date(user.birthday));
+          setAvatarImage(user.urlavatar);
+          setIdUser(user.ID);
+  }, [user])
   
   // Load user profile info from server when the screen is loaded for the first time (useEffect) or when the user presses the "Refresh" button
   // Không cần bấm button gì
 
-  const loadUserProfile = async () => {
-    try {
-      const res = await api.getUserByPhone(phone);
+  // const loadUserProfile = async () => {
+  //   try {
+  //     const res = await api.getUserByPhone(phone);
+  //     console.log(res);
 
-      if (res?.data) {
-        setFullName(res.data.fullname);
-        setGender(res.data.ismale);
-        const formattedBirthday = new Date(res.data.birthday);
-        setBirthday(formattedBirthday);
-        setBirthday(new Date(res.data.birthday));
-        setAvatarImage(res.data.urlavatar);
-        setIdUser(res.data.ID);
-      }
-    } catch (error) {
-      Alert.alert("Lỗi", "Không thể tải thông tin cá nhân");
+  //     if (res?.data) {
+  //       setFullName(res.data.fullname);
+  //       setGender(res.data.ismale);
+  //       const formattedBirthday = new Date(res.data.birthday);
+  //       setBirthday(formattedBirthday);
+  //       setBirthday(new Date(res.data.birthday));
+  //       setAvatarImage(res.data.urlavatar);
+  //       setIdUser(res.data.ID);
+  //     }
+  //   } catch (error) {
+  //     Alert.alert("Lỗi", "Không thể tải thông tin cá nhân");
 
-    }
-  };
+  //   }
+  // };
+
 
 
 
@@ -230,6 +251,7 @@ const MyProfile = () => {
     // Hiển thị thông báo cập nhật thành công
   };
 
+
   const handleLogoutPress = () => {
     // Ask if you want to log out
     Alert.alert("Đăng xuất", "Bạn có chắc chắn muốn đăng xuất?", [
@@ -240,7 +262,12 @@ const MyProfile = () => {
       },
       {
         text: "Đồng ý",
-        onPress: () => navigation.navigate("Login"),
+        onPress: async () => {
+          await removeData('user-phone').then(() => {
+            dispatch(logout())
+            navigation.navigate("DashBoard")
+          })
+        },
         style: "destructive",
       },
     ]);

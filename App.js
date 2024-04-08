@@ -23,7 +23,8 @@ import ListFriend from "./src/screens/ListFriend/ListFriend";
 import ChangePassForgot from "./src/screens/ForgotPassword&DashBoard/ChangePassForgot";
 import OTPPassForgot from "./src/screens/ForgotPassword&DashBoard/OTPPassForgot";
 
-
+import { Provider } from 'react-redux';
+import { store } from './store';
 
 const App = ()=> {
   const Stack = createNativeStackNavigator()
@@ -51,7 +52,8 @@ const App = ()=> {
 
     return (
 
-            <NavigationContainer>
+            <Provider store={store}>
+              <NavigationContainer>
             <Stack.Navigator initialRouteName={dashBoard} screenOptions={{headerShown:false}}>
                 <Stack.Screen name={login} component={Login} />
                 <Stack.Screen name={register} component={Register} />
@@ -78,6 +80,7 @@ const App = ()=> {
                 
             </Stack.Navigator>
         </NavigationContainer>
+            </Provider>
 
         );
         

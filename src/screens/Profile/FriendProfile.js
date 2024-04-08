@@ -1,16 +1,32 @@
-import { ScrollView, View, Text, TouchableOpacity, Image, ImageBackground } from "react-native";
-import React, { useState } from "react";
+import { ScrollView, View, Text, TouchableOpacity, Image, ImageBackground, Alert } from "react-native";
+import React, { useEffect, useState } from "react";
 import styles from "./StyleFriendProfile";
 import { useNavigation } from "@react-navigation/native";
 import { Ionicons } from '@expo/vector-icons';
-import axios from "axios";
 import Icon from 'react-native-vector-icons/Ionicons';
+import { api } from "../../apis/api";
+import { useSelector } from "react-redux";
 
 
 
 function FriendProfile({ route }) {
     const { phone, fullname, urlavatar } = route.params;
     const navigation = useNavigation();
+    const {user} = useSelector((state) => state.auth);
+
+    const [friendRequests, setFriendRequests] = useState([]);
+    useEffect(() => {
+      if (!user) return navigation.navigate('Login');
+      const getFriendRequests = async () => {
+        
+        const res = await api.getAllFriendRequests(user.ID)
+        console.log('res', res.data)
+      }
+      getFriendRequests()
+    }, [user])
+
+
+
 
     const hanldPressGoBack = () => {
         navigation.goBack();
@@ -27,19 +43,13 @@ function FriendProfile({ route }) {
             setAdd("Kết bạn");
             setIsAdd(false);
         } else {
-            setAdd("Hủy lời mời");
-            setIsAdd(true);
             try {
-                axios.post(
-                    'http://172.20.10.5:8080/api/users/invites',                    
-                    {
-                        userId: infoState._id,
-                    },
-                    {
-                        headers: { authorization: token },
-                    }).then(() => {
-                        console.log("Done");
-                    });
+                api.handleSendFriendRequest({ senderId: user.ID, receiverId: route.params.ID }).then((res) => {
+                    console.log(res.data);
+                    Alert.alert("Thông báo", res.data.message);
+                    setAdd("Hủy lời mời");
+                    setIsAdd(true);
+               })
 
             } catch (error) {
                 console.log(error);

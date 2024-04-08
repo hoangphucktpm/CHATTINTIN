@@ -12,10 +12,12 @@ import styles from "./StyleLogin";
 import { useEffect, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 import { api } from "../../apis/api";
+import { storeData } from "../../utils/localStorageConfig";
 
 function Login() {
   //UseState
   const navigation = useNavigation();
+
   const [isPassword, setPassword] = useState(true);
   const [phone, setPhone] = useState("+84");
   const [passWord, setPassWord] = useState("");
@@ -35,14 +37,18 @@ function Login() {
     navigation.navigate("DashBoard");
   };
   const hanldPressLogin = async () => {
+    
     try {
       const res = await api.login({
         username: phone,
         password: passWord,
       });
+
+
+     await storeData('user-phone', phone)
       // Chỉ hiện thông báo lên thôi
       Alert.alert("Đăng nhập thành công");
-      navigation.navigate("Home", { phone: phone });
+      navigation.navigate("Home", { phone: res.data.data });
     } catch (error) {
       console.log(error.message)
       Alert.alert("Mật khẩu hoặc tài khoản không đúng");

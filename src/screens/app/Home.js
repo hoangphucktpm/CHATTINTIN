@@ -10,17 +10,39 @@
 // import roomAPI from "../../redux/reducers/Room/roomAPI";
 // export let newSocket = io("http://54.254.183.128");
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import styles from "./App_Style";
 import { View } from "react-native";
 import Search from "../Search/Search";
 import ListFriend from "../ListFriend/ListFriend";
 import Footer from "../Footer/Footer";
 import { useRoute } from "@react-navigation/native";
+import { useSelector } from "react-redux";
+import { getData } from "../../utils/localStorageConfig";
+import {useNavigation} from '@react-navigation/native'
+import { api } from "../../apis/api";
+import { useDispatch } from "react-redux";
+import { setUser } from "../../redux/authSclice";
 
 function Home(props) {
   const route = useRoute();
-  const { phone } = route.params;
+  const navigation = useNavigation();
+  const dispatch = useDispatch()
+
+  const [user, setUserData] = useState(null)
+
+
+  useEffect(() => {
+    const getUser = async () => {
+      const phone = await getData('user-phone')
+      if (!phone)  return navigation.navigate('Login')
+      const res = await api.getUserByPhone(phone);
+      setUserData(res.data)
+      dispatch(setUser(res.data));
+    }
+    getUser() 
+  }, [])
+  const phone = user?.phone
   // navigation.navigate('MyProfile', {phone: phone});
   // const userState = useSelector(state => state.user);
   // const roomState = useSelector(state => state.room);

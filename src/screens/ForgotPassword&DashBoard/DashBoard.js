@@ -1,11 +1,35 @@
-import React from "react";
+import React, { useCallback, useEffect } from "react";
 import { Image, SafeAreaView, Text, TouchableOpacity, View,} from "react-native";
 import styles from "./StyleDashBoard";
 import PagerView from 'react-native-pager-view';
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useFocusEffect } from "@react-navigation/native";
+import { getData } from "../../utils/localStorageConfig";
+import { api } from "../../apis/api";
+import { useDispatch } from "react-redux";
+import { setUser } from '../../redux/authSclice'
 
 function DashBoard(){
     const navigation = useNavigation();
+    const dispatch = useDispatch()
+
+    const checkUserLogined = async () => {
+      const phone = await getData('user-phone')
+      if (phone) {
+      try {
+        const res = await api.getUserByPhone(phone);
+        dispatch(setUser(res.data)); 
+        return navigation.navigate('Home')
+      } catch (error) {
+        console.log(error)
+      }
+      }
+    }
+    useFocusEffect(
+        useCallback(() => {
+            checkUserLogined()
+        }, []),
+      )
+
     const hanldPressLogin = () => {
         navigation.navigate("Login");
     };
