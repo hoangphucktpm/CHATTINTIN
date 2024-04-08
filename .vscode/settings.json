@@ -1,3 +1,5 @@
 {
     "java.compile.nullAnalysis.mode": "automatic"
 }
+
+// phải dùng cái development build mới đc oke

@@ -19,6 +19,16 @@ function ChangePassForgot(props) {
         navigation.goBack();
     };
 
+
+    // Biểu thức chính quy cho yêu cầu mật khẩu mới
+    const passwordRegex = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/;
+
+    // Kiểm tra mật khẩu mới với biểu thức chính quy
+    const validatePassword = (password) => {
+    return passwordRegex.test(password);
+    };
+
+
     // mở mật khẩu
     const handlePressPass = () => {
         if (isPassword) {
@@ -40,11 +50,13 @@ function ChangePassForgot(props) {
     const handleChangePassword = async () => {
         if (passWord === "") {
             Alert.alert("Thông báo", "Mời bạn nhập mật khẩu mới");
+        } else if (!validatePassword(passWord)) {
+            Alert.alert("Thông báo", "Mật khẩu không đáp ứng yêu cầu. Vui lòng kiểm tra lại.");
         } else if (passWord !== passWordAgain) {
             Alert.alert("Thông báo", "Mật khẩu nhập lại không khớp. Vui lòng kiểm tra lại.");
         } else {
             try {
-                const res = await api.updatePassword({
+                const res = await api.resetPassword({
                     username: phoneNumber,
                     newpassword: passWord,
                 });
@@ -57,6 +69,7 @@ function ChangePassForgot(props) {
             }
         }
     };
+    
 
     return (
         <View style={styles.container}>

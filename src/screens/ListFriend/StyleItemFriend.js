@@ -12,6 +12,10 @@ const styles = StyleSheet.create({
     itemFriend_avatar:{
         marginRight:15,
     },
+    itemFriend_name:{
+        fontSize:16,
+        fontWeight:'bold',
+    },
     itemFriend_avatar_avatar:{
         width:50,
         height:50,

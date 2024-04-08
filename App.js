@@ -24,6 +24,7 @@ import ChangePassForgot from "./src/screens/ForgotPassword&DashBoard/ChangePassF
 import OTPPassForgot from "./src/screens/ForgotPassword&DashBoard/OTPPassForgot";
 
 
+
 const App = ()=> {
   const Stack = createNativeStackNavigator()
     const home = "Home"
@@ -68,12 +69,12 @@ const App = ()=> {
                 <Stack.Screen name={scannerQR} component={ScannerQR} />
                 <Stack.Screen name={myProfile} component={MyProfile} />
                 {/* <Stack.Screen name={friendProfile} component={FriendProfile} />
-                <Stack.Screen name={friendProfile} component={FriendProfile} /> */}
                 {/* <Stack.Screen name={createGroup} component={CreateGroup} /> */}
                 {/* <Stack.Screen name={imageChat} component={ImageChat} /> */}
                 {/* <Stack.Screen name={memberGroup} component={MemberGroup} /> */}
                 <Stack.Screen name={listFriend} component={ListFriend} />
                 <Stack.Screen name={otpPassForgot} component={OTPPassForgot} />
+                <Stack.Screen name={friendProfile} component={FriendProfile} />
                 
             </Stack.Navigator>
         </NavigationContainer>

@@ -17,6 +17,16 @@ function InputPass(props) {
     const navigation = useNavigation();
     const { phoneNumber } = props?.route?.params;
 
+
+    // Biểu thức chính quy cho yêu cầu mật khẩu
+    const passwordRegex = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/;
+
+    // Kiểm tra mật khẩu với biểu thức chính quy
+    const validatePassword = (password) => {
+        return passwordRegex.test(password);
+    };
+
+
     // mở mật khẩu
     const hanldPressPass = () => {
         if (isPassword) {
@@ -40,6 +50,8 @@ function InputPass(props) {
             Alert.alert("Thông báo", "Mật khẩu xác nhận không giống với mật khẩu trên");
         } else if (passWord == "" || passWordAgain == "") {
             Alert.alert("Thông báo", "Mời bạn nhập mật khẩu");
+        } else if (!validatePassword(passWord)) {
+            Alert.alert("Thông báo", "Mật khẩu không đáp ứng yêu cầu. Mật khẩu cần có ít nhất một ký tự viết hoa, một ký tự viết thường, một số, một ký tự đặc biệt và có ít nhất 8 ký tự.");
         } else {
             try {
                 const res = await api.register({

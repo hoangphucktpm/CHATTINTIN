@@ -3,10 +3,13 @@ import React, { Component, useState } from 'react'
 import styles from './StyleMyMessagaItem'
 import { useNavigation } from '@react-navigation/native'
 import { AntDesign, Entypo } from '@expo/vector-icons';
-import { useSelector } from 'react-redux';
+// import { useSelector } from 'react-redux';
 import axios from 'axios';
-import tokenService from '../../../services/token.service';
+// import tokenService from '../../../services/token.service';
+// const { phone, fullname, urlavatar } = route.params;
+
 function MyMessagaItem ({avatar,name,time,message,type,owner,_id,emoji}) {
+
   const navigation = useNavigation();
   const accessToken = tokenService.getAccessToken();
   const hanldPress =()=>{

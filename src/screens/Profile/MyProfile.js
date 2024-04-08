@@ -21,6 +21,10 @@ import { api } from "../../apis/api";
 import { useEffect } from "react";
 import { useRoute } from "@react-navigation/native";
 import { differenceInYears } from "date-fns";
+import { launchImageLibrary } from "react-native-image-picker";
+import { PermissionsAndroid, Platform } from "react-native";
+
+
 
 const MyProfile = () => {
   const navigation = useNavigation();
@@ -30,34 +34,77 @@ const MyProfile = () => {
   const [birthday, setBirthday] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showPasswordFields, setShowPasswordFields] = useState(false);
-  const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
-  const [avatarImage, setAvatarImage] = useState(
-    "https://products111.s3.ap-southeast-1.amazonaws.com/Avatar0366775345.jpeg"
-  );
-
+  const [oldPassword, setOldPassword] = useState("");
+  const [avatarImage, setAvatarImage] = useState("");
   const [editingProfile, setEditingProfile] = useState(false);
   const [editingPassword, setEditingPassword] = useState(false);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [editingProfileInfo, setEditingProfileInfo] = useState(false);
   const [isPasswordVisibleOld, setPasswordVisibleOld] = useState(false); // State for password visibility
   const [isPasswordVisibleNew, setPasswordVisibleNew] = useState(false); // State for password visibility
-  const [showProfile, setShowProfile] = useState(false);
+
+
+  useEffect(() => {
+    loadUserProfile();
+  }, []);
 
   const handleDateChange = (event, selectedDate) => {
     const currentDate = selectedDate || birthday;
     setShowDatePicker(false);
-    const isoString = currentDate.toISOString();
-    const dateString = isoString.split("T")[0]; // Tách ngày tháng năm từ chuỗi ISO 8601
-    setBirthday(dateString);
+    setBirthday(currentDate);
   };
 
-  const age = differenceInYears(new Date(), birthday);
-  console.log("age", age);
-
-  const handleAvatarPress = () => {
-    Alert.alert("Thông báo", "Chức năng chưa được hỗ trợ");
+  const handleAvatarPress = async () => {
+    try {
+      const permissionsGranted = await requestPermissions();
+      if (permissionsGranted) {
+        const result = await openImagePicker();
+        if (!result.didCancel && result.assets.length > 0) {
+          setAvatarImage(result.assets[0].uri);
+        }
+      } else {
+        console.log("Người dùng từ chối cấp quyền truy cập thư viện ảnh");
+      }
+    } catch (error) {
+      console.log("Đã xảy ra lỗi khi xử lý ảnh:", error);
+    }
   };
+
+  const openImagePicker = () => {
+    return new Promise((resolve, reject) => {
+      const options = {
+        mediaType: "photo",
+        cameraType: "back",
+      };
+      launchImageLibrary(options, (response) => {
+        resolve(response);
+      });
+    });
+  };
+
+  const requestPermissions = async () => {
+    try {
+      if (Platform.OS === "android") {
+        const cameraPermission = await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.CAMERA
+        );
+        const photoPermission = await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE
+        );
+        return (
+          cameraPermission === PermissionsAndroid.RESULTS.GRANTED &&
+          photoPermission === PermissionsAndroid.RESULTS.GRANTED
+        );
+      } else {
+        return true;
+      }
+    } catch (error) {
+      console.log("Đã xảy ra lỗi khi yêu cầu quyền:", error);
+      return false;
+    }
+  };
+
 
   const hanldPressGoBack = () => {
     navigation.goBack();
@@ -84,8 +131,11 @@ const MyProfile = () => {
     setEditingProfile(false);
   };
 
+
+
   const route = useRoute();
   const phone = route?.params?.phone;
+  
   // Load user profile info from server when the screen is loaded for the first time (useEffect) or when the user presses the "Refresh" button
   // Không cần bấm button gì
 
@@ -96,18 +146,27 @@ const MyProfile = () => {
       if (res?.data) {
         setFullName(res.data.fullname);
         setGender(res.data.ismale);
+        const formattedBirthday = new Date(res.data.birthday);
+        setBirthday(formattedBirthday);
         setBirthday(new Date(res.data.birthday));
-        setAvatarImage(res.data.avatarImage);
+        setAvatarImage(res.data.urlavatar);
         setIdUser(res.data.ID);
       }
     } catch (error) {
       Alert.alert("Lỗi", "Không thể tải thông tin cá nhân");
+
     }
   };
 
-  useEffect(() => {
-    loadUserProfile();
-  }, []);
+
+
+  // Biểu thức chính quy cho yêu cầu mật khẩu mới
+  const passwordRegex = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/;
+
+  // Kiểm tra mật khẩu mới với biểu thức chính quy
+  const validatePassword = (password) => {
+    return passwordRegex.test(password);
+  };
 
   const handleRegisterPress = async () => {
     if (!editingProfileInfo) {
@@ -116,31 +175,34 @@ const MyProfile = () => {
       setEditingProfile(true); // Cập nhật trạng thái chỉnh sửa thông tin cá nhân
     } else {
       // Nếu đang ở chế độ chỉnh sửa thông tin
-      const formData = new FormData();
-      formData.append("id", 1);
-      formData.append("image", {
-        uri: avatarImage,
-        type: "image/jpeg",
-        name: "photo.jpg",
-      });
+
       try {
         await api.updateInfo(idUser, {
           fullname: fullname,
-          sex: gender,
-          birthday: birthday.toString(0, 10),
-          image: formData,
+          ismale: gender ? 1 : 0,
+          birthday: birthday.format("yyyy-MM-dd"),
+          urlavatar: avatarImage,
         });
       } catch (error) {}
       if (editingPassword) {
         // Nếu đang chỉnh sửa mật khẩu
         // Kiểm tra mật khẩu mới có trùng với mật khẩu cũ không
-        if (currentPassword === newPassword) {
+        if (oldPassword === newPassword) {
           Alert.alert(
             "Thông báo",
             "Mật khẩu mới không được trùng với mật khẩu cũ"
           );
           return;
         }
+
+        if (!validatePassword(newPassword)) {
+          Alert.alert(
+            "Thông báo",
+            "Mật khẩu mới không đáp ứng yêu cầu. Mật khẩu cần có ít nhất một ký tự viết hoa, một ký tự viết thường, một số, một ký tự đặc biệt và có ít nhất 8 ký tự."
+          );
+          return;
+        }
+
 
         // Kiểm tra xem ngày sinh đã đủ điều kiện chưa
         const currentYear = new Date().getFullYear();
@@ -150,6 +212,7 @@ const MyProfile = () => {
           Alert.alert("Thông báo", "Tuổi của bạn phải từ 16 năm trở lên");
           return; // Không thực hiện các bước cập nhật khi tuổi không đủ điều kiện
         }
+
         // Code xử lý cập nhật mật khẩu ở đây
         setShowPasswordFields(false);
         setEditingPassword(false);
@@ -183,6 +246,9 @@ const MyProfile = () => {
     ]);
   };
 
+
+
+  
   const togglePasswordVisibilityOld = () => {
     setPasswordVisibleOld(!isPasswordVisibleOld); // Toggle password visibility state
   };
@@ -190,24 +256,65 @@ const MyProfile = () => {
   const togglePasswordVisibilityNew = () => {
     setPasswordVisibleNew(!isPasswordVisibleNew); // Toggle password visibility state
   };
+
   const onUpdatePass = async () => {
-    if (newPassword === "" || currentPassword === "") {
-      Alert.alert("Thông báo", "Mời bạn nhập mật khẩu ");
+    if (oldPassword === "") {
+      Alert.alert("Vui lòng nhập mật khẩu hiện tại");
       return;
     }
+    if (newPassword === "") {
+      Alert.alert("Vui lòng nhập mật khẩu mới");
+      return;
+    }
+    if (oldPassword === newPassword) {
+      Alert.alert("Mật khẩu mới không được trùng với mật khẩu cũ");
+      return;
+    }
+    if (!validatePassword(newPassword)) {
+      Alert.alert(
+        "Mật khẩu mới không đáp ứng yêu cầu. Mật khẩu cần có ít nhất một ký tự viết hoa, một ký tự viết thường, một số, một ký tự đặc biệt và có ít nhất 8 ký tự."
+      );
+      return;
+    }
+    
+
     try {
       const res = await api.updatePassword({
         username: phone,
+        oldpassword: oldPassword,
         newpassword: newPassword,
       });
-      if (res?.data) {
-        Alert.alert("Đổi mật khẩu thành công!");
+
+      // Kiểm tra phản hồi từ server
+      if (res?.data?.message === "Old password is incorrect") {
+        Alert.alert("Mật khẩu cũ không đúng");
+        return;
+      }
+      if (res?.data?.message === "Password is the same") {
+        Alert.alert("Mật khẩu mới không được trùng với mật khẩu cũ");
+        return;
+      }
+      if (res?.data?.message === "Update password success") {
+        Alert.alert("Cập nhật mật khẩu thành công");
+        setEditingPassword(false);
         setShowPasswordFields(false);
+        return;
+      }
+      if (res?.data?.message === "Update password failed") {
+        Alert.alert("Cập nhật mật khẩu thất bại");
+        return;
+      }
+      if (res?.data?.message === "User not found") {
+        Alert.alert("Người dùng không tồn tại");
+        return;
       }
     } catch (error) {
-      Alert.alert(error.message);
+      Alert.alert("Cập nhật mật khẩu thất bại");
     }
-  };
+  }
+  
+
+
 
   return (
     <View style={styles.container}>
@@ -241,21 +348,25 @@ const MyProfile = () => {
         <View style={styles.containerBody}>
           {!showPasswordFields && (
             <>
-              <ImageBackground style={styles.containerBody_Top}>
-                <TouchableOpacity onPress={handleAvatarPress}>
-                  {avatarImage ? (
-                    <Image
-                      style={styles.containerBody_Top_Avt}
-                      source={{ uri: avatarImage }}
-                    />
-                  ) : (
-                    <Image
-                      style={styles.containerBody_Top_Avt}
-                      source={require("../../../assets/avata.jpg")}
-                    />
-                  )}
-                </TouchableOpacity>
-              </ImageBackground>
+<View style={styles.containerBody_Top}>
+  <TouchableOpacity onPress={handleAvatarPress}>
+    {avatarImage ? (
+      <Image
+        style={styles.containerBody_Top_Avt}
+        source={{ uri: avatarImage }}
+      />
+    ) : (
+      <Image
+        style={styles.containerBody_Top_Avt}
+        source={require('../../../assets/avata.jpg')}
+
+      />
+    )}
+    
+  </TouchableOpacity>
+</View>
+
+
 
               <View style={styles.containerInput}>
                 <View
@@ -373,8 +484,8 @@ const MyProfile = () => {
                     <Feather name="lock" size={32} color="black" />
                   </View>
                   <TextInput
-                    onChangeText={(x) => setCurrentPassword(x)}
-                    value={currentPassword}
+                    onChangeText={(x) => setOldPassword(x)}
+                    value={oldPassword}
                     placeholder="Password hiện tại"
                     style={{
                       marginRight: 20,
@@ -456,7 +567,7 @@ const MyProfile = () => {
                   <Text
                     style={{ fontSize: 22, color: "#fff", fontWeight: "bold" }}
                   >
-                    Cập nhật
+                    Cập nhật Pass
                   </Text>
                 </TouchableOpacity>
               </View>

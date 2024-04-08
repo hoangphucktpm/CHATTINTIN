@@ -50,6 +50,7 @@ function ForgotPassword() {
       } else {
         setLoading(false);
         Alert.alert("Số điện thoại không tồn tại");
+        return;
       }
     } catch (error) {
       Alert.alert(error.message);

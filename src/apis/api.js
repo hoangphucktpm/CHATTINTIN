@@ -2,7 +2,7 @@ import axios from "axios";
 
 export const http = axios.create({
   // timeout: 30000,
-  baseURL: "http://172.20.10.5:8080",
+  baseURL: "http://172.20.50.31:8080",
 });
 
 export const api = {
@@ -23,5 +23,8 @@ export const api = {
   },
   updatePassword: async (params) => {
     return http.patch(`auth/update-password`, params);
+  },
+  resetPassword: async (params) => {
+    return http.post(`auth/reset-password`, params);
   },
 };

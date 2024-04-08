@@ -21,7 +21,7 @@ function Footer(props) {
   // const token = tokenService.getAccessToken();
 
   const hanldPress = () => {
-    navigation.navigate("Home");
+    navigation.navigate("Home", { phone: props?.phone });
   };
   //     var user = userAPI.getUserInfo()(token);
   //     dispatch(user);
@@ -32,7 +32,7 @@ function Footer(props) {
         <AntDesign name="message1" size={20} color="grey" />
       </TouchableOpacity>
       <TouchableOpacity
-        onPress={() => navigation.navigate("Contacts")}
+      onPress={() => navigation.navigate("Contacts", { phone: props?.phone })}
         style={styles.containerIcon}
       >
         <FontAwesome5 name="user-friends" size={20} color="grey" />

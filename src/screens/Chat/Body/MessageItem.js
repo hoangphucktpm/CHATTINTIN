@@ -3,15 +3,15 @@ import React, { Component, useState } from 'react'
 import styles from './StyleMessageItem'
 import { useNavigation } from '@react-navigation/native';
 import { AntDesign, Entypo } from '@expo/vector-icons';
-import tokenService from '../../../services/token.service';
-import { useSelector } from 'react-redux';
+// import tokenService from '../../../services/token.service';
+// import { useSelector } from 'react-redux';
 import axios from 'axios';
 
 function MessageItem ({avatar,name,time,message,type,owner,_id,emoji}) {
   const navigation = useNavigation();
   const accessToken = tokenService.getAccessToken();
   const [emojiIndex,setemojiIndex] = useState(emoji);
-  const roomState = useSelector(state => state.room);
+  // const roomState = useSelector(state => state.room);
   const hanldPress =()=>{
     navigation.navigate("ImageChat",{
       avatar:avatar,

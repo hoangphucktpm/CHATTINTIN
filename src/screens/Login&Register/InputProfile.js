@@ -20,15 +20,15 @@ import { launchImageLibrary } from "react-native-image-picker";
 import { PermissionsAndroid, Platform } from "react-native";
 import { differenceInYears } from "date-fns";
 
+
 import { api } from "../../apis/api";
 
 const InputProfile = (props) => {
   const [name, setName] = useState("");
   const [gender, setGender] = useState("");
-  const [avatarImage, setAvatarImage] = useState(
-    "https://products111.s3.ap-southeast-1.amazonaws.com/Avatar0366775345.jpeg"
-  );
+  const [avatarImage, setAvatarImage] = useState("");
   const navigation = useNavigation();
+  const [urlavatar, setUrlavatar] = useState("");
 
   const [birthday, setBirthday] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
@@ -127,20 +127,14 @@ const InputProfile = (props) => {
       return;
     }
 
-    const formData = new FormData();
-    formData.append("id", 1);
-    formData.append("image", {
-      uri: avatarImage,
-      type: "image/jpeg",
-      name: "photo.jpg",
-    });
+ 
 
     try {
       const res = await api.updateInfo(idNewUser, {
         fullname: name,
-        sex: gender,
+        ismale: gender,
         birthday: birthday.toString(0, 10),
-        image: formData,
+        urlavatar: avatarImage,
       });
       Alert.alert("Đăng ký thành công");
       navigation.navigate("Home", { phone: idNewUser });

@@ -1,16 +1,3 @@
-// import React from 'react'
-// import { StyleSheet, Text, View,TextInput, TouchableOpacity, Image, TouchableHighlight  } from 'react-native'
-// import styles from './StyleContacts'
-// import { MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
-// import { Ionicons } from '@expo/vector-icons';
-// import { EvilIcons } from '@expo/vector-icons'; 
-// import { SafeAreaView } from 'react-native-safe-area-context';
-// import Footer from '../Footer/Footer';
-// import { useSelector } from 'react-redux';
-// import { useDispatch } from 'react-redux';
-// import { useNavigation } from '@react-navigation/native';
-// import roomAPI from '../../redux/reducers/Room/roomAPI';
-
 import React from 'react'
 import { StyleSheet, Text, View,TextInput, TouchableOpacity, Image, TouchableHighlight, Alert  } from 'react-native'
 import styles from './StyleContacts'
@@ -23,14 +10,43 @@ import { EvilIcons } from '@expo/vector-icons';
 import { useState } from 'react';
 import { FlatList } from 'react-native';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
-
-
+import socket from '../../services/socket';
+import { useEffect } from 'react';
+import { set } from 'date-fns';
+import { useRoute } from '@react-navigation/native';
 
 
 function Contacts() {
   const navigation = useNavigation();
   const [selectedButton, setSelectedButton] = useState(null);
+  const [receiverId, setReceiverId] = useState(null);
 
+  const { phone } = useRoute().params || {};
+  console.log('phone:', phone);
+
+
+
+
+  // Thêm một state mới để lưu trữ danh sách lời mời kết bạn
+const [friendRequests, setFriendRequests] = useState([]);
+
+
+useEffect(() => {
+  // Listen for a 'friend request received' event from the server
+  socket.on('friend request received', (response) => {
+    if (response.receiverId === receiverId) {
+      Alert.alert("Thông báo", "Bạn đã nhận được lời mời kết bạn");
+
+      // Cập nhật danh sách lời mời kết bạn
+      setFriendRequests(prevRequests => [...prevRequests, response]);
+    }
+  });
+
+  // Clean up the effect
+  return () => socket.off('friend request received');
+}, [receiverId]);
+
+ 
 
 
     const Data = [ 
@@ -62,15 +78,6 @@ function Contacts() {
   const hanldPress = ()=>{
     navigation.navigate("ScannerQR");
   }
-// const roomState = useSelector(state => state.room);
-//     const userState = useSelector(state => state.user)
-//     const listRoom = userState.rooms;
-//     const accessToken = userState.accessToken;
-//     const dispatch = useDispatch();
-//     const Data = listRoom.map((e)=>{
-//         return ({id:e._id,name:e.name,image:e.avatar,lastMessage:e.messages[0]?.content,time:(e.createdAt)});
-//     });
-
     const hanldPressCreateGroup = ()=>{
         navigation.navigate("CreateGroup");
       }
@@ -80,7 +87,7 @@ function Contacts() {
     }
 
     const handleAccept = (id) => {
-        // dispatch(roomAPI.acceptFriendRequest()({ accessToken, id }));
+      setReceiverId(id);
         Alert.alert("Đã chấp nhận lời mời kết bạn");
 
     }
@@ -88,15 +95,14 @@ function Contacts() {
     const handleReject = (id) => {
         // xóa cái item đó 
         // Hiện thông báo đã từ chối
+        setReceiverId(id);
         Alert.alert("Đã từ chối lời mời kết bạn");
     }
 
     const AddFriend = ()=>{
-        navigation.navigate("AddFriends");
+        navigation.navigate("AddFriends", {phone: phone});
     }
 
-
- 
 
 
     const renderList = ()=>{ 
@@ -107,8 +113,8 @@ function Contacts() {
                 return <FlatList data={Data1} renderItem={renderItem1} keyExtractor={(item) => item.id} />
             case 'loimoi':
                 // Lời mời kết bạn kèm theo chức năng chấp nhận hoặc từ chối, hiện icon chấp nhận và từ chối ra trong mỗi item
-                return <FlatList data={Data2} renderItem={renderItem2} keyExtractor={(item) => item.id} />
-            default:
+                return <FlatList data={friendRequests} renderItem={renderItem2} keyExtractor={(item) => item.id} />
+                default:
                 return <FlatList data={Data} renderItem={renderItem} keyExtractor={(item) => item.id} />
         }
     }
@@ -196,31 +202,6 @@ function Contacts() {
     };
 
     
-//     const renderItem = ({item}) =>{
-//         var imageItem = (item.image == undefined)? "https://hinhgaixinh.com/wp-content/uploads/2021/12/bo-anh-girl-xinh-cap-2.jpg":item.image;
-//         return  <TouchableHighlight underlayColor={'#E6E6FA'} style={styles.touchHightLight} onPress={()=>{
-//             const id = item.id;
-//             dispatch(roomAPI.getListChat()({ accessToken, id }));
-//             dispatch(roomAPI.saveRoomId()(id))
-//             navigation.navigate("Chat",{id:item.id,name:item.name,image:imageItem,lastMessage:item.lastMessage,time:item.time})
-//         }}>
-//                 <View style={styles.containerItem} >
-//                     <View style={styles.itemFriend_info}>
-//                         <View style={styles.itemFriend_avatar}>
-//                             <Image
-//                                 style={styles.itemFriend_avatar_avatar}
-//                                 source={{
-//                                     uri: `${imageItem}`,
-//                                 }}
-//                             />
-//                         </View>
-//                     </View>
-//                     <View style={styles.itemFriend_right}>
-// <Text style={{fontSize:20,}}>{item.name}</Text>
-//                     </View>
-//                 </View>
-//         </TouchableHighlight>
-//     };
     
   return (
     <SafeAreaView style={styles.container}>
@@ -255,7 +236,7 @@ function Contacts() {
   <Icon name="mail-outline" size={35} color="blue" />
   <View style={{flexDirection: 'row'}}>
     <Text style={{fontSize:18, marginLeft:20}}>Lời mời kết bạn</Text>
-    <Text style={{fontSize:18, marginLeft:5, color: 'red'}}>[{Data2.length}]</Text>
+    <Text style={{fontSize:18, marginLeft:5, color: 'red'}}>[{friendRequests.length}]</Text>
   </View>
 </TouchableOpacity>
     </View>

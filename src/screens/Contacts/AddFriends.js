@@ -1,192 +1,222 @@
-import { View, Text, TouchableOpacity, TextInput, Image, Alert, TouchableHighlight } from "react-native";
-import { AntDesign, Entypo, Feather, FontAwesome5 } from "@expo/vector-icons";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  TextInput,
+  Image,
+  Alert,
+  TouchableHighlight,
+} from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import styles from "./StyleAddFriends";
 import { useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 import { Button } from "react-native";
-import { FlatList } from 'react-native';
-
+import { FlatList } from "react-native";
+import { useRoute } from "@react-navigation/native";
+import { api } from "../../apis/api";
+import socket from "../../services/socket";
+import { useEffect } from "react";
+ 
 // Import FireBase
 const AddFriends = (props) => {
-    const [otp, setOTP] = useState("");
-    const navigation = useNavigation();
+  const navigation = useNavigation();
 
-    
-    const Data = [ 
-        {id:"1",name:"Nguyễn Văn A",image:"https://hinhgaixinh.com/wp-content/uploads/2021/12/bo-anh-girl-xinh-cap-2.jpg"
-        ,lastMessage:"Chào bạn",time:"2022-01-01"},
-        {id:"2",name:"Nguyễn Văn A",image:"https://hinhgaixinh.com/wp-content/uploads/2021/12/bo-anh-girl-xinh-cap-2.jpg"
-        ,lastMessage:"Chào bạn",time:"2022-01-01"}
-    ];
+  const [phoneNumber, setPhoneNumber] = useState(""); // Số điện thoại người dùng nhập
+  const [searchData, setSearchData] = useState([]); // Dữ liệu tìm kiếm
+  const route = useRoute();
+  const phone = route?.params?.phone;
+
+  console.log('phone:', phone);
 
 
-    const hanldPressDashBoard = () => {
-        Alert.alert("Thông báo", "Bạn có chắc chắn muốn thoát không ?", [
-            {
-                text: "Có",
-                onPress: () => {
-                    navigation.navigate("Login");
-                },
-            },
-            {
-                text: "Không",
-                onPress: () => {
-                    return;
-                },
-            },
-        ]);
-    };
+  const hanldPressDashBoard = () => {
+    navigation.navigate("Contacts");
+  };
+
+  const Search  = async () => {
+    try {
+      const res = await api.getUserByPhone(phoneNumber);
+      console.log('Response from api.getUserByPhone:', res);
+      if (res.data) {
+        setSearchData([res.data]);
+      } else {
+        Alert.alert("Thông báo", "Không tìm thấy người dùng");
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
 
-    const Sreach = () => {
-        return <FlatList data={Data} renderItem={renderItem} keyExtractor={item => item.id} />
-    };
-
-
-
-
-        const renderItem = ({item}) =>{
-            var imageItem = (item.image == undefined)? "https://hinhgaixinh.com/wp-content/uploads/2021/12/bo-anh-girl-xinh-cap-2.jpg":item.image;
-            return  <TouchableHighlight underlayColor={'#E6E6FA'} style={styles.touchHightLight} onPress={()=>{
-                const id = item.id;
-                // dispatch(roomAPI.getListChat()({ accessToken, id }));
-                // dispatch(roomAPI.saveRoomId()(id))
-                navigation.navigate("Chat",{id:item.id,name:item.name,image:imageItem,lastMessage:item.lastMessage,time:item.time})
-            }}>
-    
-                    <View style={styles.containerItem} >
-                        <View style={styles.itemFriend_info}>
-                            <View style={styles.itemFriend_avatar}>
-                                <Image style={styles.itemFriend_avatar_avatar} source={{uri: `${imageItem}`}} />    
-                            </View>
-                        </View>
-                        <View style={styles.itemFriend_right}>
-                            <Text style={{fontSize:20,}}>{item.name}</Text>
-                        </View>
-                    </View>
-            </TouchableHighlight>
-        };
-    
-
-
-
-    // Connect FireBase
-
-    const regexOTP = /^\d{6}$/; // Biểu thức chính quy kiểm tra 6 số
-    const hanldPressRegister = () => {
-        if (otp === "") {
-            Alert.alert("Thông báo", "Mã OTP không được rỗng");
-        } else if (!regexOTP.test(otp)) {
-            Alert.alert("Thông báo", "Mã OTP không hợp lệ");
-        } else {
-            // sendPhoneVerification(auth.currentUser)
-            //     .then(() => {
-            //         Alert.alert("Thông báo", `Đăng ký thành công ! ${'\n'}Mời bạn kiểm tra điện thoại để xác nhận`);
-
-            // })
-            // .catch(error => {
-            //     Alert.alert("Thông báo", "Xảy ra lỗi! \n Mời bạn thử lại");
-            // });
-        }
-    };
-
-
-
+  const renderItem = ({ item }) => {
+    console.log(item);
+    const urlavatar = item.urlavatar || "https://hinhgaixinh.com/wp-content/uploads/2021/12/bo-anh-girl-xinh-cap-2.jpg";
     return (
-        <View style={styles.container}>
-            <View style={styles.containerTabBar}>
-                <TouchableOpacity
-                    onPress={hanldPressDashBoard}
-                    style={{ paddingLeft: 10, paddingRight: 10, justifyContent: "center", paddingTop: 10 }}
-                >
-                    <Ionicons name="arrow-back" size={30} color="#fff" />
-                </TouchableOpacity>
-                <View style={{ width: "73%", justifyContent: "center", paddingTop: 10 }}>
-                    <Text style={{ fontSize: 22, color: "white" }}>Thêm bạn</Text>
-                </View>
+      <TouchableHighlight
+        underlayColor={"#E6E6FA"}
+        style={styles.touchHightLight}
+        onPress={() => {
+          navigation.navigate("FriendProfile", {
+            phone: item.phone,
+            fullname: item.fullname,
+            urlavatar: item.urlavatar,
+          });
+        }}
+      >
+        <View style={styles.containerItem}>
+          <View style={styles.itemFriend_info}>
+            <View style={styles.itemFriend_avatar}>
+              <Image
+                style={styles.itemFriend_avatar_avatar}
+                source={{ uri : urlavatar }}
+              />
             </View>
-            <View style={styles.containerInput}>
-                <View
-                    style={{
-                        display: "flex",
-                        flexDirection: "row",
-                        marginRight: 10,
-                        marginLeft: 10,
-                        borderRadius: 20,
-                        backgroundColor: "#DCDCDC",
-                        alignItems: "center",
-                    }}
-                >
-                </View>
-
-                <View
-    style={{
-        display: "flex",
-        flexDirection: "row",
-        borderWidth: 1,
-        marginLeft: 10,
-        marginRight: 10,
-        marginTop: 0,
-        borderRadius: 20,
-        backgroundColor: "#DCDCDC",
-        alignItems: "center",
-    }}
->
-    
-    <View style={{ flex: 0.15, alignItems: "center" }}>
-        <FontAwesome5 name="keyboard" size={24} color="black" />
-    </View>
-    <View style={{ flex: 0.85, flexDirection: 'row', alignItems: 'center' }}>
-        <TextInput
-            onChangeText={(x) => setOTP(x)}
-            value={otp}
-            placeholder="Nhập số điện thoại bạn bè"
-            style={{ height: 50, fontSize: 18, flex: 1, marginRight: 10 }}
-            keyboardType="numeric"
-        />
-    </View>
-    
-</View>
-
-
-<TouchableOpacity
-                    onPress={Sreach } style={{ justifyContent: 'center', alignItems: 'center' }}>
-                    <Text style={{ fontSize: 15, color: "#1E90FF" }}>Tìm kiếm</Text>
-                </TouchableOpacity>
-            
-
-{/* 
-onPress={() => {
-    // Tìm kiếm bạn bè
-}} style={{ justifyContent: 'center', alignItems: 'center' }}>
-    <Text style={{ fontSize: 15, color: "#1E90FF" }}>Tìm kiếm</Text>
-</TouchableOpacity>
-     */}
-
-
-                {/* 
-                <TouchableOpacity onPress={hanldPressLogin} style={{marginTop:25,alignItems:'center',width:"100%"}} >
-                    <View style={{display:'flex',flexDirection:'row'}}>
-                        <Text style={{fontSize:20,marginRight:10,}}> Đã có tài khoản?</Text>
-                        <Text style={{fontSize:22,fontWeight:'bold',marginRight:10,color:'#F4A460'}}> Đăng nhập</Text>
-                        
-                    </View>
-            </TouchableOpacity> */}
-            </View>
-
-            <View style={{flex:0.8, backgroundColor:"white"}}>
-                <FlatList data={Data} renderItem={renderItem} keyExtractor={item => item.id} />
-                            
-    </View>
-
-            <View style={styles.containerBottom}>
-                <TouchableOpacity onPress={hanldPressRegister} style={styles.bottom}>
-                    <Text style={{ fontSize: 22, color: "#fff", fontWeight: "bold" }}> Xác nhận</Text>
-                </TouchableOpacity>
-            </View>
+          </View>
+          <View style={styles.itemFriend_right}>
+            <Text style={{ fontSize: 20 }}>{item.fullname}</Text>
+            <Text style={{ fontSize: 16 }}>{item.phone}</Text>
+          </View>
         </View>
+      </TouchableHighlight>
     );
+  };
+
+  const hanldPressHuy = () => {
+    navigation.navigate("Contacts");
+  };
+
+  useEffect(() => {
+    // Listen for connect event
+    socket.on('connect', () => {
+      console.log('Connected to the server');
+    });
+  
+    // Listen for disconnect event
+    socket.on('disconnect', () => {
+      console.log('Disconnected from the server');
+    });
+  
+    // Listen for error event
+    socket.on('error', (error) => {
+      console.log('An error occurred:', error);
+    });
+  
+    // Listen for reconnect event
+    socket.on('reconnect', (attemptNumber) => {
+      console.log('Reconnected to the server after', attemptNumber, 'attempts');
+    });
+  
+    // Clean up the effect
+    return () => {
+      socket.off('connect');
+      socket.off('disconnect');
+      socket.off('error');
+      socket.off('reconnect');
+    };
+  }, []);
+  
+  const hanldPressAdd = () => {
+    // Emit a 'new friend request client' event to the server with the senderId and receiverId
+    socket.emit('new friend request client', { senderId: phone, receiverId: phoneNumber });
+    Alert.alert("Thông báo", "Bạn đã gửi lời mời kết bạn thành công");
+
+    console.log('senderId:', phone);
+    console.log('receiverId:', phoneNumber);
+  };
+
+
+  return (
+    <View style={{ flex: 1, backgroundColor: "#fff" }}>
+      <View style={styles.containerTabBar}>
+        <TouchableOpacity
+          onPress={hanldPressDashBoard}
+          style={{
+            paddingLeft: 10,
+            paddingRight: 10,
+            justifyContent: "center",
+            paddingTop: 10,
+          }}
+        >
+          <Ionicons name="arrow-back" size={30} color="#fff" />
+        </TouchableOpacity>
+        <View
+          style={{ width: "73%", justifyContent: "center", paddingTop: 10 }}
+        >
+          <Text style={{ fontSize: 22, color: "white" }}>Thêm bạn</Text>
+        </View>
+      </View>
+      <View style={styles.containerInput}>
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            paddingHorizontal: 10,
+            backgroundColor: "#fff",
+            padding: 10,
+          }}
+        >
+          <View style={{ flex: 1 }}>
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                borderWidth: 1,
+                borderRadius: 20,
+                paddingHorizontal: 10,
+                backgroundColor: "#fff",
+                padding: 10,
+              }}
+            >
+              <Text style={{ fontSize: 24, marginRight: 20 }}>+84</Text>
+              <TextInput
+                value={phoneNumber.substring(3)} // Lấy phần tử từ index 3 đến hết để loại bỏ +84
+                onChangeText={(text) => setPhoneNumber(`+84${text}`)} // Thêm +84 vào đầu chuỗi số điện thoại
+                placeholder="Nhập số điện thoại"
+                keyboardType="phone-pad"
+                maxLength={9}
+                style={{ flex: 1, fontSize: 24 }}
+              />
+            </View>
+          </View>
+          <TouchableOpacity onPress={Search } style={{ marginLeft: 10 }}>
+            <Text
+              style={{ color: "#1E90FF", fontSize: 20, fontWeight: "bold" }}
+            >
+              Tìm kiếm
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+      <View style={{ flex: 0.8, backgroundColor: "white" }} >
+
+      {        console.log(Array.isArray(searchData))
+
+}
+
+        <FlatList
+          data={searchData}
+          renderItem={renderItem}
+          keyExtractor={(item, index) => index.toString()}
+        />
+      </View>
+
+      <View
+        style={{
+          position: "absolute",
+          bottom: 0,
+          right: 0,
+          flexDirection: "row",
+          paddingHorizontal: 20,
+          paddingBottom: 20,
+        }}
+      >
+        <Button title="Hủy" onPress={hanldPressHuy} color="#808080" />
+        <View style={{ width: 20 }} />
+        <Button title="Kết bạn" onPress={hanldPressAdd} />
+      </View>
+    </View>
+  );
 };
 
 export default AddFriends;

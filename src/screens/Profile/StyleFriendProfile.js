@@ -8,7 +8,7 @@ const styles = StyleSheet.create({
     containerTabBar:{
     height: "8%",
     padding:5,
-    backgroundColor: '#01bafa',
+    backgroundColor: "#1E90FF",
     display:'flex',
     flexDirection:'row',
     },
@@ -76,7 +76,15 @@ const styles = StyleSheet.create({
         paddingBottom:20,
         paddingLeft:30,
         paddingRight:30,
-        backgroundColor:"#B9D3EE",
+        backgroundColor: "#1E90FF", 
+        borderRadius:10,
+    },
+    bottom1:{
+        paddingTop:20,
+        paddingBottom:20,
+        paddingLeft:30,
+        paddingRight:30,
+        backgroundColor: "#1E90FF",
         borderRadius:10,
     }
 })
