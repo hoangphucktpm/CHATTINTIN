@@ -16,7 +16,7 @@ import auth from "@react-native-firebase/auth";
 import { Feather, FontAwesome5 } from "@expo/vector-icons";
 
 function ForgotPassword() {
-  const [phone, setPhone] = useState("+84");
+  const [phone, setPhone] = useState("84");
   const [confirm, setConfirm] = useState(null);
   const [code, setCode] = useState("");
   const [showOtp, setShowOtp] = useState(false);
@@ -26,7 +26,7 @@ function ForgotPassword() {
   };
   const [loading, setLoading] = useState(false);
 
-  const sdt = /^\+84\d{9}$/;
+  const sdt = /^\84\d{9}$/;
 
   const hanldPressLinkResert = async () => {
     if (!phone) {
@@ -173,7 +173,7 @@ function ForgotPassword() {
             <TextInput
               onChangeText={(x) => setPhone(x)}
               value={phone}
-              defaultValue="+84"
+              defaultValue="84"
               placeholder="Vui lòng nhập số điện thoại"
               style={{
                 marginLeft: 15,

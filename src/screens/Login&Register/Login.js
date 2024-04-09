@@ -19,7 +19,7 @@ function Login() {
   const navigation = useNavigation();
 
   const [isPassword, setPassword] = useState(true);
-  const [phone, setPhone] = useState("+84");
+  const [phone, setPhone] = useState("84");
   const [passWord, setPassWord] = useState("");
   //UseEffect
   const hanldPress = () => {

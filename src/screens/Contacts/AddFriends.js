@@ -164,10 +164,10 @@ const AddFriends = (props) => {
                 padding: 10,
               }}
             >
-              <Text style={{ fontSize: 24, marginRight: 20 }}>+84</Text>
+              <Text style={{ fontSize: 24, marginRight: 20 }}>84</Text>
               <TextInput
-                value={phoneNumber.substring(3)} // Lấy phần tử từ index 3 đến hết để loại bỏ +84
-                onChangeText={(text) => setPhoneNumber(`+84${text}`)} // Thêm +84 vào đầu chuỗi số điện thoại
+                value={phoneNumber.substring(3)} // Lấy phần tử từ index 3 đến hết để loại bỏ 84
+                onChangeText={(text) => setPhoneNumber(`84${text}`)} // Thêm 84 vào đầu chuỗi số điện thoại
                 placeholder="Nhập số điện thoại"
                 keyboardType="phone-pad"
                 maxLength={9}

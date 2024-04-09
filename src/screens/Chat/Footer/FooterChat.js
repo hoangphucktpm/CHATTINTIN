@@ -1,35 +1,41 @@
-import { KeyboardAvoidingView, Text, TextInput, TouchableOpacity, View, Alert } from 'react-native'
-import React, { Component, useState } from 'react'
-import styles from './StyleFooter'
-import { FontAwesome } from '@expo/vector-icons'; 
-import { MaterialIcons } from '@expo/vector-icons'; 
-import { SimpleLineIcons } from '@expo/vector-icons'; 
-// import io, { Socket } from "socket.io-client";
- import { useDispatch } from 'react-redux';
-import { useSelector } from 'react-redux';
-import * as ImagePicker  from 'expo-image-picker';
+import React, { useState, useEffect } from 'react';
+import { KeyboardAvoidingView, TextInput, View, TouchableOpacity, Alert, Text, Platform } from 'react-native';
+import { MaterialIcons, SimpleLineIcons, FontAwesome } from '@expo/vector-icons';
+import { useSelector, useDispatch } from 'react-redux';
+import * as ImagePicker from 'expo-image-picker';
 import { setChatList } from '../../../redux/chatSlice';
-// import tokenService from '../../../services/token.service';
+import PropTypes from 'prop-types';
+import useSpeechRecognition from '../../../redux/hook';
+import axios from 'axios';
+import AudioRecord from 'react-native-audio-record'; // Import AudioRecord
+// import RNFS from 'react-native-fs'; // Import RNFS
 
-function FooterChat (){
- const dispatch = useDispatch();
-  const [text,setText] = useState("");
+import styles from './StyleFooter';
 
- const chatData = useSelector(state => state.room);
+function FooterChat() {
+  const dispatch = useDispatch();
+  const [text, setText] = useState('');
+  const chatData = useSelector(state => state.room);
+  const { transcript, startRecording, stopRecording, isRecording } = useSpeechRecognition();
+
+
+  useEffect(() => {
+    if (transcript) {
+      setText(transcript);
+    }
+  }, [transcript]);
 
   const sendMessageSocket = () => {
-      console.log(text);
-      const data = {
-        content: text,
+    console.log(text);
+    const data = {
+      content: text,
       fromSelf: true,
-      };
-
-      dispatch(setChatList(data));
-
-   
+    };
+    setText('');
+    dispatch(setChatList(data));
   };
+
   const pickImage = async () => {
-    // No permissions request is necessary for launching the image library
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
       allowsEditing: true,
@@ -49,62 +55,72 @@ function FooterChat (){
       };
       formData.append("file", _image);
       axios.post(urlUploadFile, formData, {
-                    headers: {
-                        authorization: token,
-                        "Content-type": "multipart/form-data",
-                    },
-                })
-                .then((res) => {
-                   
-                   
-                })
-                .catch((err) => {
-                    alert("Error Upload file");
-                });
-
-    }
-    else if(result.cancelled){
+        headers: {
+          authorization: token,
+          "Content-type": "multipart/form-data",
+        },
+      })
+      .then((res) => {})
+      .catch((err) => {
+        alert("Error Upload file");
+      });
+    } else if (result.cancelled) {
       console.log(result);
     }
-
   };
 
-  // Hiển thị icon emoji
-  const hanldPressIcon = ()=>{
-    Alert.alert("","",[
-      { text: '😍', onPress: ()=> console.log("😍") },
-      { text: '😀', onPress: ()=> console.log("😀")},
+  const stop = async () => {
+    const audioFile = await AudioRecord.stop();
+    console.log('audioFile', audioFile);
+    
+    // Save the audio file to the device's storage
+    const destPath = RNFS.DocumentDirectoryPath + '/test.wav';
+    RNFS.moveFile(audioFile, destPath)
+      .then(() => console.log('Audio file saved successfully'))
+      .catch(err => console.log('Error saving audio file: ', err));
+  };
+
+  const handlePressIcon = () => {
+    Alert.alert('', '', [
+      { text: '😍', onPress: () => console.log('😍') },
+      { text: '😀', onPress: () => console.log('😀') },
       {
-        text: 'Thoát',
+        text: 'Cancel',
         onPress: () => console.log('Cancel Pressed'),
         style: 'cancel',
       },
-     
     ]);
-  }
+  };
 
 
-    return (
-      <KeyboardAvoidingView style={[styles.container,]}>
-        <View style={styles.foorter_left}>
-          <MaterialIcons name="insert-emoticon" size={24} color="#0091ff" onPress={hanldPressIcon} /> 
-          <TextInput  value={text} onChangeText={x=>setText(x)} style={styles.input_Message} placeholder='Nhập tin nhắn...' ></TextInput>
-        </View>
-        <View style={styles.footer_Right}>
-          <View>
-            <MaterialIcons name="keyboard-voice" size={24} color="#0091ff" />
-          </View>
-          <TouchableOpacity onPress={pickImage}>
-            <SimpleLineIcons name="picture" size={24} color="#0091ff" />
-          </TouchableOpacity>
-          <TouchableOpacity onPress={()=>{
-            sendMessageSocket();
-           
-          }}>
-            <FontAwesome name="send" size={24} color="#0091ff" />
-          </TouchableOpacity>
-        </View>
-      </KeyboardAvoidingView>
-    )
-  }
+  return (
+    <KeyboardAvoidingView style={[styles.container,]}>
+      <View style={styles.foorter_left}>
+        <MaterialIcons name="insert-emoticon" size={24} color="#0091ff" onPress={handlePressIcon} /> 
+        <TextInput value={text} onChangeText={x => setText(x)} style={styles.input_Message} placeholder='Nhập tin nhắn...' />
+      </View>
+      <View style={styles.footer_Right}>
+      <TouchableOpacity onPress={isRecording ? stopRecording : startRecording}>
+  <MaterialIcons name={isRecording ? 'keyboard-voice' : 'keyboard-voice'} size={24} color="#0091ff" />
+</TouchableOpacity>
+        <TouchableOpacity onPress={pickImage}>
+          <SimpleLineIcons name="picture" size={24} color="#0091ff" />
+        </TouchableOpacity>
+        <TouchableOpacity onPress={sendMessageSocket}>
+          <FontAwesome name="send" size={24} color="#0091ff" />
+        </TouchableOpacity>
+      </View>
+      {transcript && <Text>{transcript}</Text>}
+    </KeyboardAvoidingView>
+  );
+}
+
+FooterChat.propTypes = {
+  transcript: PropTypes.string,
+  resetTranscript: PropTypes.func,
+  browserSupportsSpeechRecognition: PropTypes.bool,
+  startListening: PropTypes.func,
+  stopListening: PropTypes.func,
+};
+
 export default FooterChat;

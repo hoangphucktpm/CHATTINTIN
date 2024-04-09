@@ -1,52 +1,71 @@
-import React from "react";
+import React, { useState } from "react";
+import { View, TouchableOpacity } from "react-native";
+import { AntDesign, FontAwesome5, FontAwesome } from "@expo/vector-icons";
+import { useNavigation } from "@react-navigation/native";
 import styles from "./StyleFooter";
-import {
-  StyleSheet,
-  Text,
-  View,
-  TextInput,
-  TouchableOpacity,
-} from "react-native";
-import { AntDesign } from "@expo/vector-icons";
-import { FontAwesome5 } from "@expo/vector-icons";
-import { FontAwesome } from "@expo/vector-icons";
-import { NavigationContainer, useNavigation } from "@react-navigation/native";
-// import userAPI from '../../redux/reducers/user/userAPI';
-// import { useDispatch } from 'react-redux';
-// import tokenService from '../../services/token.service';
 
 function Footer(props) {
   const navigation = useNavigation();
-  // const dispatch = useDispatch();
-  // const token = tokenService.getAccessToken();
+  const [activeIcon, setActiveIcon] = useState(null);
 
-  const hanldPress = () => {
+  const handlePress = () => {
+    setActiveIcon("message1");
     navigation.navigate("Home", { phone: props?.phone });
   };
-  //     var user = userAPI.getUserInfo()(token);
-  //     dispatch(user);
-  // }
+
+  const handleContactsPress = () => {
+    setActiveIcon("user-friends");
+    navigation.navigate("Contacts", { phone: props?.phone });
+  };
+
+  const handleClockPress = () => {
+    setActiveIcon("clockcircleo");
+    // Thực hiện các hành động khác khi nhấn vào icon này
+  };
+
+  const handleProfilePress = () => {
+    setActiveIcon("user");
+    navigation.navigate("MyProfile", { phone: props?.phone });
+  };
+
   return (
     <View style={styles.container}>
-      <TouchableOpacity onPress={hanldPress} style={styles.containerIcon}>
-        <AntDesign name="message1" size={20} color="grey" />
+      <TouchableOpacity onPress={handlePress} style={styles.containerIcon}>
+        <AntDesign
+          name="message1"
+          size={20}
+          color={activeIcon === "message1" ? "blue" : "grey"}
+        />
       </TouchableOpacity>
       <TouchableOpacity
-      onPress={() => navigation.navigate("Contacts", { phone: props?.phone })}
+        onPress={handleContactsPress}
         style={styles.containerIcon}
       >
-        <FontAwesome5 name="user-friends" size={20} color="grey" />
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.containerIcon}>
-        <AntDesign name="clockcircleo" size={20} color="grey" />
+        <FontAwesome5
+          name="user-friends"
+          size={20}
+          color={activeIcon === "user-friends" ? "blue" : "grey"}
+        />
       </TouchableOpacity>
       <TouchableOpacity
-        onPress={() =>
-          navigation.navigate("MyProfile", { phone: props?.phone })
-        }
+        onPress={handleClockPress}
         style={styles.containerIcon}
       >
-        <FontAwesome name="user" size={20} color="grey" />
+        <AntDesign
+          name="clockcircleo"
+          size={20}
+          color={activeIcon === "clockcircleo" ? "blue" : "grey"}
+        />
+      </TouchableOpacity>
+      <TouchableOpacity
+        onPress={handleProfilePress}
+        style={styles.containerIcon}
+      >
+        <FontAwesome
+          name="user"
+          size={20}
+          color={activeIcon === "user" ? "blue" : "grey"}
+        />
       </TouchableOpacity>
     </View>
   );

@@ -1,6 +1,6 @@
 import axios from "axios";
 
-export const myIP = '192.168.1.15'
+export const myIP = '172.20.50.31'
 
 export const http = axios.create({
   // timeout: 30000,

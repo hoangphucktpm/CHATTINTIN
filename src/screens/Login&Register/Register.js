@@ -17,11 +17,11 @@ import { api } from "../../apis/api";
 import auth from "@react-native-firebase/auth";
 
 const Register = () => {
-  const [phone, setPhone] = useState("+84");
+  const [phone, setPhone] = useState("84");
   const [confirm, setConfirm] = useState(null);
   const [showOtp, setShowOtp] = useState(false);
   const [code, setCode] = useState("");
-  const regexPhone = /^\+84\d{9}$/;
+  const regexPhone = /^\84\d{9}$/;
   const navigation = useNavigation();
   const hanldPressDashBoard = () => {
     navigation.navigate("DashBoard");
@@ -188,7 +188,7 @@ const Register = () => {
               <TextInput
                 onChangeText={(x) => setPhone(x)}
                 value={phone}
-                defaultValue="+84"
+                defaultValue="84"
                 placeholder="Vui lòng nhập số điện thoại"
                 style={{
                   marginRight: 15,

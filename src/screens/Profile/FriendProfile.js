@@ -83,7 +83,7 @@ function FriendProfile({ route }) {
                                         </TouchableOpacity>
                                     </View>
                                 )}
-                                <TouchableOpacity style={styles.bottom} onPress={() => navigation.navigate("Chat", { phone: phone, fullname: fullname, urlavatar: urlavatar })}>
+                                <TouchableOpacity style={styles.bottom} onPress={() => navigation.navigate("Chat", { id: phone, name: fullname, image : urlavatar })}>
                                     <Text style={{ fontSize: 18, fontWeight: 'bold', marginLeft: 0 , color: 'white' }}>Nhắn tin</Text>
                                 </TouchableOpacity>
                             </View>
