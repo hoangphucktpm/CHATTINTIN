@@ -14,11 +14,15 @@ function Search() {
   const hanldPressCreateGroup = ()=>{
     navigation.navigate("CreateGroup");
   }
+    const sreach = ()=>{
+    // Mở thanh tìm kiếm
+  }
+
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.containerIcon}>
-        <EvilIcons style={styles.iconSeach} name="search" size={30} color="white" />
-        
+        <EvilIcons name="search" size={30} color="white" onPress={sreach}/>
       </View>
       <View style={styles.containerInput}>
         <TextInput placeholderTextColor="#fff" style={styles.input} type="text" placeholder='Tìm kiếm'/>

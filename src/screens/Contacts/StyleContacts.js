@@ -10,26 +10,30 @@ const styles = StyleSheet.create({
         color:"white",
         fontWeight:'bold',
         textAlign:'center',
+        
     }, 
     container:{
         flex:1,
+        backgroundColor: "white",
+        
+        
     },
     containerText:{
         flex:0.8,
         justifyContent:'flex-end',
+        
     },  
     containerHeader :{
-        display:'flex',
-        width: '100%',
-        flex:0.08,
-        borderColor:'#ccc',
-        borderWidth:1,
-        flexDirection:'row',
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "space-between",
+        paddingHorizontal: 10,
+        paddingVertical: 10,
         backgroundColor:'#0091ff'
+        
     },
     containerIcon:{
         width:"8%",
-        marginBottom:9,
         justifyContent:'flex-end',
         alignItems:'center',
         marginRight:5,
@@ -55,18 +59,29 @@ const styles = StyleSheet.create({
         color:'#fff',
         paddingLeft:10,
     },
+    searchInputContainer: {
+        flex: 1,
+        marginRight: 10,
+      },
+      searchInput: {
+        borderWidth: 1,
+        borderColor: "white",
+        borderRadius: 20,
+        paddingHorizontal: 15,
+        paddingVertical: 5,
+        color: "white",
+      },
 
 
     iconSeach:{
-        marginBottom:9,
+        marginRight: 10,
 
     },
     containerIconRight:{
-        flex:0.2,
+        width:"22%",
         display:'flex',
         flexDirection:'row',
         justifyContent:'space-around',
-        alignItems:"center"
     },
     containerIconAdd:{
         justifyContent:'flex-end',

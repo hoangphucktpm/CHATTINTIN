@@ -2,13 +2,17 @@ import {StyleSheet} from 'react-native'
 
 const styles = StyleSheet.create({
     input:{
-        width:'100%',
-        fontSize:18,
-        padding:10,
+        borderWidth: 1,
+        borderColor: "white",
+        borderRadius: 20,
+        paddingHorizontal: 15,
+        paddingVertical: 5,
+        color: "white",
     }, 
     containerInput:{
-        width:"70%",
-        justifyContent:'flex-end',
+        flex: 1,
+        marginRight: 10,
+        marginTop: 5,
     },  
     container :{
         display:'flex',
@@ -20,11 +24,11 @@ const styles = StyleSheet.create({
         backgroundColor:'#0091ff'
     },
     containerIcon:{
-        width:"8%",
-        marginBottom:9,
-        justifyContent:'flex-end',
-        alignItems:'center',
-        marginRight:5,
+        marginRight: 10,
+        marginLeft: 10,
+        justifyContent: 'center',
+        
+
     },
     iconSeach:{
         margin: 'auto',

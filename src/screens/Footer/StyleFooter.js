@@ -16,7 +16,15 @@ const styles = StyleSheet.create({
     },
     containerIcon:{
         justifyContent: 'center',
-    }
+    },
+    textIcon:{
+        fontSize: 12,
+        color: '#000',
+        textAlign: 'center',
+        paddingTop: 3,
+        fontFamily: 'Times New Roman',
+    },
+    
 })
 
 export default styles;

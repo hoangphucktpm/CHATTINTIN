@@ -1,4 +1,4 @@
-import { Text, View, Image, TouchableHighlight, TouchableOpacity, FlatList } from "react-native";
+import { Text, View, Image, TouchableHighlight, TouchableOpacity, FlatList, Alert } from "react-native";
 import React from "react";
 import styles from "./StyleItemFriend";
 import { AntDesign, Feather } from '@expo/vector-icons';
@@ -28,6 +28,13 @@ const ItemFriend = ({ navigation }) => {
         // Implement delete action here
         console.log("Delete action clicked");
     };
+
+    // Function to handle Ghim action
+    const GhimHandleClick = () => {
+        // Implement Ghim action here
+        console.log("Ghim action clicked");
+    };
+
 
     const renderItem = ({ item }) => {
         return (
@@ -66,10 +73,10 @@ const ItemFriend = ({ navigation }) => {
                         <Feather name="more-horizontal" size={24} color="white" />
                         <Text style={styles.txtItemRowBack}>Thêm</Text>
                     </View>
-                    <View style={styles.rowBackRight_Mid}>
+                    <TouchableOpacity style={styles.rowBackRight_Mid} onPress={GhimHandleClick}>
                         <AntDesign name="pushpino" size={24} color="white" />
                         <Text style={styles.txtItemRowBack}>Ghim</Text>
-                    </View>
+                    </TouchableOpacity>
                     <TouchableOpacity onPress={deleteGroupHandleClick} style={styles.rowBackRight_Right}>
                         <AntDesign name="delete" size={24} color="white" />
                         <Text style={styles.txtItemRowBack}>Xóa</Text>

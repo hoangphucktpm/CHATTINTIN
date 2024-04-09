@@ -19,6 +19,7 @@ import { useNavigation } from "@react-navigation/native";
 import { launchImageLibrary } from "react-native-image-picker";
 import { PermissionsAndroid, Platform } from "react-native";
 import { differenceInYears } from "date-fns";
+import * as FileSystem from "expo-file-system";
 
 
 import { api } from "../../apis/api";
@@ -49,6 +50,9 @@ const InputProfile = (props) => {
       if (permissionsGranted) {
         const result = await openImagePicker();
         if (!result.didCancel) {
+          const rs = await FileSystem.readAsStringAsync(result.assets[0].uri, {
+            encoding: FileSystem.EncodingType.Base64,
+          })
           setAvatarImage(result.assets[0].uri);
         }
       } else {

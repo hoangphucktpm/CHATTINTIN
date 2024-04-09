@@ -7,6 +7,7 @@ import Footer from "./Footer/FooterChat";
 
 function Chat({ route }) {
     const { id, name, image, owner } = route.params;
+    console.log(route.params)
     return (
         <View style={styles.container}>
             <Header fullname={name} id={id} image={image} owner={owner} />

@@ -26,13 +26,20 @@ import { PermissionsAndroid, Platform } from "react-native";
 import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
 import { removeData } from "../../utils/localStorageConfig";
-import { logout } from "../../redux/authSclice";
+import { logout, setUser } from "../../redux/authSclice";
+import * as FileSystem from "expo-file-system";
+import Footer from "../Footer/Footer";
 
 
 
 const MyProfile = () => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
+  
+  const {user} = useSelector((state) => state.auth);
+  const route = useRoute();
+  const phone = user?.phone;
+
 
   const [fullname, setFullName] = useState("");
   const [idUser, setIdUser] = useState("");
@@ -61,13 +68,28 @@ const MyProfile = () => {
     setBirthday(currentDate);
   };
 
+
   const handleAvatarPress = async () => {
     try {
       const permissionsGranted = await requestPermissions();
       if (permissionsGranted) {
         const result = await openImagePicker();
         if (!result.didCancel && result.assets.length > 0) {
-          setAvatarImage(result.assets[0].uri);
+          const rs = await FileSystem.readAsStringAsync(result.assets[0].uri, {
+            encoding: FileSystem.EncodingType.Base64,
+          })
+        try {
+        const res =   await api.updateInfo(idUser, {
+            ...user,
+              urlavatar:`data:image/jpeg;base64,${rs}`,
+              type: result.assets[0].type
+            });
+          setAvatarImage(res.data.data.urlavatar);
+          dispatch(setUser({...user, urlavatar:res.data.data.urlavatar}))
+          Alert.alert("Thông báo", "Cập nhật ảnh đại diện thành công");
+        } catch (error) {
+          Alert.alert("Thông báo", "Cập nhật ảnh đại diện thất bại");
+        }
         }
       } else {
         console.log("Người dùng từ chối cấp quyền truy cập thư viện ảnh");
@@ -77,6 +99,7 @@ const MyProfile = () => {
     }
   };
 
+
   const openImagePicker = () => {
     return new Promise((resolve, reject) => {
       const options = {
@@ -84,6 +107,7 @@ const MyProfile = () => {
         cameraType: "back",
       };
       launchImageLibrary(options, (response) => {
+        console.log("Response = ", response);
         resolve(response);
       });
     });
@@ -112,10 +136,6 @@ const MyProfile = () => {
   };
 
 
-  const hanldPressGoBack = () => {
-    navigation.goBack();
-  };
-
   const handleUpdatePress = () => {
     setEditingPassword(true);
     setShowPasswordFields(true);
@@ -139,13 +159,8 @@ const MyProfile = () => {
 
 
 
-  const {user} = useSelector((state) => state.auth);
-  const route = useRoute();
-  const phone = user?.phone;
-
   useEffect(() => {
     if (!user) return navigation.navigate("Login");
-    console.log(user);
     setFullName(user.fullname);
           setGender(user.ismale);
           const formattedBirthday = new Date(user.birthday);
@@ -346,27 +361,16 @@ const MyProfile = () => {
   return (
     <View style={styles.container}>
       <View style={styles.containerTabBar}>
-        <TouchableOpacity
-          onPress={hanldPressGoBack}
-          style={{
-            paddingLeft: 10,
-            paddingRight: 10,
-            justifyContent: "center",
-            paddingTop: 10,
-          }}
-        >
-          <Ionicons name="arrow-back" size={30} color="#fff" />
-        </TouchableOpacity>
         <View
           style={{
-            width: "73%",
+            width: "100%",
             justifyContent: "center",
             alignItems: "center",
-            paddingTop: 10,
+            paddingTop: 15,
           }}
         >
           <Text style={{ fontSize: 24, color: "white" }}>
-            Cập nhật thông tin
+            Thông tin cá nhân
           </Text>
         </View>
       </View>
@@ -392,9 +396,6 @@ const MyProfile = () => {
     
   </TouchableOpacity>
 </View>
-
-
-
               <View style={styles.containerInput}>
                 <View
                   style={{
@@ -671,6 +672,7 @@ const MyProfile = () => {
           </View>
         </View>
       </Modal>
+      <Footer />
     </View>
   );
 };

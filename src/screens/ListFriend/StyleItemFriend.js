@@ -80,7 +80,7 @@ const styles = StyleSheet.create({
         width:75,
         alignItems:'center',
         justifyContent:'center',
-        backgroundColor:'#800080',
+        backgroundColor: '#ADDD1D',
     },
     rowBackRight_Right:{
         height:"100%",

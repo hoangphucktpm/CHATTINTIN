@@ -22,6 +22,7 @@ import MemberGroup from "./src/screens/Chat/ShowMemberGroup";
 import ListFriend from "./src/screens/ListFriend/ListFriend";
 import ChangePassForgot from "./src/screens/ForgotPassword&DashBoard/ChangePassForgot";
 import OTPPassForgot from "./src/screens/ForgotPassword&DashBoard/OTPPassForgot";
+import Story from './src/screens/Story/Story';
 
 import { Provider } from 'react-redux';
 import { store } from './store';
@@ -49,6 +50,7 @@ const App = ()=> {
     const memberGroup = "MemberGroup";
     const changePassForgot = "ChangePassForgot";
     const otpPassForgot = "OTPPassForgot";
+    const story = "Story";
 
     return (
 
@@ -77,6 +79,7 @@ const App = ()=> {
                 <Stack.Screen name={listFriend} component={ListFriend} />
                 <Stack.Screen name={otpPassForgot} component={OTPPassForgot} />
                 <Stack.Screen name={friendProfile} component={FriendProfile} />
+                <Stack.Screen name={story} component={Story} />
                 
             </Stack.Navigator>
         </NavigationContainer>

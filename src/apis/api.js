@@ -1,6 +1,6 @@
 import axios from "axios";
 
-export const myIP = '172.20.50.31'
+export const myIP = '192.168.1.15'
 
 export const http = axios.create({
   // timeout: 30000,
@@ -32,4 +32,5 @@ export const api = {
   getAllFriendRequests: (id) => http.get(`user/get-all-friend-requests/${id}`, {id}),
   handleFriendRequest: ({ id, type }) => http.post('user/process-friend-request',{ id, type }),
   handleSendFriendRequest: ({ senderId, receiverId }) => http.post('user/send-friend-request',{ senderId, receiverId }),
+  getAllFriends: (username) => http.post(`conversation/get-list-friend`, {username}),
 };
