@@ -19,7 +19,7 @@ import Footer from "../Footer/Footer";
 import { useRoute } from "@react-navigation/native";
 import { useSelector } from "react-redux";
 import { getData } from "../../utils/localStorageConfig";
-import {useNavigation} from '@react-navigation/native'
+import { useNavigation } from "@react-navigation/native";
 import { api } from "../../apis/api";
 import { useDispatch } from "react-redux";
 import { setUser } from "../../redux/authSclice";
@@ -27,30 +27,25 @@ import { setUser } from "../../redux/authSclice";
 function Home(props) {
   const route = useRoute();
   const navigation = useNavigation();
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
 
-  const [user, setUserData] = useState(null)
-
+  const [user, setUserData] = useState(null);
 
   useEffect(() => {
     const getUser = async () => {
-      const phone = await getData('user-phone')
-      if (!phone)  return navigation.navigate('Login')
+      const phone = await getData("user-phone");
+      if (!phone) return navigation.navigate("Login");
       const res = await api.getUserByPhone(phone);
-      setUserData(res.data)
+      setUserData(res.data);
       dispatch(setUser(res.data));
-    }
-    getUser() 
-  }, [])
-  const phone = user?.phone
-  // navigation.navigate('MyProfile', {phone: phone});
-  // const userState = useSelector(state => state.user);
-  // const roomState = useSelector(state => state.room);
+    };
+    getUser();
+  }, []);
+  const phone = user?.phone;
   // const [socket, setSocket] = useState(null);
 
   // const rooms = userState.rooms;
 
-  // const dispatch = useDispatch();
   // const token = tokenService.getAccessToken();
   // const roomId = useRef(roomState._id);
   // useEffect(() => {

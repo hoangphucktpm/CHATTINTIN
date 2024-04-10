@@ -1,6 +1,7 @@
 import axios from "axios";
 
-export const myIP = '192.168.1.15'
+export const myIP = "192.168.1.7";
+// export const myIP = "10.68.1.140";
 
 export const http = axios.create({
   // timeout: 30000,
@@ -29,8 +30,14 @@ export const api = {
   resetPassword: async (params) => {
     return http.post(`auth/reset-password`, params);
   },
-  getAllFriendRequests: (id) => http.get(`user/get-all-friend-requests/${id}`, {id}),
-  handleFriendRequest: ({ id, type }) => http.post('user/process-friend-request',{ id, type }),
-  handleSendFriendRequest: ({ senderId, receiverId }) => http.post('user/send-friend-request',{ senderId, receiverId }),
-  getAllFriends: (username) => http.post(`conversation/get-list-friend`, {username}),
+  getAllFriendRequests: (id) =>
+    http.get(`user/get-all-friend-requests/${id}`, { id }),
+  handleFriendRequest: ({ id, type }) =>
+    http.post("user/process-friend-request", { id, type }),
+  handleSendFriendRequest: ({ senderId, receiverId }) =>
+    http.post("user/send-friend-request", { senderId, receiverId }),
+  getAllFriends: (username) =>
+    http.post(`conversation/get-list-friend`, { username }),
+  checkRequest: ({ senderId, receiverId }) =>
+    http.post(`friend-request/check-request-exists`, { senderId, receiverId }),
 };
