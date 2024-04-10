@@ -1,7 +1,7 @@
 import { StyleSheet } from "react-native";
 
 const stylesBody = StyleSheet.create({
-    container: {
+  container: {
     backgroundColor: "#EEE0E5",
     flex: 1,
     padding: 10,
@@ -11,10 +11,10 @@ const stylesBody = StyleSheet.create({
     flexDirection: "row",
     marginBottom: 10,
     justifyContent: "flex-end",
-    alignSelf: 'flex-end',
+    alignSelf: "flex-end",
     maxWidth: "60%",
     borderRadius: 10,
-    backgroundColor: " "#FFC0CB",
+    backgroundColor: " #FFC0CB",
     padding: 10,
   },
   messageContainer: {
@@ -23,10 +23,9 @@ const stylesBody = StyleSheet.create({
     padding: 10,
     marginBottom: 10,
     paddingRight: 20,
-    
   },
   messageText: {
-    Bottom:10,   
+    Bottom: 10,
     fontSize: 16,
   },
 });

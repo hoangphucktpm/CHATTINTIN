@@ -24,7 +24,7 @@
 //     const roomState = useSelector(state => state.room);
 //     const userState = useSelector(state => state.user);
 //     const token = tokenService.getAccessToken();
-    
+
 //     const roomId = id;
 //     const navigation = useNavigation();
 //     const [isBFF,setIsBFF] = useState(false);
@@ -41,7 +41,7 @@
 //             url: `http://54.254.183.128/api/rooms/${roomId}/name`,
 //             method: "PATCH",
 //             headers: {
-//                 authorization: token 
+//                 authorization: token
 //             },
 //             data: {
 //                 name: nameChange
@@ -54,7 +54,7 @@
 //         })
 //         //  axios.patch(
 //         //     `http://54.254.183.128/api/rooms/${roomId}/name`,
-            
+
 //         //     {data,
 //         //       headers: { authorization: token },
 //         //     }
@@ -71,7 +71,7 @@
 //         navigation.navigate("MemberGroup",{id: id,owner:owner});
 //     }
 
-//     // Đổi avt 
+//     // Đổi avt
 //     // const pickImage = async () => {
 //     //     // No permissions request is necessary for launching the image library
 //     //     let result = await ImagePicker.launchImageLibraryAsync({
@@ -92,7 +92,7 @@
 //     //           name: nameFile,
 //     //         };
 //     //         formData.append("file", _image);
-            
+
 //     //       axios.patch(urlUploadFile, formData, {
 //     //         headers: {
 //     //             authorization: token,
@@ -112,12 +112,12 @@
 //     //     // dispatch(
 //     //     //     userAPI.updateRoomByIdUI()({ _id: roomId, avatar: avtChange, name: nameChange })
 //     //     //   );
-    
+
 //     //     }
 //     //     else if(result.cancelled){
 //     //       console.log(result);
 //     //     }
-    
+
 //     //   };
 //     const pickImage = async () => {
 //         // No permissions request is necessary for launching the image library
@@ -163,12 +163,12 @@
 //         //             .catch((err) => {
 //         //                 alert("Error Upload file");
 //         //             });
-    
+
 //         }
 //         else if(result.cancelled){
 //           console.log(result);
 //         }
-    
+
 //       };
 //       const deleteGroupHandleClick =  () => {
 //         const roomId = roomState._id;
@@ -196,7 +196,7 @@
 //                         <Text style={{fontSize:24,color:'white',}}>Tuỳ chọn</Text>
 //                     </View>
 //             </View>
-           
+
 //             <ScrollView style={{paddingBottom: 600}}>
 //                 <View style={styles.containerBody}>
 //                     <View style={styles.containerBody_Top}>
@@ -209,23 +209,23 @@
 //                                 </View>
 //                                 <View style={styles.containerBody_Top_Icon_IconText}>
 //                                 <Text style={{color:'#4F4F4F',textAlign:'center'}}>Tìm {'\n'} tin nhắn</Text>
-//                                 </View>     
-//                             </TouchableOpacity>  
+//                                 </View>
+//                             </TouchableOpacity>
 //                             <TouchableOpacity onPress={hanldPressMemberGroup} style={styles.containerBody_Top_Icon_Icon}>
 //                                 <View style={styles.containerBody_Top_Icon_IconItem}>
 //                                     <AntDesign name="user" size={20} color="black" />
 //                                 </View>
 //                                 <View style={styles.containerBody_Top_Icon_IconText}>
 //                                 <Text style={{color:'#4F4F4F',textAlign:'center'}}>Xem {'\n'} thành viên</Text>
-//                                 </View>     
-//                             </TouchableOpacity>  
+//                                 </View>
+//                             </TouchableOpacity>
 //                             {(owner==userState.user._id)? <TouchableOpacity onPress={pickImage} style={styles.containerBody_Top_Icon_Icon}>
 //                                 <View style={styles.containerBody_Top_Icon_IconItem}>
 //                                     <FontAwesome5 name="brush" size={20} color="black" />
 //                                 </View>
 //                                 <View style={styles.containerBody_Top_Icon_IconText}>
 //                                 <Text style={{color:'#4F4F4F',textAlign:'center'}}>Đổi {'\n'} hình nền</Text>
-//                                 </View>     
+//                                 </View>
 //                             </TouchableOpacity> : null}
 //                             <TouchableOpacity style={styles.containerBody_Top_Icon_Icon}>
 //                                 <View style={styles.containerBody_Top_Icon_IconItem}>
@@ -233,8 +233,8 @@
 //                                 </View>
 //                                 <View style={styles.containerBody_Top_Icon_IconText}>
 //                                 <Text style={{color:'#4F4F4F',textAlign:'center'}}>Tắt {'\n'} thông báo</Text>
-//                                 </View>     
-//                             </TouchableOpacity>  
+//                                 </View>
+//                             </TouchableOpacity>
 //                         </View>
 //                     </View>
 //                     <View style={styles.containerBody_Mid}>

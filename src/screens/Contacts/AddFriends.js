@@ -18,7 +18,7 @@ import { api } from "../../apis/api";
 import socket from "../../services/socket";
 import { useEffect } from "react";
 import { useSelector } from "react-redux";
- 
+
 // Import FireBase
 const AddFriends = (props) => {
   const navigation = useNavigation();
@@ -26,19 +26,17 @@ const AddFriends = (props) => {
   const [phoneNumber, setPhoneNumber] = useState(""); // Số điện thoại người dùng nhập
   const [searchData, setSearchData] = useState([]); // Dữ liệu tìm kiếm
   const route = useRoute();
-  const {user} = useSelector((state) => state.auth);
-  const phone =user.phone;
-
-
+  const { user } = useSelector((state) => state.auth);
+  const phone = user.phone;
 
   const hanldPressDashBoard = () => {
     navigation.navigate("Contacts");
   };
 
-  const Search  = async () => {
+  const Search = async () => {
     try {
       const res = await api.getUserByPhone(phoneNumber);
-      console.log('Response from api.getUserByPhone:', res);
+      console.log("Response from api.getUserByPhone:", res);
       if (res.data) {
         setSearchData([res.data]);
       } else {
@@ -49,15 +47,19 @@ const AddFriends = (props) => {
     }
   };
 
-
   const renderItem = ({ item }) => {
-    const urlavatar = item.urlavatar || "https://hinhgaixinh.com/wp-content/uploads/2021/12/bo-anh-girl-xinh-cap-2.jpg";
+    const urlavatar =
+      item.urlavatar ||
+      "https://hinhgaixinh.com/wp-content/uploads/2021/12/bo-anh-girl-xinh-cap-2.jpg";
     return (
       <TouchableHighlight
         underlayColor={"#E6E6FA"}
         style={styles.touchHightLight}
         onPress={() => {
-          navigation.navigate("FriendProfile", item);
+          navigation.navigate(
+            item.ID === user.ID ? "MyProfile" : "FriendProfile",
+            item
+          );
         }}
       >
         <View style={styles.containerItem}>
@@ -65,7 +67,7 @@ const AddFriends = (props) => {
             <View style={styles.itemFriend_avatar}>
               <Image
                 style={styles.itemFriend_avatar_avatar}
-                source={{ uri : urlavatar }}
+                source={{ uri: urlavatar }}
               />
             </View>
           </View>
@@ -84,43 +86,45 @@ const AddFriends = (props) => {
 
   useEffect(() => {
     // Listen for connect event
-    socket.on('connect', () => {
-      console.log('Connected to the server');
+    socket.on("connect", () => {
+      console.log("Connected to the server");
     });
-  
+
     // Listen for disconnect event
-    socket.on('disconnect', () => {
-      console.log('Disconnected from the server');
+    socket.on("disconnect", () => {
+      console.log("Disconnected from the server");
     });
-  
+
     // Listen for error event
-    socket.on('error', (error) => {
-      console.log('An error occurred:', error);
+    socket.on("error", (error) => {
+      console.log("An error occurred:", error);
     });
-  
+
     // Listen for reconnect event
-    socket.on('reconnect', (attemptNumber) => {
-      console.log('Reconnected to the server after', attemptNumber, 'attempts');
+    socket.on("reconnect", (attemptNumber) => {
+      console.log("Reconnected to the server after", attemptNumber, "attempts");
     });
-  
+
     // Clean up the effect
     return () => {
-      socket.off('connect');
-      socket.off('disconnect');
-      socket.off('error');
-      socket.off('reconnect');
+      socket.off("connect");
+      socket.off("disconnect");
+      socket.off("error");
+      socket.off("reconnect");
     };
   }, []);
-  
+
   const hanldPressAdd = () => {
     // Emit a 'new friend request client' event to the server with the senderId and receiverId
-    socket.emit('new friend request client', { senderId: phone, receiverId: phoneNumber });
+    socket.emit("new friend request client", {
+      senderId: phone,
+      receiverId: phoneNumber,
+    });
     Alert.alert("Thông báo", "Bạn đã gửi lời mời kết bạn thành công");
 
-    console.log('senderId:', phone);
-    console.log('receiverId:', phoneNumber);
+    console.log("senderId:", phone);
+    console.log("receiverId:", phoneNumber);
   };
-
 
   return (
     <View style={{ flex: 1, backgroundColor: "#fff" }}>
@@ -166,7 +170,7 @@ const AddFriends = (props) => {
             >
               <Text style={{ fontSize: 24, marginRight: 20 }}>+84</Text>
               <TextInput
-                value={phoneNumber.substring(3)} // Lấy phần tử từ index 3 đến hết để loại bỏ 84
+                // value={phoneNumber.substring(3)} // Lấy phần tử từ index 3 đến hết để loại bỏ 84
                 onChangeText={(text) => setPhoneNumber(`84${text}`)} // Thêm 84 vào đầu chuỗi số điện thoại
                 placeholder="Nhập số điện thoại"
                 keyboardType="phone-pad"
@@ -175,7 +179,7 @@ const AddFriends = (props) => {
               />
             </View>
           </View>
-          <TouchableOpacity onPress={Search } style={{ marginLeft: 10 }}>
+          <TouchableOpacity onPress={Search} style={{ marginLeft: 10 }}>
             <Text
               style={{ color: "#1E90FF", fontSize: 20, fontWeight: "bold" }}
             >
@@ -184,11 +188,8 @@ const AddFriends = (props) => {
           </TouchableOpacity>
         </View>
       </View>
-      <View style={{ flex: 0.8, backgroundColor: "white" }} >
-
-      {        console.log(Array.isArray(searchData))
-
-}
+      <View style={{ flex: 0.8, backgroundColor: "white" }}>
+        {console.log(Array.isArray(searchData))}
         <FlatList
           data={searchData}
           renderItem={renderItem}

@@ -31,7 +31,6 @@ function Contacts() {
   const navigation = useNavigation();
   const { user } = useSelector((state) => state.auth);
 
-
   const [selectedButton, setSelectedButton] = useState(null);
   const [receiverId, setReceiverId] = useState(null);
   const [listFriends, setListFriends] = useState([]);
@@ -54,7 +53,6 @@ function Contacts() {
   }, [user, receiverId]);
 
   useEffect(() => {
-    console.log("receiverId", receiverId);
     // Listen for a 'friend request received' event from the server
     socket.on("friend request received", (response) => {
       if (response.receiverId === receiverId) {
@@ -213,7 +211,7 @@ function Contacts() {
           const id = item.ID;
           navigation.navigate("Chat", item);
         }}
-      >                    
+      >
         <View style={styles.containerItem}>
           <View style={styles.itemFriend_info}>
             <View style={styles.itemFriend_avatar}>
@@ -330,12 +328,7 @@ function Contacts() {
     <SafeAreaView style={styles.container}>
       <View style={styles.containerHeader}>
         <View style={styles.containerIcon}>
-        <EvilIcons
-            name="search"
-            size={30}
-            color="white"
-            onPress={sreach}
-          />
+          <EvilIcons name="search" size={30} color="white" onPress={sreach} />
         </View>
         <View style={styles.searchInputContainer}>
           <TextInput
@@ -346,7 +339,12 @@ function Contacts() {
         </View>
         <View style={styles.containerIconRight}>
           <TouchableOpacity onPress={AddFriend} style={styles.containerIconAdd}>
-            <Ionicons name="person-add" size={24} color="white" marginRight={10} />
+            <Ionicons
+              name="person-add"
+              size={24}
+              color="white"
+              marginRight={10}
+            />
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => {
@@ -369,13 +367,16 @@ function Contacts() {
               selectedButton === "friends" && { backgroundColor: "#BFEFFF" }, // Sử dụng điều kiện để chỉ định màu cho mục đã chọn
             ]}
           >
-
-            <Octicons name="feed-person" size={35} color="blue" marginLeft={5} />
+            <Octicons
+              name="feed-person"
+              size={35}
+              color="blue"
+              marginLeft={5}
+            />
 
             <Text style={{ fontSize: 18, marginLeft: 20 }}>
               Danh sách bạn bè
             </Text>
-
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => handleButtonPress("Group")}
@@ -384,9 +385,16 @@ function Contacts() {
               selectedButton === "Group" && { backgroundColor: "#BFEFFF" }, // Sử dụng điều kiện để chỉ định màu cho mục đã chọn
             ]}
           >
-            <FontAwesome name="address-book" size={35} color="blue" marginLeft={5} />
+            <FontAwesome
+              name="address-book"
+              size={35}
+              color="blue"
+              marginLeft={5}
+            />
             <View style={{ flexDirection: "row", marginLeft: 4 }}>
-            <Text style={{ fontSize: 18, marginLeft: 20 }}>Danh sách nhóm</Text>
+              <Text style={{ fontSize: 18, marginLeft: 20 }}>
+                Danh sách nhóm
+              </Text>
             </View>
           </TouchableOpacity>
           <TouchableOpacity

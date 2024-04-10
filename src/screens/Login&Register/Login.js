@@ -37,20 +37,18 @@ function Login() {
     navigation.navigate("DashBoard");
   };
   const hanldPressLogin = async () => {
-    
     try {
       const res = await api.login({
         username: phone,
         password: passWord,
       });
 
-
-     await storeData('user-phone', phone)
+      await storeData("user-phone", phone);
       // Chỉ hiện thông báo lên thôi
       Alert.alert("Đăng nhập thành công");
       navigation.navigate("Home", { phone: res.data.data });
     } catch (error) {
-      console.log(error.message)
+      console.log(error.message);
       Alert.alert("Mật khẩu hoặc tài khoản không đúng");
     }
   };

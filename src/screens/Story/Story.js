@@ -1,17 +1,10 @@
 import React from "react";
-import {
-  Text,
-  View,
-  TextInput,
-  TouchableOpacity,
-  Image,
-} from "react-native";
+import { Text, View, TextInput, TouchableOpacity, Image } from "react-native";
 import { EvilIcons } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Footer from "../Footer/Footer";
 import { useNavigation } from "@react-navigation/native";
 import styles from "./StyleStory";
- 
 
 function Story() {
   const navigation = useNavigation();

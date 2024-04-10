@@ -1,18 +1,22 @@
-import {createSlice} from '@reduxjs/toolkit'
+import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-    chatList: [] // [{message: 'Hello', fromSelf: true}]
-}
+  chatList: [], // [{message: 'Hello', fromSelf: true}]
+  messages: [],
+};
 
 const chatSlice = createSlice({
-    name: 'chat',
-    initialState,
-    reducers: {
-        setChatList: (state, action) => {
-            state.chatList = state.chatList.concat(action.payload)
-        }
-    }
-})
+  name: "chat",
+  initialState,
+  reducers: {
+    setChatList: (state, action) => {
+      state.chatList = action.payload;
+    },
+    setMessages: (state, action) => {
+      state.messages = action.payload;
+    },
+  },
+});
 
-export const {setChatList} = chatSlice.actions
-export default chatSlice.reducer
+export const { setChatList, setMessages } = chatSlice.actions;
+export default chatSlice.reducer;

@@ -1,48 +1,48 @@
 {
-    "project_info": {
-        "project_number": "901523807134",
-        "project_id": "tintin-6479f",
-        "storage_bucket": "tintin-6479f.appspot.com"
-    },
-    "client": [
-        {
-            "client_info": {
-                "mobilesdk_app_id": "1:901523807134:android:e31b7747904fa3491ad48f",
-                "android_client_info": {
-                    "package_name": "com.app.tintin"
-                }
-            },
-            "oauth_client": [],
-            "api_key": [
-                {
-                    "current_key": "AIzaSyAAT4VJI1LtvnCtBsWDewGIc8H90_fd0ic"
-                }
-            ],
-            "services": {
-                "appinvite_service": {
-                    "other_platform_oauth_client": []
-                }
-            }
-        },
-        {
-            "client_info": {
-                "mobilesdk_app_id": "1:901523807134:android:1bbdb7b32d7309a11ad48f",
-                "android_client_info": {
-                    "package_name": "com.hoangphucktpm.AppTinTin"
-                }
-            },
-            "oauth_client": [],
-            "api_key": [
-                {
-                    "current_key": "AIzaSyAAT4VJI1LtvnCtBsWDewGIc8H90_fd0ic"
-                }
-            ],
-            "services": {
-                "appinvite_service": {
-                    "other_platform_oauth_client": []
-                }
-            }
+  "project_info": {
+    "project_number": "901523807134",
+    "project_id": "tintin-6479f",
+    "storage_bucket": "tintin-6479f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:901523807134:android:e31b7747904fa3491ad48f",
+        "android_client_info": {
+          "package_name": "com.app.tintin"
         }
-    ],
-    "configuration_version": "1"
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAAT4VJI1LtvnCtBsWDewGIc8H90_fd0ic"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:901523807134:android:1bbdb7b32d7309a11ad48f",
+        "android_client_info": {
+          "package_name": "com.hoangphucktpm.AppTinTin"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAAT4VJI1LtvnCtBsWDewGIc8H90_fd0ic"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
 }

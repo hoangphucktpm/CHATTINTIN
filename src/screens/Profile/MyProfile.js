@@ -30,16 +30,13 @@ import { logout, setUser } from "../../redux/authSclice";
 import * as FileSystem from "expo-file-system";
 import Footer from "../Footer/Footer";
 
-
-
 const MyProfile = () => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
-  
-  const {user} = useSelector((state) => state.auth);
+
+  const { user } = useSelector((state) => state.auth);
   const route = useRoute();
   const phone = user?.phone;
-
 
   const [fullname, setFullName] = useState("");
   const [idUser, setIdUser] = useState("");
@@ -57,7 +54,6 @@ const MyProfile = () => {
   const [isPasswordVisibleOld, setPasswordVisibleOld] = useState(false); // State for password visibility
   const [isPasswordVisibleNew, setPasswordVisibleNew] = useState(false); // State for password visibility
 
-
   // useEffect(() => {
   //   loadUserProfile();
   // }, []);
@@ -68,7 +64,6 @@ const MyProfile = () => {
     setBirthday(currentDate);
   };
 
-
   const handleAvatarPress = async () => {
     try {
       const permissionsGranted = await requestPermissions();
@@ -77,19 +72,19 @@ const MyProfile = () => {
         if (!result.didCancel && result.assets.length > 0) {
           const rs = await FileSystem.readAsStringAsync(result.assets[0].uri, {
             encoding: FileSystem.EncodingType.Base64,
-          })
-        try {
-        const res =   await api.updateInfo(idUser, {
-            ...user,
-              urlavatar:`data:image/jpeg;base64,${rs}`,
-              type: result.assets[0].type
+          });
+          try {
+            const res = await api.updateInfo(idUser, {
+              ...user,
+              urlavatar: `data:image/jpeg;base64,${rs}`,
+              type: result.assets[0].type,
             });
-          setAvatarImage(res.data.data.urlavatar);
-          dispatch(setUser({...user, urlavatar:res.data.data.urlavatar}))
-          Alert.alert("Thông báo", "Cập nhật ảnh đại diện thành công");
-        } catch (error) {
-          Alert.alert("Thông báo", "Cập nhật ảnh đại diện thất bại");
-        }
+            setAvatarImage(res.data.data.urlavatar);
+            dispatch(setUser({ ...user, urlavatar: res.data.data.urlavatar }));
+            Alert.alert("Thông báo", "Cập nhật ảnh đại diện thành công");
+          } catch (error) {
+            Alert.alert("Thông báo", "Cập nhật ảnh đại diện thất bại");
+          }
         }
       } else {
         console.log("Người dùng từ chối cấp quyền truy cập thư viện ảnh");
@@ -98,7 +93,6 @@ const MyProfile = () => {
       console.log("Đã xảy ra lỗi khi xử lý ảnh:", error);
     }
   };
-
 
   const openImagePicker = () => {
     return new Promise((resolve, reject) => {
@@ -135,7 +129,6 @@ const MyProfile = () => {
     }
   };
 
-
   const handleUpdatePress = () => {
     setEditingPassword(true);
     setShowPasswordFields(true);
@@ -157,19 +150,17 @@ const MyProfile = () => {
     setEditingProfile(false);
   };
 
-
-
   useEffect(() => {
     if (!user) return navigation.navigate("Login");
     setFullName(user.fullname);
-          setGender(user.ismale);
-          const formattedBirthday = new Date(user.birthday);
-          setBirthday(formattedBirthday);
-          setBirthday(new Date(user.birthday));
-          setAvatarImage(user.urlavatar);
-          setIdUser(user.ID);
-  }, [user])
-  
+    setGender(user.ismale);
+    const formattedBirthday = new Date(user.birthday);
+    setBirthday(formattedBirthday);
+    setBirthday(new Date(user.birthday));
+    setAvatarImage(user.urlavatar);
+    setIdUser(user.ID);
+  }, [user]);
+
   // Load user profile info from server when the screen is loaded for the first time (useEffect) or when the user presses the "Refresh" button
   // Không cần bấm button gì
 
@@ -193,11 +184,9 @@ const MyProfile = () => {
   //   }
   // };
 
-
-
-
   // Biểu thức chính quy cho yêu cầu mật khẩu mới
-  const passwordRegex = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/;
+  const passwordRegex =
+    /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/;
 
   // Kiểm tra mật khẩu mới với biểu thức chính quy
   const validatePassword = (password) => {
@@ -239,7 +228,6 @@ const MyProfile = () => {
           return;
         }
 
-
         // Kiểm tra xem ngày sinh đã đủ điều kiện chưa
         const currentYear = new Date().getFullYear();
         const selectedYear = birthday.getFullYear();
@@ -266,7 +254,6 @@ const MyProfile = () => {
     // Hiển thị thông báo cập nhật thành công
   };
 
-
   const handleLogoutPress = () => {
     // Ask if you want to log out
     Alert.alert("Đăng xuất", "Bạn có chắc chắn muốn đăng xuất?", [
@@ -278,19 +265,16 @@ const MyProfile = () => {
       {
         text: "Đồng ý",
         onPress: async () => {
-          await removeData('user-phone').then(() => {
-            dispatch(logout())
-            navigation.navigate("DashBoard")
-          })
+          await removeData("user-phone").then(() => {
+            dispatch(logout());
+            navigation.navigate("DashBoard");
+          });
         },
         style: "destructive",
       },
     ]);
   };
 
-
-
-  
   const togglePasswordVisibilityOld = () => {
     setPasswordVisibleOld(!isPasswordVisibleOld); // Toggle password visibility state
   };
@@ -318,7 +302,6 @@ const MyProfile = () => {
       );
       return;
     }
-    
 
     try {
       const res = await api.updatePassword({
@@ -353,10 +336,7 @@ const MyProfile = () => {
     } catch (error) {
       Alert.alert("Cập nhật mật khẩu thất bại");
     }
-  }
-  
-
-
+  };
 
   return (
     <View style={styles.container}>
@@ -379,23 +359,21 @@ const MyProfile = () => {
         <View style={styles.containerBody}>
           {!showPasswordFields && (
             <>
-<View style={styles.containerBody_Top}>
-  <TouchableOpacity onPress={handleAvatarPress}>
-    {avatarImage ? (
-      <Image
-        style={styles.containerBody_Top_Avt}
-        source={{ uri: avatarImage }}
-      />
-    ) : (
-      <Image
-        style={styles.containerBody_Top_Avt}
-        source={require('../../../assets/avata.jpg')}
-
-      />
-    )}
-    
-  </TouchableOpacity>
-</View>
+              <View style={styles.containerBody_Top}>
+                <TouchableOpacity onPress={handleAvatarPress}>
+                  {avatarImage ? (
+                    <Image
+                      style={styles.containerBody_Top_Avt}
+                      source={{ uri: avatarImage }}
+                    />
+                  ) : (
+                    <Image
+                      style={styles.containerBody_Top_Avt}
+                      source={require("../../../assets/avata.jpg")}
+                    />
+                  )}
+                </TouchableOpacity>
+              </View>
               <View style={styles.containerInput}>
                 <View
                   style={{

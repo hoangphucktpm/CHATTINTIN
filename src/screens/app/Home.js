@@ -19,38 +19,35 @@ import Footer from "../Footer/Footer";
 import { useRoute } from "@react-navigation/native";
 import { useSelector } from "react-redux";
 import { getData } from "../../utils/localStorageConfig";
-import {useNavigation} from '@react-navigation/native'
+import { useNavigation } from "@react-navigation/native";
 import { api } from "../../apis/api";
 import { useDispatch } from "react-redux";
 import { setUser } from "../../redux/authSclice";
+import socket from "../../services/socket";
+import { setConversation } from "../../redux/conversationSlice";
 
 function Home(props) {
   const route = useRoute();
   const navigation = useNavigation();
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
 
-  const [user, setUserData] = useState(null)
-
+  const [user, setUserData] = useState(null);
 
   useEffect(() => {
     const getUser = async () => {
-      const phone = await getData('user-phone')
-      if (!phone)  return navigation.navigate('Login')
+      const phone = await getData("user-phone");
+      if (!phone) return navigation.navigate("Login");
       const res = await api.getUserByPhone(phone);
-      setUserData(res.data)
+      setUserData(res.data);
       dispatch(setUser(res.data));
-    }
-    getUser() 
-  }, [])
-  const phone = user?.phone
-  // navigation.navigate('MyProfile', {phone: phone});
-  // const userState = useSelector(state => state.user);
-  // const roomState = useSelector(state => state.room);
+    };
+    getUser();
+  }, []);
+  const phone = user?.phone;
   // const [socket, setSocket] = useState(null);
 
   // const rooms = userState.rooms;
 
-  // const dispatch = useDispatch();
   // const token = tokenService.getAccessToken();
   // const roomId = useRef(roomState._id);
   // useEffect(() => {
@@ -135,6 +132,43 @@ function Home(props) {
   //     };
   //     // }
   // }, [token]);
+
+  useEffect(() => {
+    // Listen for connect event
+    socket.on("connect", () => {
+      console.log("Connected to the server");
+    });
+
+    // Listen for disconnect event
+    socket.on("disconnect", () => {
+      console.log("Disconnected from the server");
+    });
+
+    // Listen for error event
+    socket.on("error", (error) => {
+      console.log("An error occurred:", error);
+    });
+
+    // Listen for reconnect event
+    socket.on("reconnect", (attemptNumber) => {
+      console.log("Reconnected to the server after", attemptNumber, "attempts");
+    });
+
+    // Clean up the effect
+    return () => {
+      socket.off("connect");
+      socket.off("disconnect");
+      socket.off("error");
+      socket.off("reconnect");
+    };
+  }, []);
+
+  useEffect(() => {
+    user && socket.emit("load_conversations", { IDUser: user.ID });
+    socket.on("load_conversations_server", (data) => {
+      if (data) dispatch(setConversation(data));
+    });
+  }, [user]);
 
   return (
     <View style={styles.container}>
