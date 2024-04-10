@@ -7,7 +7,7 @@ import { useNavigation } from '@react-navigation/native';
 import * as WebBrowser from 'expo-web-browser';
 import { Camera } from 'expo-camera';
 function ImageChat({route}) {
-  const {avatar,name,image} = route.params;
+  const {avatar, name, image, message} = route.params; // add 'message' here
   const navigation = useNavigation();
   const hanldPressClose= ()=>{
     navigation.goBack();
@@ -31,6 +31,7 @@ function ImageChat({route}) {
       </View>
       <View style={{flex:0.9,justifyContent:'center',alignItems:'center'}}>
         <Image source={{uri:image}} style={{height:"60%",width:'100%'}} />
+        <Text style={{color: 'white'}}>{message}</Text>
       </View>
     </View>
   );

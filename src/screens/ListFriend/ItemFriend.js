@@ -38,7 +38,12 @@ const ItemFriend = ({ navigation }) => {
 
     const renderItem = ({ item }) => {
         return (
-            <TouchableHighlight underlayColor={'#E6E6FA'} style={styles.touchHightLight}>
+            <TouchableHighlight underlayColor={'#E6E6FA'} style={styles.touchHightLight} 
+            onPress={() =>  {
+                const id = item.ID;
+                navigation.navigate('Chat', item);
+            }}>
+
                 <View style={styles.container} >
                     <View style={styles.itemFriend_info}>
                         <View style={styles.itemFriend_avatar}>

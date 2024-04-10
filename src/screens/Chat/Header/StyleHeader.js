@@ -10,6 +10,8 @@ const styles = StyleSheet.create({
         backgroundColor:'#0091ff',
         justifyContent:'space-between',
         
+    
+
     },
     container_left:{
         width:"70%",

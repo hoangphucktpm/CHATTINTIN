@@ -55,7 +55,7 @@ const styles = StyleSheet.create({
         flexDirection:'row',
         justifyContent:'space-between',
         paddingLeft:10,
-        margin:5,
+        paddingBottom:15,
         borderRadius:5,
     },
     touchHightLight:{
@@ -63,7 +63,7 @@ const styles = StyleSheet.create({
     },
     rowBackRight:{
         height:"100%",
-        width:225,
+        width:200,
         display:'flex',
         flexDirection:'row',
         justifyContent:'space-around'

@@ -31,6 +31,7 @@ function Contacts() {
   const navigation = useNavigation();
   const { user } = useSelector((state) => state.auth);
 
+
   const [selectedButton, setSelectedButton] = useState(null);
   const [receiverId, setReceiverId] = useState(null);
   const [listFriends, setListFriends] = useState([]);
@@ -210,11 +211,9 @@ function Contacts() {
         style={styles.touchHightLight}
         onPress={() => {
           const id = item.ID;
-          // dispatch(roomAPI.getListChat()({ accessToken, id }));
-          // dispatch(roomAPI.saveRoomId()(id))
           navigation.navigate("Chat", item);
         }}
-      >
+      >                    
         <View style={styles.containerItem}>
           <View style={styles.itemFriend_info}>
             <View style={styles.itemFriend_avatar}>
@@ -387,7 +386,7 @@ function Contacts() {
           >
             <FontAwesome name="address-book" size={35} color="blue" marginLeft={5} />
             <View style={{ flexDirection: "row", marginLeft: 4 }}>
-            <Text style={{ fontSize: 18, marginLeft: 20, fontStyle: 'bold' }}>Danh sách nhóm</Text>
+            <Text style={{ fontSize: 18, marginLeft: 20 }}>Danh sách nhóm</Text>
             </View>
           </TouchableOpacity>
           <TouchableOpacity

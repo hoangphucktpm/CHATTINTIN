@@ -17,6 +17,13 @@ const styles = StyleSheet.create({
         borderRadius:50,
         marginLeft:10,
     },
+    container_Left:{
+        marginLeft:10,
+        backgroundColor:"#fff",
+        padding:15,
+        borderRadius:10,
+        alignItems:'flex-start'
+    },
     container_Right:{
         marginLeft:10,
         backgroundColor:"#fff",
