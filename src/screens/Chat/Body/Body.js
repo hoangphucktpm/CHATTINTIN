@@ -22,7 +22,7 @@ function Body({ id, owner }) {
   const { messages } = useSelector((state) => state.chat);
   const dispatch = useDispatch();
   const scrollViewRef = useRef();
-  const user = useSelector((state) => state.auth);
+  const { user } = useSelector((state) => state.auth);
 
   const [messagesData, setMessagesData] = useState([]);
 
@@ -58,6 +58,8 @@ function Body({ id, owner }) {
     );
   };
 
+  console.log(messages, user.ID);
+
   return (
     <View style={{ flex: 1 }}>
       <FlatList
@@ -70,8 +72,8 @@ function Body({ id, owner }) {
             style={{
               margin: 10,
               padding: 10,
-              alignSelf: item.IDSender !== user.ID ? "flex-end" : "flex-start",
-              backgroundColor: item.IDSender !== user.ID ? "#0094FF" : "#fff",
+              alignSelf: item.IDSender === user.ID ? "flex-end" : "flex-start",
+              backgroundColor: item.IDSender === user.ID ? "#0094FF" : "#fff",
               borderRadius: 8,
               marginBottom: 5,
               maxWidth: "70%",
@@ -82,7 +84,7 @@ function Body({ id, owner }) {
             <Text
               style={{
                 fontSize: 20,
-                color: item.IDSender !== user.ID ? "white" : "black",
+                color: item.IDSender === user.ID ? "white" : "black",
               }}
             >
               {item.content}
@@ -90,7 +92,7 @@ function Body({ id, owner }) {
             <Text
               style={{
                 ...styles.time,
-                color: item.IDSender !== user.ID ? "white" : "black",
+                color: item.IDSender === user.ID ? "white" : "black",
               }}
             >
               {format(item.dateTime, "HH:mm:s")}
