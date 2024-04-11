@@ -22,8 +22,12 @@ const chatSlice = createSlice({
     setPopup: (state, action) => {
       state.popup = action.payload;
     },
+    updateMessages: (state, action) => {
+      state.messages.push(action.payload);
+    },
   },
 });
 
-export const { setChatList, setMessages, setPopup } = chatSlice.actions;
+export const { setChatList, setMessages, setPopup, updateMessages } =
+  chatSlice.actions;
 export default chatSlice.reducer;

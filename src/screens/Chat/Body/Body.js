@@ -1,105 +1,89 @@
+import React, { memo, useEffect, useMemo, useState } from "react";
 import {
   ActivityIndicator,
   FlatList,
-  Image,
-  ScrollView,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
-import React, { Component, useEffect, useMemo, useRef, useState } from "react";
-import styles from "./stylesBody";
-import MessageItem from "./MessageItem";
-import MyMessagaItem from "./MyMessagaItem";
-import { useSelector } from "react-redux";
-import { useDispatch } from "react-redux";
-import ScrollToBottom from "react-scroll-to-bottom";
-import socket from "../../../services/socket";
-import { setMessages, setPopup } from "../../../redux/chatSlice";
+import { useDispatch, useSelector } from "react-redux";
 import { format } from "date-fns";
+import { setPopup } from "../../../redux/chatSlice";
+import socket from "../../../services/socket";
 
-function Body({ id, owner }) {
+function Body({ isLoading }) {
   const { messages } = useSelector((state) => state.chat);
-  const dispatch = useDispatch();
-  const scrollViewRef = useRef();
   const { user } = useSelector((state) => state.auth);
+  const dispatch = useDispatch();
 
   const [messagesData, setMessagesData] = useState([]);
 
   useEffect(() => {
     setMessagesData(messages);
-  }, []);
-
-  useEffect(() => {
-    socket.on("receive_message", (data) => {
-      setMessagesData((prev) => [...prev, data]);
-    });
-    scrollToBottom();
   }, [messages]);
 
-  const scrollToBottom = () => {
-    if (scrollViewRef.current) {
-      scrollViewRef.current.scrollToEnd({ animated: true });
-    }
-  };
-
-  const reverseData = useMemo(() => {
-    const currentMessages = [...messagesData];
-    currentMessages.reverse();
-    return currentMessages;
-  }, [messagesData]);
+  const reverseData = useMemo(
+    () => [...messagesData].reverse(),
+    [messagesData]
+  );
 
   const handleLongPress = (item) => {
-    dispatch(
-      setPopup({
-        show: true,
-        data: item,
-      })
-    );
+    dispatch(setPopup({ show: true, data: item }));
+  };
+
+  const getItemAlignment = (item) => {
+    return item.IDSender === user.ID ? "flex-end" : "flex-start";
+  };
+
+  const getItemBackgroundColor = (item) => {
+    return item.IDSender === user.ID ? "#0094FF" : "#fff";
+  };
+
+  const getItemTextColor = (item) => {
+    return item.IDSender === user.ID ? "white" : "black";
   };
 
   return (
     <View style={{ flex: 1 }}>
-      <FlatList
-        ref={(ref) => (scrollViewRef.current = ref)}
-        data={reverseData}
-        keyExtractor={(item, index) => index.toString()}
-        renderItem={({ item }) => (
-          <TouchableOpacity
-            onLongPress={() => handleLongPress(item)}
-            style={{
-              margin: 10,
-              padding: 10,
-              alignSelf: item.IDSender === user.ID ? "flex-end" : "flex-start",
-              backgroundColor: item.IDSender === user.ID ? "#0094FF" : "#fff",
-              borderRadius: 8,
-              marginBottom: 5,
-              maxWidth: "70%",
-              display: "flex",
-              gap: 5,
-            }}
-          >
-            <Text
+      {isLoading ? (
+        <ActivityIndicator />
+      ) : (
+        <FlatList
+          data={reverseData}
+          keyExtractor={(item, index) => index.toString()}
+          renderItem={({ item }) => (
+            <TouchableOpacity
+              onLongPress={() => handleLongPress(item)}
               style={{
-                fontSize: 20,
-                color: item.IDSender === user.ID ? "white" : "black",
+                margin: 10,
+                padding: 10,
+                alignSelf: getItemAlignment(item),
+                backgroundColor: getItemBackgroundColor(item),
+                borderRadius: 8,
+                marginBottom: 5,
+                maxWidth: "70%",
+                display: "flex",
+                gap: 5,
               }}
             >
-              {item.content}
-            </Text>
-            <Text
-              style={{
-                ...styles.time,
-                color: item.IDSender === user.ID ? "white" : "black",
-              }}
-            >
-              {format(item.dateTime, "HH:mm:s")}
-            </Text>
-          </TouchableOpacity>
-        )}
-        inverted={true}
-      />
+              <Text
+                style={{
+                  fontSize: 20,
+                  color: getItemTextColor(item),
+                }}
+              >
+                {item.content}
+              </Text>
+              <Text style={{ color: getItemTextColor(item) }}>
+                {format(item.dateTime, "HH:mm:s")}
+              </Text>
+            </TouchableOpacity>
+          )}
+          inverted={true}
+        />
+      )}
     </View>
   );
 }
-export default Body;
+
+export default memo(Body);

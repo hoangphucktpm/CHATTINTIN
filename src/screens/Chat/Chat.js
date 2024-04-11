@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { memo, useEffect, useState } from "react";
 import { ActivityIndicator, View } from "react-native";
 import styles from "./StyleChat";
 import Header from "./Header/Header";
@@ -6,54 +6,61 @@ import Body from "./Body/Body";
 import Footer from "./Footer/FooterChat";
 import { useDispatch, useSelector } from "react-redux";
 import { api } from "../../apis/api";
-import { setMessages } from "../../redux/chatSlice";
+import { setMessages, updateMessages } from "../../redux/chatSlice";
 import PopUpOptions from "../../components/PopUpOptions";
+import socket from "../../services/socket";
 
 function Chat({ route }) {
   const { ID, name, image, owner } = route.params;
-
-  const { conversation } = useSelector((state) => state.conversation);
   const dispatch = useDispatch();
-
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    // get messages
-    dispatch(setMessages([]));
-    const getMessages = async () => {
+  const { conversation } = useSelector((state) => state.conversation);
+  const { messages } = useSelector((state) => state.chat);
+
+  useEffect(() => {}, []);
+
+  async function fetchMessages() {
+    try {
+      dispatch(setMessages([])); // Clear previous messages
       if (!conversation.length) return;
       const IDConversation = conversation.find(
         (convers) => convers.IDReceiver === ID
       )?.IDConversation;
-      try {
-        if (!IDConversation) return;
-        const response = await api.getMessageByConversationId({
-          IDConversation,
-          IDNextBucket: null,
-        });
-
-        if (response.data) {
-          dispatch(setMessages(response.data.listMessageDetail));
-        }
-      } catch (error) {
-        console.log(error);
-      } finally {
-        setIsLoading(false);
+      if (!IDConversation) return;
+      const response = await api.getMessageByConversationId({
+        IDConversation,
+        IDNextBucket: null,
+      });
+      if (response.data) {
+        dispatch(setMessages(response.data.listMessageDetail));
       }
-    };
-    getMessages();
-  }, [conversation]);
+    } catch (error) {
+      console.error("Error fetching messages:", error);
+      // Handle error
+    } finally {
+      setIsLoading(false);
+    }
+  }
 
-  return isLoading ? (
-    <ActivityIndicator />
-  ) : (
+  useEffect(() => {
+    fetchMessages();
+  }, [conversation, dispatch, ID]);
+
+  return (
     <View style={styles.container}>
       <Header fullname={name} id={ID} image={image} owner={owner} />
-      <Body id={ID} owner={owner} nameGroup={name} imageGroup={image} />
-      <Footer ID={ID} />
+      <Body
+        id={ID}
+        owner={owner}
+        nameGroup={name}
+        imageGroup={image}
+        isLoading={isLoading}
+      />
+      {!isLoading && <Footer ID={ID} />}
       <PopUpOptions />
     </View>
   );
 }
 
-export default Chat;
+export default memo(Chat);
