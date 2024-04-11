@@ -23,6 +23,7 @@ import AudioRecord from "react-native-audio-record"; // Import AudioRecord
 // import RNFS from 'react-native-fs'; // Import RNFS
 import EmojiSelector, { Categories } from "react-native-emoji-selector";
 import * as FileSystem from "expo-file-system";
+import * as DocumentPicker from "expo-document-picker";
 
 import styles from "./StyleFooter";
 import socket from "../../../services/socket";
@@ -142,6 +143,21 @@ function FooterChat({ ID }) {
     setShowIcon(true);
   };
 
+  const handlePickDoc = async () => {
+    const result = await DocumentPicker.getDocumentAsync({
+      type: "*/*",
+      copyToCacheDirectory: true,
+    });
+    console.log(result);
+    if (result.type === "success") {
+      // socket.emit("send-message", {
+      //   IDConversation: user.IDConversation,
+      //   content: result.uri,
+      //   type: "document",
+      // });
+    }
+  };
+
   return (
     <KeyboardAvoidingView>
       <View style={[styles.container]}>
@@ -164,7 +180,7 @@ function FooterChat({ ID }) {
         <View style={styles.footer_Right}>
           <TouchableOpacity
             // onPress={isRecording ? stopRecording : startRecording}
-            onPress={handleUploadVideo}
+            onPress={handlePickDoc}
           >
             <MaterialIcons
               name="video-library"

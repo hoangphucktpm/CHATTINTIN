@@ -12,8 +12,7 @@ import { setPopup } from "../../../redux/chatSlice";
 import socket from "../../../services/socket";
 import MessageItem from "../../../components/MessageItem";
 import ImageMessage from "../../../components/ImageMessage";
-// import VideoMessage from "../../../components/VideoMessage";
-// import * as DocumentPicker from "expo-document-picker";
+import VideoMessage from "../../../components/VideoMessage";
 
 function Body({ isLoading }) {
   const { messages } = useSelector((state) => state.chat);

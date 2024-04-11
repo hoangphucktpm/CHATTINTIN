@@ -22,7 +22,7 @@ const styles = StyleSheet.create({
     color: "#000",
     textAlign: "center",
     paddingTop: 3,
-    fontFamily: "Times New Roman",
+    fontFamily: "Roboto",
   },
 });
 
