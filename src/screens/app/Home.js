@@ -173,7 +173,6 @@ function Home(props) {
     useCallback(() => {
       user && socket.emit("load_conversations", { IDUser: user.ID });
       socket.on("load_conversations_server", (data) => {
-        console.log(data);
         if (data) dispatch(setConversation(data));
       });
     }, [user])

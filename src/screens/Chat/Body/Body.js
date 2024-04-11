@@ -10,22 +10,18 @@ import { useDispatch, useSelector } from "react-redux";
 import { format } from "date-fns";
 import { setPopup } from "../../../redux/chatSlice";
 import socket from "../../../services/socket";
+import MessageItem from "../../../components/MessageItem";
+import ImageMessage from "../../../components/ImageMessage";
+import VideoMessage from "../../../components/VideoMessage";
 
 function Body({ isLoading }) {
   const { messages } = useSelector((state) => state.chat);
   const { user } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
 
-  const [messagesData, setMessagesData] = useState([]);
+  console.log(messages);
 
-  useEffect(() => {
-    setMessagesData(messages);
-  }, [messages]);
-
-  const reverseData = useMemo(
-    () => [...messagesData].reverse(),
-    [messagesData]
-  );
+  const handleViewImage = (url) => {};
 
   const handleLongPress = (item) => {
     dispatch(setPopup({ show: true, data: item }));
@@ -49,36 +45,31 @@ function Body({ isLoading }) {
         <ActivityIndicator />
       ) : (
         <FlatList
-          data={reverseData}
+          data={messages}
           keyExtractor={(item, index) => index.toString()}
-          renderItem={({ item }) => (
-            <TouchableOpacity
-              onLongPress={() => handleLongPress(item)}
-              style={{
-                margin: 10,
-                padding: 10,
-                alignSelf: getItemAlignment(item),
-                backgroundColor: getItemBackgroundColor(item),
-                borderRadius: 8,
-                marginBottom: 5,
-                maxWidth: "70%",
-                display: "flex",
-                gap: 5,
-              }}
-            >
-              <Text
-                style={{
-                  fontSize: 20,
-                  color: getItemTextColor(item),
-                }}
-              >
-                {item.content}
-              </Text>
-              <Text style={{ color: getItemTextColor(item) }}>
-                {format(item.dateTime, "HH:mm:s")}
-              </Text>
-            </TouchableOpacity>
-          )}
+          renderItem={({ item }) => {
+            if (item?.type === "image")
+              return (
+                <TouchableOpacity
+                  onLongPress={() => handleViewImage(item.content)}
+                  style={{
+                    margin: 10,
+                    alignSelf: getItemAlignment(item),
+                    backgroundColor: getItemBackgroundColor(item),
+                    borderRadius: 8,
+                    marginBottom: 5,
+                    maxWidth: "70%",
+                    display: "flex",
+                    gap: 5,
+                  }}
+                >
+                  <ImageMessage url={item.content} />
+                </TouchableOpacity>
+              );
+            if (item?.type === "video")
+              return <VideoMessage uri={item.content} />;
+            return <MessageItem item={item} user={user} />;
+          }}
           inverted={true}
         />
       )}

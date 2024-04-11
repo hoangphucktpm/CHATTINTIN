@@ -8,11 +8,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     paddingVertical: 5,
     color: "white",
+    flexShrink: 0,
   },
   containerInput: {
     flex: 1,
     marginRight: 10,
     marginTop: 5,
+    flexShrink: 0,
   },
   container: {
     display: "flex",
@@ -22,28 +24,34 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     flexDirection: "row",
     backgroundColor: "#0091ff",
+    flexShrink: 0,
   },
   containerIcon: {
     marginRight: 10,
     marginLeft: 10,
     justifyContent: "center",
+    flexShrink: 0,
   },
   iconSeach: {
     margin: "auto",
+    flexShrink: 0,
   },
   containerIconRight: {
     width: "22%",
     display: "flex",
     flexDirection: "row",
     justifyContent: "space-around",
+    flexShrink: 0,
   },
   containerIconAdd: {
-    justifyContent: "flex-end",
+    justifyContent: "center",
     marginBottom: 5,
+    flexShrink: 0,
   },
   containerIconQR: {
-    justifyContent: "flex-end",
+    justifyContent: "center",
     marginBottom: 10,
+    flexShrink: 0,
   },
 });
 export default styles;

@@ -23,7 +23,7 @@ const chatSlice = createSlice({
       state.popup = action.payload;
     },
     updateMessages: (state, action) => {
-      state.messages.push(action.payload);
+      state.messages.unshift(action.payload);
     },
   },
 });

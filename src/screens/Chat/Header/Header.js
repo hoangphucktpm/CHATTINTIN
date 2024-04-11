@@ -1,57 +1,100 @@
-import { Text, View, TouchableOpacity } from "react-native";
-import React, { Component } from "react";
+import { Text, View, TouchableOpacity, TextInput } from "react-native";
+import React, { useState } from "react";
 import styles from "./StyleHeader";
 import { MaterialIcons } from "@expo/vector-icons";
 import { Feather } from "@expo/vector-icons";
-// import { TouchableOpacity } from "react-native-gesture-handler";
 import { useNavigation } from "@react-navigation/native";
+import { useEffect } from "react";
 
-// import { useDispatch } from "react-redux";
-// import userAPI from "../../../redux/reducers/user/userAPI";
-// import tokenService from "../../../services/token.service";
+function Header({ fullname, id, name, image, owner }) {
+  const navigation = useNavigation();
+  const [isSearchVisible, setIsSearchVisible] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [messages, setMessages] = useState([]);
+  const [searchResults, setSearchResults] = useState([]);
 
-//      const { phone, fullname, urlavatar } = route.params;
-
-function Header({fullname,id,name,image,owner})
-{
-    const navigation = useNavigation();
-    // const dispatch = useDispatch();
-    // const token = tokenService.getAccessToken();
-    const hanldPress = () =>{
-        navigation.goBack();
-        // var user = userAPI.getUserInfo()(token);
-        // dispatch(user);
+  useEffect(() => {
+    if (searchTerm) {
+      const regex = new RegExp(`\\b${searchTerm}\\b`, "i");
+      const results = messages.filter((message) => regex.test(message.body));
+      setSearchResults(results);
+      console.log(results);
+    } else {
+      setSearchResults([]);
     }
-    return (
-        <View style={styles.container}>
-            <View style={styles.container_left}>
-                <View  style={styles.containerIcon}>
-                    <TouchableOpacity onPress={hanldPress} style={styles.button}>
-                        <MaterialIcons 
-                            name="keyboard-arrow-left"
-                            size={32}
-                            color="white"
-                        />
-                    </TouchableOpacity>
-                </View>
-                
-                <View style={styles.container_friend_Name}>
-                    <Text style={styles.friend_Name}>{fullname}</Text>
-                </View>
-            </View>
-            <View style={styles.container_right}>
-                <View style={styles.container_right_icon}>
-                    <Feather name="phone" size={23} color="white" />
-                </View>
-                <View style={styles.container_right_icon}>
-                    <Feather name="video"  size={26} color="white"/>
-                </View>
-                <TouchableOpacity style={styles.container_right_icon} onPress={()=> navigation.navigate("FriendProfile",{ phone: id, fullname: name, urlavatar: image })}>
-                    <Feather name="menu" size={26} color="white" />
-                </TouchableOpacity>
-            </View>
+  }, [searchTerm, messages]);
+
+  const handleBackPress = () => {
+    navigation.goBack();
+  };
+
+  const handleSearchPress = () => {
+    setIsSearchVisible(!isSearchVisible);
+  };
+
+  const handleSearch = () => {
+    const regex = new RegExp(`\\b${searchTerm}\\b`, "i");
+    const results = messages.filter((message) => regex.test(message.body));
+    setSearchResults(results);
+    console.log(results);
+  
+    // If there are results, navigate to the first one
+    if (results.length > 0) {
+      navigation.navigate('Message', { message: results[0] });
+    }
+  };
+
+  return (
+    <View style={styles.container}>
+      <View style={styles.container_left}>
+        <View style={styles.containerIcon}>
+          <TouchableOpacity onPress={handleBackPress} style={styles.button}>
+            <MaterialIcons name="keyboard-arrow-left" size={32} color="white" />
+          </TouchableOpacity>
         </View>
-    );
+
+        <View style={styles.container_friend_Name}>
+          <Text style={styles.friend_Name}>{fullname}</Text>
+        </View>
+      </View>
+      <View style={styles.container_right}>
+        {isSearchVisible ? (
+          <TextInput
+            value={searchTerm}
+            onChangeText={setSearchTerm}
+            placeholder="Search messages"
+            onSubmitEditing={handleSearch}
+          />
+        ) : null}
+        <View style={styles.container_right_icon}>
+          <Feather
+            name="search"
+            size={23}
+            color="white"
+            onPress={handleSearchPress}
+          />
+        </View>
+        <View style={styles.container_right_icon}>
+          <Feather name="phone" size={23} color="white" />
+        </View>
+        <View style={styles.container_right_icon}>
+          <Feather name="video" size={26} color="white" />
+        </View>
+        <TouchableOpacity
+          style={styles.container_right_icon}
+          onPress={() =>
+            navigation.navigate("FriendProfile", {
+              phone: id,
+              fullname: name,
+              urlavatar: image,
+            })
+          }
+        >
+          <Feather name="menu" size={26} color="white" />
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
 }
 
 export default Header;
