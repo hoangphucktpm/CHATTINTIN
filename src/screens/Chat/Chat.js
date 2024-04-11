@@ -16,7 +16,6 @@ function Chat({ route }) {
   const [isLoading, setIsLoading] = useState(true);
 
   const { conversation } = useSelector((state) => state.conversation);
-
   async function fetchMessages() {
     try {
       dispatch(setMessages([])); // Clear previous messages

@@ -31,11 +31,10 @@ function Body({ isLoading }) {
   const getItemBackgroundColor = (item) => {
     return item.IDSender === user.ID ? "#0094FF" : "#fff";
   };
+
   const getItemTextColor = (item) => {
     return item.IDSender === user.ID ? "white" : "black";
   };
-
-  const handleViewImage = (url) => {};
 
   return (
     <View style={{ flex: 1 }}>
@@ -65,24 +64,7 @@ function Body({ isLoading }) {
                 </TouchableOpacity>
               );
             if (item?.type === "video")
-              return (
-                <TouchableOpacity
-                  onLongPress={() => handleLongPress(item)}
-                  style={{
-                    margin: 10,
-                    alignSelf: getItemAlignment(item),
-                    backgroundColor: getItemBackgroundColor(item),
-                    borderRadius: 8,
-                    marginBottom: 5,
-                    maxWidth: "70%",
-                    display: "flex",
-                    gap: 5,
-                  }}
-                >
-                  <Text>VIDEO</Text>
-                  {/* <VideoMessage uri={item.content} /> */}
-                </TouchableOpacity>
-              );
+              return <VideoMessage uri={item.content} />;
             return <MessageItem item={item} user={user} />;
           }}
           inverted={true}

@@ -52,7 +52,6 @@ function FooterChat({ ID }) {
 
   const sendMessageSocket = async () => {
     if (!text) return;
-
     const data = {
       IDSender: user.ID,
       textMessage: text,

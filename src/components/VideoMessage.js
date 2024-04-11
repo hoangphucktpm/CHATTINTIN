@@ -1,11 +1,10 @@
 import * as React from "react";
 import { View, StyleSheet, Button } from "react-native";
-import { Video, ResizeMode } from 'expo-av';
+import { ResizeMode, Video } from "expo-av";
 
 export default function VideoMessage({ uri }) {
   if (!uri) return null;
   const video = React.useRef(null);
-  const [status, setStatus] = React.useState({});
   return (
     <View style={styles.container}>
       <Video
@@ -17,18 +16,7 @@ export default function VideoMessage({ uri }) {
         useNativeControls
         resizeMode={ResizeMode.CONTAIN}
         isLooping
-        onPlaybackStatusUpdate={(status) => setStatus(() => status)}
       />
-      <View style={styles.buttons}>
-        <Button
-          title={status.isPlaying ? "Pause" : "Play"}
-          onPress={() =>
-            status.isPlaying
-              ? video.current.pauseAsync()
-              : video.current.playAsync()
-          }
-        />
-      </View>
     </View>
   );
 }
