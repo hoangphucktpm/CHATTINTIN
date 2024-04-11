@@ -12,14 +12,13 @@ import { setPopup } from "../../../redux/chatSlice";
 import socket from "../../../services/socket";
 import MessageItem from "../../../components/MessageItem";
 import ImageMessage from "../../../components/ImageMessage";
-import VideoMessage from "../../../components/VideoMessage";
+// import VideoMessage from "../../../components/VideoMessage";
+// import * as DocumentPicker from "expo-document-picker";
 
 function Body({ isLoading }) {
   const { messages } = useSelector((state) => state.chat);
   const { user } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
-
-  console.log(messages);
 
   const handleLongPress = (item) => {
     dispatch(setPopup({ show: true, data: item }));

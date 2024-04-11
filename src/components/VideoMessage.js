@@ -1,6 +1,6 @@
 import * as React from "react";
 import { View, StyleSheet, Button } from "react-native";
-// import { ResizeMode } from "expo-av";
+import { Video, ResizeMode } from 'expo-av';
 
 export default function VideoMessage({ uri }) {
   if (!uri) return null;
@@ -14,8 +14,8 @@ export default function VideoMessage({ uri }) {
         source={{
           uri,
         }}
-        // useNativeControls
-        // resizeMode={ResizeMode.CONTAIN}
+        useNativeControls
+        resizeMode={ResizeMode.CONTAIN}
         isLooping
         onPlaybackStatusUpdate={(status) => setStatus(() => status)}
       />
