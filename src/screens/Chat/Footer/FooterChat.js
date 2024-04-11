@@ -126,6 +126,7 @@ function FooterChat() {
             onChangeText={(x) => setText(x)}
             style={styles.input_Message}
             placeholder="Nhập tin nhắn..."
+            onPressIn={() => setShowIcon(false)}
           />
         </View>
         <View style={styles.footer_Right}>

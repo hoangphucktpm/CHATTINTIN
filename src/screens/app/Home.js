@@ -44,7 +44,6 @@ function Home(props) {
     getUser();
   }, []);
   const phone = user?.phone;
-  // const [socket, setSocket] = useState(null);
 
   // const rooms = userState.rooms;
 
@@ -132,36 +131,6 @@ function Home(props) {
   //     };
   //     // }
   // }, [token]);
-
-  useEffect(() => {
-    // Listen for connect event
-    socket.on("connect", () => {
-      console.log("Connected to the server");
-    });
-
-    // Listen for disconnect event
-    socket.on("disconnect", () => {
-      console.log("Disconnected from the server");
-    });
-
-    // Listen for error event
-    socket.on("error", (error) => {
-      console.log("An error occurred:", error);
-    });
-
-    // Listen for reconnect event
-    socket.on("reconnect", (attemptNumber) => {
-      console.log("Reconnected to the server after", attemptNumber, "attempts");
-    });
-
-    // Clean up the effect
-    return () => {
-      socket.off("connect");
-      socket.off("disconnect");
-      socket.off("error");
-      socket.off("reconnect");
-    };
-  }, []);
 
   useEffect(() => {
     user && socket.emit("load_conversations", { IDUser: user.ID });

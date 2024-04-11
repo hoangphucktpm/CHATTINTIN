@@ -15,53 +15,30 @@ function Chat({ route }) {
   const { conversation } = useSelector((state) => state.conversation);
   const dispatch = useDispatch();
 
-  useEffect(() => {
-    // Listen for connect event
-    socket.on("connect", () => {
-      console.log("Connected to the server");
-    });
-
-    // Listen for disconnect event
-    socket.on("disconnect", () => {
-      console.log("Disconnected from the server");
-    });
-
-    // Listen for error event
-    socket.on("error", (error) => {
-      console.log("An error occurred:", error);
-    });
-
-    // Listen for reconnect event
-    socket.on("reconnect", (attemptNumber) => {
-      console.log("Reconnected to the server after", attemptNumber, "attempts");
-    });
-    // Clean up the effect
-    return () => {
-      socket.off("connect");
-      socket.off("disconnect");
-      socket.off("error");
-      socket.off("reconnect");
-    };
-  }, []);
-
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     // get messages
+    dispatch(setMessages([]));
     const getMessages = async () => {
-      if (!conversation[0].IDConversation) return;
+      if (!conversation.length) return;
+      const IDConversation = conversation.find(
+        (convers) => convers.IDReceiver === route.params.ID
+      )?.IDConversation;
       try {
+        if (!IDConversation) return;
         const response = await api.getMessageByConversationId({
-          IDConversation: conversation[0].IDConversation,
+          IDConversation,
           IDNextBucket: null,
         });
 
         if (response.data) {
           dispatch(setMessages(response.data.listMessageDetail));
-          setIsLoading(false);
         }
       } catch (error) {
         console.log(error);
+      } finally {
+        setIsLoading(false);
       }
     };
     getMessages();

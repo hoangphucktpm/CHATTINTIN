@@ -1,5 +1,12 @@
-import { FlatList, Image, ScrollView, Text, View } from "react-native";
-import React, { Component, useEffect, useRef, useState } from "react";
+import {
+  ActivityIndicator,
+  FlatList,
+  Image,
+  ScrollView,
+  Text,
+  View,
+} from "react-native";
+import React, { Component, useEffect, useMemo, useRef, useState } from "react";
 import styles from "./stylesBody";
 import MessageItem from "./MessageItem";
 import MyMessagaItem from "./MyMessagaItem";
@@ -25,47 +32,63 @@ function Body({ id, owner }) {
   useEffect(() => {
     socket.on("receive_message", (data) => {
       setMessagesData((prev) => [...prev, data]);
-      console.log(1231);
     });
-    scrollViewRef.current.scrollToEnd({ animated: true });
+    scrollToBottom();
   }, [messages]);
 
+  const scrollToBottom = () => {
+    if (scrollViewRef.current) {
+      scrollViewRef.current.scrollToEnd({ animated: true });
+    }
+  };
+
+  const reverseData = useMemo(() => {
+    const currentMessages = [...messagesData];
+    currentMessages.reverse();
+    return currentMessages;
+  }, [messagesData]);
+
   return (
-    <ScrollView ref={scrollViewRef} style={styles.messages}>
-      {messagesData.map((item, i) => (
-        <View
-          key={i}
-          style={{
-            margin: 10,
-            padding: 10,
-            alignSelf: item.IDSender !== user.ID ? "flex-end" : "flex-start",
-            backgroundColor: item.IDSender !== user.ID ? "#0094FF" : "#fff",
-            borderRadius: 8,
-            marginBottom: 5,
-            maxWidth: "70%",
-            display: "flex",
-            gap: 5,
-          }}
-        >
-          <Text
+    <View style={{ flex: 1 }}>
+      <FlatList
+        ref={(ref) => (scrollViewRef.current = ref)}
+        data={reverseData}
+        keyExtractor={(item, index) => index.toString()}
+        renderItem={({ item }) => (
+          <View
             style={{
-              fontSize: 20,
-              color: item.IDSender !== user.ID ? "white" : "black",
+              margin: 10,
+              padding: 10,
+              alignSelf: item.IDSender !== user.ID ? "flex-end" : "flex-start",
+              backgroundColor: item.IDSender !== user.ID ? "#0094FF" : "#fff",
+              borderRadius: 8,
+              marginBottom: 5,
+              maxWidth: "70%",
+              display: "flex",
+              gap: 5,
             }}
           >
-            {item.content}
-          </Text>
-          <Text
-            style={{
-              ...styles.time,
-              color: item.IDSender !== user.ID ? "white" : "black",
-            }}
-          >
-            {format(item.dateTime, "HH:mm:s")}
-          </Text>
-        </View>
-      ))}
-    </ScrollView>
+            <Text
+              style={{
+                fontSize: 20,
+                color: item.IDSender !== user.ID ? "white" : "black",
+              }}
+            >
+              {item.content}
+            </Text>
+            <Text
+              style={{
+                ...styles.time,
+                color: item.IDSender !== user.ID ? "white" : "black",
+              }}
+            >
+              {format(item.dateTime, "HH:mm:s")}
+            </Text>
+          </View>
+        )}
+        inverted={true}
+      />
+    </View>
   );
 }
 export default Body;
