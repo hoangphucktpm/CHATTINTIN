@@ -10,21 +10,22 @@
 // import roomAPI from "../../redux/reducers/Room/roomAPI";
 // export let newSocket = io("http://54.254.183.128");
 
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import styles from "./App_Style";
-import { View } from "react-native";
+import { ActivityIndicator, View } from "react-native";
 import Search from "../Search/Search";
 import ListFriend from "../ListFriend/ListFriend";
 import Footer from "../Footer/Footer";
 import { useRoute } from "@react-navigation/native";
 import { useSelector } from "react-redux";
 import { getData } from "../../utils/localStorageConfig";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import { api } from "../../apis/api";
 import { useDispatch } from "react-redux";
 import { setUser } from "../../redux/authSclice";
 import socket from "../../services/socket";
 import { setConversation } from "../../redux/conversationSlice";
+import { updateMessages } from "../../redux/chatSlice";
 
 function Home(props) {
   const route = useRoute();
@@ -32,6 +33,7 @@ function Home(props) {
   const dispatch = useDispatch();
 
   const [user, setUserData] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const getUser = async () => {
@@ -40,11 +42,11 @@ function Home(props) {
       const res = await api.getUserByPhone(phone);
       setUserData(res.data);
       dispatch(setUser(res.data));
+      setIsLoading(false);
     };
     getUser();
   }, []);
   const phone = user?.phone;
-  // const [socket, setSocket] = useState(null);
 
   // const rooms = userState.rooms;
 
@@ -154,6 +156,10 @@ function Home(props) {
       console.log("Reconnected to the server after", attemptNumber, "attempts");
     });
 
+    socket.on("receive_message", (data) => {
+      dispatch(updateMessages(data));
+    });
+
     // Clean up the effect
     return () => {
       socket.off("connect");
@@ -163,19 +169,25 @@ function Home(props) {
     };
   }, []);
 
-  useEffect(() => {
-    user && socket.emit("load_conversations", { IDUser: user.ID });
-    socket.on("load_conversations_server", (data) => {
-      if (data) dispatch(setConversation(data));
-    });
-  }, [user]);
+  useFocusEffect(
+    useCallback(() => {
+      user && socket.emit("load_conversations", { IDUser: user.ID });
+      socket.on("load_conversations_server", (data) => {
+        if (data) dispatch(setConversation(data));
+      });
+    }, [user])
+  );
 
   return (
     <View style={styles.container}>
       <View style={styles.containerItem}>
         <Search style={styles.containerSearch} />
         <View style={styles.containerList}>
-          <ListFriend {...props} style={styles.main} />
+          {isLoading ? (
+            <ActivityIndicator />
+          ) : (
+            <ListFriend {...props} style={styles.main} />
+          )}
         </View>
         <Footer phone={phone} style={styles.footer} />
       </View>

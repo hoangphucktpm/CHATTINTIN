@@ -13,7 +13,6 @@
 // import {Button,Dialog,Portal,Provider,} from 'react-native-paper';
 // import { useSelector } from "react-redux";
 // import * as ImagePicker  from 'expo-image-picker';
-// import roomAPI from "../../../redux/reducers/Room/roomAPI";
 // import userAPI from "../../../redux/reducers/user/userAPI";
 // import { useDispatch } from "react-redux";
 // import tokenService from "../../../services/token.service";
@@ -29,7 +28,7 @@
 //     const navigation = useNavigation();
 //     const [isBFF,setIsBFF] = useState(false);
 //     const hanldPressGoBack= ()=>{
-//         navigation.navigate("ChatWindow",{id:id,name:nameChange,image:avtChange,owner:owner});
+//         navigation.navigate("Chat",{id:id,name:nameChange,image:avtChange,owner:owner});
 //     }
 //     const [nameChange, setnameChange] = useState(name);
 //     const [avtChange, setavtChange] = useState(image);

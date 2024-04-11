@@ -22,16 +22,22 @@ import axios from "axios";
 import AudioRecord from "react-native-audio-record"; // Import AudioRecord
 // import RNFS from 'react-native-fs'; // Import RNFS
 import EmojiSelector, { Categories } from "react-native-emoji-selector";
+import * as FileSystem from "expo-file-system";
 
 import styles from "./StyleFooter";
 import socket from "../../../services/socket";
 
-function FooterChat() {
+function FooterChat({ ID }) {
   const dispatch = useDispatch();
   const [text, setText] = useState("");
   const [showIcon, setShowIcon] = useState(false);
   const chatData = useSelector((state) => state.room);
   const { conversation } = useSelector((state) => state.conversation);
+
+  if (!conversation.length) return;
+  const IDConversation = conversation.find(
+    (convers) => convers.IDReceiver === ID
+  )?.IDConversation;
 
   const { transcript, startRecording, stopRecording, isRecording } =
     useSpeechRecognition();
@@ -46,52 +52,79 @@ function FooterChat() {
 
   const sendMessageSocket = async () => {
     if (!text) return;
+
     const data = {
       IDSender: user.ID,
       textMessage: text,
       fromSelf: true,
-      IDConversation: conversation[0].IDConversation,
+      IDConversation,
     };
 
     socket.emit("send_message", data);
     setText("");
   };
-
   const pickImage = async () => {
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.All,
-      allowsEditing: true,
-      quality: 1,
-    });
-    if (!result.cancelled) {
-      let localUri = result.uri;
-      let formData = new FormData();
-      let uriParts = localUri.split(".");
-      const path = localUri.split("/");
-      let fileType = uriParts[uriParts.length - 1];
-      let nameFile = path[path.length - 1];
-      const _image = {
-        uri:
-          Platform.OS === "android"
-            ? localUri
-            : localUri.replace("file://", ""),
-        type: `image/${fileType}`,
-        name: nameFile,
-      };
-      formData.append("file", _image);
-      axios
-        .post(urlUploadFile, formData, {
-          headers: {
-            authorization: token,
-            "Content-type": "multipart/form-data",
-          },
-        })
-        .then((res) => {})
-        .catch((err) => {
-          alert("Error Upload file");
-        });
-    } else if (result.cancelled) {
-      console.log(result);
+    try {
+      let result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        quality: 1,
+        allowsMultipleSelection: true,
+        base64: true,
+      });
+
+      if (!result.canceled) {
+        const image = result.assets.flatMap((img) => img.base64);
+        const data = {
+          IDSender: user.ID,
+          image,
+          fromSelf: true,
+          IDConversation,
+        };
+        socket.emit("send_message", data);
+
+        // await uploadImage(formData);
+      } else {
+        console.log("Image selection cancelled");
+      }
+    } catch (error) {
+      console.error("Error picking image:", error);
+      alert("Error picking image");
+    }
+  };
+  const handleUploadVideo = async () => {
+    try {
+      let result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Videos,
+        quality: 1,
+        allowsMultipleSelection: true,
+        base64: true,
+      });
+
+      if (!result.canceled) {
+        const video = await Promise.all(
+          result.assets.map(async (asset) => {
+            const fileUri = asset.uri;
+            const base64String = await FileSystem.readAsStringAsync(fileUri, {
+              encoding: FileSystem.EncodingType.Base64,
+            });
+            return base64String;
+          })
+        );
+
+        const data = {
+          IDSender: user.ID,
+          video,
+          fromSelf: true,
+          IDConversation,
+        };
+
+        socket.emit("send_message", data);
+      } else {
+        console.log("Image selection cancelled");
+      }
+    } catch (error) {
+      console.error("Error picking image:", error);
+      alert("Error picking image");
     }
   };
 
@@ -126,14 +159,17 @@ function FooterChat() {
             onChangeText={(x) => setText(x)}
             style={styles.input_Message}
             placeholder="Nhập tin nhắn..."
+            onPressIn={() => setShowIcon(false)}
           />
         </View>
         <View style={styles.footer_Right}>
           <TouchableOpacity
-            onPress={isRecording ? stopRecording : startRecording}
+            // onPress={isRecording ? stopRecording : startRecording}
+            onPress={handleUploadVideo}
           >
             <MaterialIcons
-              name={isRecording ? "keyboard-voice" : "keyboard-voice"}
+              name="video-library"
+              // name={isRecording ? "keyboard-voice" : "keyboard-voice"}
               size={24}
               color="#0091ff"
             />

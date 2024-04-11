@@ -3,6 +3,10 @@ import { createSlice } from "@reduxjs/toolkit";
 const initialState = {
   chatList: [], // [{message: 'Hello', fromSelf: true}]
   messages: [],
+  popup: {
+    show: false,
+    data: null,
+  },
 };
 
 const chatSlice = createSlice({
@@ -15,8 +19,15 @@ const chatSlice = createSlice({
     setMessages: (state, action) => {
       state.messages = action.payload;
     },
+    setPopup: (state, action) => {
+      state.popup = action.payload;
+    },
+    updateMessages: (state, action) => {
+      state.messages.unshift(action.payload);
+    },
   },
 });
 
-export const { setChatList, setMessages } = chatSlice.actions;
+export const { setChatList, setMessages, setPopup, updateMessages } =
+  chatSlice.actions;
 export default chatSlice.reducer;

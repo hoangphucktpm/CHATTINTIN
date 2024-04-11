@@ -5,13 +5,18 @@ import {
   TouchableHighlight,
   TouchableOpacity,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import styles from "./StyleItemFriend";
 import { AntDesign, Feather } from "@expo/vector-icons";
 import { SwipeListView } from "react-native-swipe-list-view";
+import { useSelector } from "react-redux";
 
 const ItemFriend = ({ navigation }) => {
-  const [chatLists, setChatLists] = useState([]);
+  const { conversation } = useSelector((state) => state.conversation);
+  const chatLists = useMemo(() => {
+    if (!conversation) return [];
+    return conversation.flatMap((convers) => convers.Receiver);
+  }, [conversation]);
 
   // Function to handle delete action
   const deleteGroupHandleClick = () => {
@@ -28,6 +33,7 @@ const ItemFriend = ({ navigation }) => {
   const renderItem = ({ item }) => {
     return (
       <TouchableHighlight
+        onPress={() => navigation.navigate("Chat", item)}
         underlayColor={"#E6E6FA"}
         style={styles.touchHightLight}
       >
@@ -37,19 +43,19 @@ const ItemFriend = ({ navigation }) => {
               <Image
                 style={styles.itemFriend_avatar_avatar}
                 source={{
-                  uri: "https://hinhgaixinh.com/wp-content/uploads/2021/12/bo-anh-girl-xinh-cap-2.jpg",
+                  uri: item.urlavatar,
                 }}
               />
             </View>
           </View>
           <View style={styles.itemFriend_right}>
             <View style={styles.itemFriend_message}>
-              <Text style={styles.itemFriend_name}>{item.name}</Text>
+              <Text style={styles.itemFriend_name}>{item.fullname}</Text>
               <Text style={styles.itemFriend_content}>{item.lastMessage}</Text>
             </View>
-            <View style={styles.itemFriend_timeBlock}>
+            {/* <View style={styles.itemFriend_timeBlock}>
               <Text style={styles.itemFriend_time}>1 phút trước</Text>
-            </View>
+            </View> */}
           </View>
         </View>
       </TouchableHighlight>

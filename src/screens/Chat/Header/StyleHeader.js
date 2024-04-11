@@ -9,10 +9,9 @@ const styles = StyleSheet.create({
         flexDirection:'row',
         backgroundColor:'#0091ff',
         justifyContent:'space-between',
-        
     
-
     },
+    
     container_left:{
         width:"70%",
         display: 'flex',
@@ -45,13 +44,14 @@ const styles = StyleSheet.create({
     container_right:{
         display:'flex',
         flexDirection:'row',
-        width:"30%",
+        width:"40%",
         justifyContent:'space-around',
     },
     container_right_icon:{
         justifyContent:'flex-end',
         height:"100%",
-        paddingBottom:8
+        paddingBottom:8,
+        paddingRight: 70,
     },
     button:{
         justifyContent:'center',
