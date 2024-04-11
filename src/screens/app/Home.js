@@ -10,7 +10,7 @@
 // import roomAPI from "../../redux/reducers/Room/roomAPI";
 // export let newSocket = io("http://54.254.183.128");
 
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import styles from "./App_Style";
 import { View } from "react-native";
 import Search from "../Search/Search";
@@ -19,7 +19,7 @@ import Footer from "../Footer/Footer";
 import { useRoute } from "@react-navigation/native";
 import { useSelector } from "react-redux";
 import { getData } from "../../utils/localStorageConfig";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import { api } from "../../apis/api";
 import { useDispatch } from "react-redux";
 import { setUser } from "../../redux/authSclice";
@@ -132,12 +132,15 @@ function Home(props) {
   //     // }
   // }, [token]);
 
-  useEffect(() => {
-    user && socket.emit("load_conversations", { IDUser: user.ID });
-    socket.on("load_conversations_server", (data) => {
-      if (data) dispatch(setConversation(data));
-    });
-  }, [user]);
+  useFocusEffect(
+    useCallback(() => {
+      user && socket.emit("load_conversations", { IDUser: user.ID });
+      socket.on("load_conversations_server", (data) => {
+        console.log(data);
+        if (data) dispatch(setConversation(data));
+      });
+    }, [user])
+  );
 
   return (
     <View style={styles.container}>

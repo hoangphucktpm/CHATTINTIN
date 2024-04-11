@@ -26,7 +26,7 @@ import EmojiSelector, { Categories } from "react-native-emoji-selector";
 import styles from "./StyleFooter";
 import socket from "../../../services/socket";
 
-function FooterChat() {
+function FooterChat({ ID }) {
   const dispatch = useDispatch();
   const [text, setText] = useState("");
   const [showIcon, setShowIcon] = useState(false);
@@ -46,11 +46,15 @@ function FooterChat() {
 
   const sendMessageSocket = async () => {
     if (!text) return;
+    if (!conversation.length) return;
+    const IDConversation = conversation.find(
+      (convers) => convers.IDReceiver === ID
+    )?.IDConversation;
     const data = {
       IDSender: user.ID,
       textMessage: text,
       fromSelf: true,
-      IDConversation: conversation[0].IDConversation,
+      IDConversation,
     };
 
     socket.emit("send_message", data);

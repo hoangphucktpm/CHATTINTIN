@@ -50,7 +50,7 @@ function Chat({ route }) {
     <View style={styles.container}>
       <Header fullname={name} id={ID} image={image} owner={owner} />
       <Body id={ID} owner={owner} nameGroup={name} imageGroup={image} />
-      <Footer />
+      <Footer ID={ID} />
       <PopUpOptions />
     </View>
   );

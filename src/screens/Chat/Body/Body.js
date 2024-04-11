@@ -58,8 +58,6 @@ function Body({ id, owner }) {
     );
   };
 
-  console.log(messages, user.ID);
-
   return (
     <View style={{ flex: 1 }}>
       <FlatList
