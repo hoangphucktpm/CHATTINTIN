@@ -4,6 +4,7 @@ import {
   Image,
   ScrollView,
   Text,
+  TouchableOpacity,
   View,
 } from "react-native";
 import React, { Component, useEffect, useMemo, useRef, useState } from "react";
@@ -14,7 +15,7 @@ import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
 import ScrollToBottom from "react-scroll-to-bottom";
 import socket from "../../../services/socket";
-import { setMessages } from "../../../redux/chatSlice";
+import { setMessages, setPopup } from "../../../redux/chatSlice";
 import { format } from "date-fns";
 
 function Body({ id, owner }) {
@@ -48,6 +49,15 @@ function Body({ id, owner }) {
     return currentMessages;
   }, [messagesData]);
 
+  const handleLongPress = (item) => {
+    dispatch(
+      setPopup({
+        show: true,
+        data: item,
+      })
+    );
+  };
+
   return (
     <View style={{ flex: 1 }}>
       <FlatList
@@ -55,7 +65,8 @@ function Body({ id, owner }) {
         data={reverseData}
         keyExtractor={(item, index) => index.toString()}
         renderItem={({ item }) => (
-          <View
+          <TouchableOpacity
+            onLongPress={() => handleLongPress(item)}
             style={{
               margin: 10,
               padding: 10,
@@ -84,7 +95,7 @@ function Body({ id, owner }) {
             >
               {format(item.dateTime, "HH:mm:s")}
             </Text>
-          </View>
+          </TouchableOpacity>
         )}
         inverted={true}
       />

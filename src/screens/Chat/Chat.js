@@ -4,13 +4,13 @@ import styles from "./StyleChat";
 import Header from "./Header/Header";
 import Body from "./Body/Body";
 import Footer from "./Footer/FooterChat";
-import socket from "../../services/socket";
 import { useDispatch, useSelector } from "react-redux";
 import { api } from "../../apis/api";
 import { setMessages } from "../../redux/chatSlice";
+import PopUpOptions from "../../components/PopUpOptions";
 
 function Chat({ route }) {
-  const { id, name, image, owner } = route.params;
+  const { ID, name, image, owner } = route.params;
 
   const { conversation } = useSelector((state) => state.conversation);
   const dispatch = useDispatch();
@@ -23,7 +23,7 @@ function Chat({ route }) {
     const getMessages = async () => {
       if (!conversation.length) return;
       const IDConversation = conversation.find(
-        (convers) => convers.IDReceiver === route.params.ID
+        (convers) => convers.IDReceiver === ID
       )?.IDConversation;
       try {
         if (!IDConversation) return;
@@ -48,9 +48,10 @@ function Chat({ route }) {
     <ActivityIndicator />
   ) : (
     <View style={styles.container}>
-      <Header fullname={name} id={id} image={image} owner={owner} />
-      <Body id={id} owner={owner} nameGroup={name} imageGroup={image} />
+      <Header fullname={name} id={ID} image={image} owner={owner} />
+      <Body id={ID} owner={owner} nameGroup={name} imageGroup={image} />
       <Footer />
+      <PopUpOptions />
     </View>
   );
 }

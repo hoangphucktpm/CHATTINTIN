@@ -14,9 +14,9 @@ import { useSelector } from "react-redux";
 const ItemFriend = ({ navigation }) => {
   const { conversation } = useSelector((state) => state.conversation);
   const chatLists = useMemo(() => {
+    if (!conversation) return [];
     return conversation.flatMap((convers) => convers.Receiver);
   }, [conversation]);
-  console.log(chatLists);
 
   // Function to handle delete action
   const deleteGroupHandleClick = () => {
@@ -33,6 +33,7 @@ const ItemFriend = ({ navigation }) => {
   const renderItem = ({ item }) => {
     return (
       <TouchableHighlight
+        onPress={() => navigation.navigate("Chat", item)}
         underlayColor={"#E6E6FA"}
         style={styles.touchHightLight}
       >
