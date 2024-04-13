@@ -348,7 +348,7 @@ function Contacts() {
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => {
-              navigation.navigate("AddGroup");
+              navigation.navigate("CreateGroup");
             }}
             style={styles.containerIconAdd}
           >

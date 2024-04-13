@@ -23,7 +23,6 @@ import {
 } from "../../../redux/chatSlice";
 import { A } from "@expo/html-elements";
 import { format } from "date-fns";
-import { Icon } from "react-native-paper";
 function Body({ isLoading, messageData }) {
   const { user } = useSelector((state) => state.auth);
   const dispatch = useDispatch();

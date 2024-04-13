@@ -27,9 +27,9 @@ import ImageChat from "./src/screens/Chat/ShowImageChat";
 import MemberGroup from "./src/screens/Chat/ShowMemberGroup";
 import ListFriend from "./src/screens/ListFriend/ListFriend";
 import ChangePassForgot from "./src/screens/ForgotPassword&DashBoard/ChangePassForgot";
+import DrawerChatGroup from "./src/screens/Chat/Drawble/DrawerChatGroup";
 import OTPPassForgot from "./src/screens/ForgotPassword&DashBoard/OTPPassForgot";
 import Story from "./src/screens/Story/Story";
-
 
 import { Provider } from "react-redux";
 import { store } from "./store";
@@ -40,6 +40,7 @@ const App = () => {
   const chat = "Chat";
   const listFriend = "ListFriend";
   const drawbleChat = "DrawerChat";
+  const drawbleChatGroup = "DrawerChatGroup";
   const login = "Login";
   const register = "Register";
   const inputPass = "InputPass";
@@ -78,7 +79,7 @@ const App = () => {
           <Stack.Screen name={addFriends} component={AddFriends} />
           <Stack.Screen name={home} component={Home} />
           <Stack.Screen name={chat} component={Chat} />
-          {/* <Stack.Screen name={drawbleChat} component={DrawerChat} /> */}
+          <Stack.Screen name={drawbleChat} component={DrawerChat} />
           <Stack.Screen name={scannerQR} component={ScannerQR} />
           <Stack.Screen name={myProfile} component={MyProfile} />
           {/* <Stack.Screen name={friendProfile} component={FriendProfile} />
@@ -86,6 +87,8 @@ const App = () => {
           {/* <Stack.Screen name={imageChat} component={ImageChat} /> */}
           {/* <Stack.Screen name={memberGroup} component={MemberGroup} /> */}
           <Stack.Screen name={listFriend} component={ListFriend} />
+          <Stack.Screen name={drawbleChatGroup} component={DrawerChatGroup} />
+          <Stack.Screen name={createGroup} component={CreateGroup} />
           <Stack.Screen name={otpPassForgot} component={OTPPassForgot} />
           <Stack.Screen name={friendProfile} component={FriendProfile} />
           <Stack.Screen name={story} component={Story} />

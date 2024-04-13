@@ -137,14 +137,14 @@ const styles = StyleSheet.create({
     display: "flex",
     flexDirection: "column",
     backgroundColor: "white",
-    height: 360,
+    height: 300,
   },
   containerBody_Mid_Report: {
     marginTop: 10,
     display: "flex",
     flexDirection: "column",
     backgroundColor: "white",
-    height: 180,
+    height: 300,
   },
 });
 export default styles;

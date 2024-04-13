@@ -89,7 +89,7 @@ function Header({ fullname, id, name, image, owner }) {
         <TouchableOpacity
           style={styles.container_right_icon}
           onPress={() =>
-            navigation.navigate("FriendProfile", {
+            navigation.navigate("DrawerChatGroup", {
               phone: id,
               fullname: name,
               urlavatar: image,

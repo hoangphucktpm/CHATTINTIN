@@ -15,8 +15,7 @@ import { useSelector, useDispatch } from "react-redux";
 import * as ImagePicker from "expo-image-picker";
 import PropTypes from "prop-types";
 import useSpeechRecognition from "../../../redux/hook";
-import AudioRecord from "react-native-audio-record"; // Import AudioRecord
-// import RNFS from 'react-native-fs'; // Import RNFS
+import AudioRecord from "react-native-audio-record";
 import EmojiSelector, { Categories } from "react-native-emoji-selector";
 import * as FileSystem from "expo-file-system";
 import * as DocumentPicker from "expo-document-picker";
