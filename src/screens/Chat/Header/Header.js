@@ -1,4 +1,10 @@
-import { Text, View, TouchableOpacity, TextInput } from "react-native";
+import {
+  Text,
+  View,
+  TouchableOpacity,
+  TextInput,
+  StatusBar,
+} from "react-native";
 import React, { useState } from "react";
 import styles from "./StyleHeader";
 import { MaterialIcons } from "@expo/vector-icons";
@@ -37,10 +43,10 @@ function Header({ fullname, id, name, image, owner }) {
     const results = messages.filter((message) => regex.test(message.body));
     setSearchResults(results);
     console.log(results);
-  
+
     // If there are results, navigate to the first one
     if (results.length > 0) {
-      navigation.navigate('Message', { message: results[0] });
+      navigation.navigate("Message", { message: results[0] });
     }
   };
 

@@ -1,8 +1,11 @@
 import { View, Text, TouchableOpacity } from "react-native";
 import React from "react";
 import { format } from "date-fns";
+import { useDispatch } from "react-redux";
+import { setPopup } from "../redux/chatSlice";
 
 const MessageItem = ({ item, user }) => {
+  const dispatch = useDispatch();
   const handleLongPress = (item) => {
     dispatch(setPopup({ show: true, data: item }));
   };

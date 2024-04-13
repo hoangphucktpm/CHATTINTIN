@@ -7,6 +7,11 @@ const initialState = {
     show: false,
     data: null,
   },
+
+  viewFullImage: {
+    show: false,
+    data: null,
+  },
 };
 
 const chatSlice = createSlice({
@@ -25,9 +30,17 @@ const chatSlice = createSlice({
     updateMessages: (state, action) => {
       state.messages.unshift(action.payload);
     },
+    setViewFullImage: (state, action) => {
+      state.viewFullImage = action.payload;
+    },
   },
 });
 
-export const { setChatList, setMessages, setPopup, updateMessages } =
-  chatSlice.actions;
+export const {
+  setChatList,
+  setMessages,
+  setPopup,
+  updateMessages,
+  setViewFullImage,
+} = chatSlice.actions;
 export default chatSlice.reducer;

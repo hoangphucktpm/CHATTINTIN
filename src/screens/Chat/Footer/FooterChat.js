@@ -4,9 +4,7 @@ import {
   TextInput,
   View,
   TouchableOpacity,
-  Alert,
   Text,
-  Platform,
 } from "react-native";
 import {
   MaterialIcons,
@@ -15,10 +13,8 @@ import {
 } from "@expo/vector-icons";
 import { useSelector, useDispatch } from "react-redux";
 import * as ImagePicker from "expo-image-picker";
-import { setMessages } from "../../../redux/chatSlice";
 import PropTypes from "prop-types";
 import useSpeechRecognition from "../../../redux/hook";
-import axios from "axios";
 import AudioRecord from "react-native-audio-record"; // Import AudioRecord
 // import RNFS from 'react-native-fs'; // Import RNFS
 import EmojiSelector, { Categories } from "react-native-emoji-selector";
@@ -27,9 +23,10 @@ import * as DocumentPicker from "expo-document-picker";
 
 import styles from "./StyleFooter";
 import socket from "../../../services/socket";
+import { Buffer } from "buffer";
+const CHUNK_SIZE = 1024 * 1024; 
 
 function FooterChat({ ID }) {
-  const dispatch = useDispatch();
   const [text, setText] = useState("");
   const [showIcon, setShowIcon] = useState(false);
   const chatData = useSelector((state) => state.room);
@@ -63,6 +60,9 @@ function FooterChat({ ID }) {
     socket.emit("send_message", data);
     setText("");
   };
+
+
+  // send image
   const pickImage = async () => {
     try {
       let result = await ImagePicker.launchImageLibraryAsync({
@@ -73,16 +73,18 @@ function FooterChat({ ID }) {
       });
 
       if (!result.canceled) {
-        const image = result.assets.flatMap((img) => img.base64);
+        const image = result.assets.flatMap((img) =>
+          Buffer.from(img.base64, "base64")
+        );
+
         const data = {
           IDSender: user.ID,
           image,
           fromSelf: true,
           IDConversation,
         };
-        socket.emit("send_message", data);
 
-        // await uploadImage(formData);
+        socket.emit("send_message", data);
       } else {
         console.log("Image selection cancelled");
       }
@@ -91,40 +93,90 @@ function FooterChat({ ID }) {
       alert("Error picking image");
     }
   };
+
+  // send video
   const handleUploadVideo = async () => {
     try {
       let result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Videos,
-        quality: 1,
         allowsMultipleSelection: true,
+        quality: 1,
         base64: true,
-      });
+    });
 
-      if (!result.canceled) {
-        const video = await Promise.all(
-          result.assets.map(async (asset) => {
+    let videos = [];
+    if (!result.canceled) {
+        for (const asset of result.assets) {
             const fileUri = asset.uri;
             const base64String = await FileSystem.readAsStringAsync(fileUri, {
-              encoding: FileSystem.EncodingType.Base64,
+                encoding: FileSystem.EncodingType.Base64,
             });
-            return base64String;
-          })
-        );
 
+            const videoData = Buffer.from(base64String, "base64");
+            videos.push(videoData);
+          }
+        } else {
+          console.log("Video selection cancelled");
+        }
         const data = {
-          IDSender: user.ID,
-          video,
-          fromSelf: true,
-          IDConversation,
+            IDSender: user.ID,
+            video: videos,
+            IDConversation,
         };
-
         socket.emit("send_message", data);
-      } else {
-        console.log("Image selection cancelled");
-      }
     } catch (error) {
-      console.error("Error picking image:", error);
-      alert("Error picking image");
+      console.error("Error picking Video:", error);
+      alert("Error picking Video");
+    }
+  };
+
+  // send document
+  const handlePickDoc = async () => {
+    try {
+      const result = await DocumentPicker.getDocumentAsync({
+        multiple: true,
+        type: "application/*",
+    });
+
+    const fileList = [];
+    if (!result.canceled) {
+
+        for (const asset of result.assets) {
+            const fileSize = asset.size;
+            let position = 0;
+
+                const chunkSize = Math.min(CHUNK_SIZE, fileSize - position);
+                const chunk = await FileSystem.readAsStringAsync(asset.uri, {
+                    encoding: FileSystem.EncodingType.Base64,
+                    length: chunkSize,
+                    position
+                });
+
+                fileList.push({
+                    mimeType: asset.type,
+                    content: Buffer.from(chunk, "base64"),
+                    fileName: asset.name
+                });
+
+        }
+
+        
+        
+      } else {
+        console.log("Document selection cancelled");
+      }
+      const data = {
+          IDSender: user.ID,
+          fileList,
+          IDConversation,
+      };
+
+      // console.log(data.fileList.length)
+      socket.emit("send_message", data);
+    } catch (error) {
+      console.error("Error picking document:", error);
+      alert("Error picking document");
+      
     }
   };
 
@@ -138,25 +190,11 @@ function FooterChat({ ID }) {
       .then(() => console.log("Audio file saved successfully"))
       .catch((err) => console.log("Error saving audio file: ", err));
   };
-
   const handlePressIcon = () => {
     setShowIcon(true);
   };
 
-  const handlePickDoc = async () => {
-    const result = await DocumentPicker.getDocumentAsync({
-      type: "*/*",
-      copyToCacheDirectory: true,
-    });
-    console.log(result);
-    if (result.type === "success") {
-      // socket.emit("send-message", {
-      //   IDConversation: user.IDConversation,
-      //   content: result.uri,
-      //   type: "document",
-      // });
-    }
-  };
+ 
 
   return (
     <KeyboardAvoidingView>
@@ -178,17 +216,20 @@ function FooterChat({ ID }) {
           />
         </View>
         <View style={styles.footer_Right}>
+        <TouchableOpacity onPress={handlePickDoc}>
+            <SimpleLineIcons name="link" size={24} color="#0091ff" />
+          </TouchableOpacity>
           <TouchableOpacity
             // onPress={isRecording ? stopRecording : startRecording}
-            onPress={handlePickDoc}
+            onPress={handleUploadVideo}
           >
             <MaterialIcons
               name="video-library"
-              // name={isRecording ? "keyboard-voice" : "keyboard-voice"}
               size={24}
               color="#0091ff"
             />
           </TouchableOpacity>
+       
           <TouchableOpacity onPress={pickImage}>
             <SimpleLineIcons name="picture" size={24} color="#0091ff" />
           </TouchableOpacity>

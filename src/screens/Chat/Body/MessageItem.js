@@ -20,6 +20,7 @@ function MessageItem({ avatar, name, time, message, type, owner, _id, emoji }) {
       message: message,
     });
   };
+
   const reactMessage = (e) => {
     axios({
       url: `http://54.254.183.128/api/rooms/${roomState._id}/messages/${_id}/react`,

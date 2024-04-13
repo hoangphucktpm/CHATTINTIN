@@ -20,16 +20,14 @@ export default function VideoMessage({ uri }) {
     </View>
   );
 }
-
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     justifyContent: "center",
     backgroundColor: "#ecf0f1",
   },
   video: {
     alignSelf: "center",
-    width: 320,
+    width: 300,
     height: 200,
   },
   buttons: {

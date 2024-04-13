@@ -135,48 +135,17 @@ function Home(props) {
   //     // }
   // }, [token]);
 
-  useEffect(() => {
-    // Listen for connect event
-    socket.on("connect", () => {
-      console.log("Connected to the server");
-    });
-
-    // Listen for disconnect event
-    socket.on("disconnect", () => {
-      console.log("Disconnected from the server");
-    });
-
-    // Listen for error event
-    socket.on("error", (error) => {
-      console.log("An error occurred:", error);
-    });
-
-    // Listen for reconnect event
-    socket.on("reconnect", (attemptNumber) => {
-      console.log("Reconnected to the server after", attemptNumber, "attempts");
-    });
-
-    socket.on("receive_message", (data) => {
-      dispatch(updateMessages(data));
-    });
-
-    // Clean up the effect
-    return () => {
-      socket.off("connect");
-      socket.off("disconnect");
-      socket.off("error");
-      socket.off("reconnect");
-    };
-  }, []);
-
   useFocusEffect(
     useCallback(() => {
       user && socket.emit("load_conversations", { IDUser: user.ID });
-      socket.on("load_conversations_server", (data) => {
-        if (data) dispatch(setConversation(data));
-      });
     }, [user])
   );
+
+  useEffect(() => {
+    socket.on("load_conversations_server", (data) => {
+      if (data) dispatch(setConversation(data));
+    });
+  }, []);
 
   return (
     <View style={styles.container}>

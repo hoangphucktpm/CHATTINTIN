@@ -10,6 +10,9 @@ import {
 import React from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { setPopup } from "../redux/chatSlice";
+import { FontAwesome } from "@expo/vector-icons";
+import { api } from "../apis/api";
+import socket from "../services/socket";
 
 const PopUpOptions = () => {
   const popupOptions = useSelector((state) => state.chat.popup);
@@ -18,17 +21,52 @@ const PopUpOptions = () => {
 
   const handleClose = () => dispatch(setPopup({ show: false, data: null }));
 
+  const user = useSelector((state) => state.auth.user);
+
   const handlePress = () => {
     Alert.alert(
       "Thông báo",
-      "Bạn có chắc chắn muốn xóa?",
+      "Bạn có chắc chắn muốn thu hồi?",
       [
         {
           text: "Không",
           onPress: () => console.log("Cancel Pressed"),
           style: "cancel",
         },
-        { text: "Có", onPress: () => handleClose() },
+        {
+          text: "Có",
+          onPress: () => {
+            socket.emit("recallMessage", {
+              IDMessageDetail: popupOptions.data.IDMessageDetail,
+              IDReceiver: user.ID,
+            });
+            handleClose();
+          },
+        },
+      ],
+      { cancelable: false }
+    );
+  };
+
+  const handleRepply = () => {};
+
+  const handleDelete = () => {
+    Alert.alert(
+      "Thông báo",
+      "Bạn có chắc chắn muốn xóa tin nhắn này?",
+      [
+        {
+          text: "Không",
+          onPress: () => console.log("Cancel Pressed"),
+          style: "cancel",
+        },
+        {
+          text: "Có",
+          onPress: async () => {
+            await api.deleteMessage(popupOptions.data.IDMessageDetail);
+            handleClose();
+          },
+        },
       ],
       { cancelable: false }
     );
@@ -56,14 +94,43 @@ const PopUpOptions = () => {
               ? popupOptions.data?.content.slice(0, 20) + "..."
               : popupOptions.data?.content}
           </Text>
-          <TouchableOpacity>
+          <TouchableOpacity
+            onPress={handleRepply}
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              alignItems: "center",
+              gap: 5,
+            }}
+          >
             <Text style={styles.modalText}>Trả lời</Text>
+            <FontAwesome name="reply" size={20} color="#0091ff" />
           </TouchableOpacity>
-          <TouchableOpacity onPress={handlePress}>
+
+          <TouchableOpacity
+            onPress={handlePress}
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              alignItems: "center",
+              gap: 5,
+            }}
+          >
             <Text style={styles.modalText}>Thu hồi</Text>
+            <FontAwesome name="repeat" size={20} color="orange" />
           </TouchableOpacity>
-          <TouchableOpacity>
-            <Text style={styles.modalText}>Chuyển tiếp</Text>
+
+          <TouchableOpacity
+            onPress={handleDelete}
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              alignItems: "center",
+              gap: 5,
+            }}
+          >
+            <Text style={styles.modalText}>Xóa</Text>
+            <FontAwesome name="trash" size={20} color="red" />
           </TouchableOpacity>
 
           <Pressable
@@ -98,6 +165,9 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 4,
     elevation: 5,
+    display: "flex",
+    flexDirection: "column",
+    gap: 15,
   },
   button: {
     borderRadius: 20,
@@ -116,8 +186,13 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   modalText: {
-    marginBottom: 15,
+    width: 80,
+    alignItems: "flex-start",
     textAlign: "center",
+    fontSize: 16,
+    fontWeight: "500",
+    color: "#555",
+    alignSelf: "flex-start",
   },
 });
 

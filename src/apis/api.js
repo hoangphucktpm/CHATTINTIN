@@ -1,6 +1,6 @@
 import axios from "axios";
 
-export const myIP = "192.168.199.60";
+export const myIP = "172.20.10.5";
 
 export const http = axios.create({
   // timeout: 30000,
@@ -45,4 +45,9 @@ export const api = {
       IDConversation,
       IDNextBucket,
     }),
+
+  // delete mess
+
+  deleteMessage: (IDMessageDetail) =>
+    http.post("message/remove", { IDMessageDetail }),
 };
