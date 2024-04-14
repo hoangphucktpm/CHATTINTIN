@@ -52,7 +52,7 @@ function Chat({ route }) {
       setMessageData((prev) => [data, ...prev]);
     };
     socket.on("sending_message", (data) => {
-      // console.log("data", data);
+
     });
 
     socket.on("receive_message", handleReceiveMessage);

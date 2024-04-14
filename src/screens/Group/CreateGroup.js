@@ -39,7 +39,7 @@ function CreateGroup() {
   };
   const renderItem = ({ item }) => {
     var Name =
-      item.userId.name == undefined ? item.userId.email : item.userId.name;
+      item.userId.name == undefined ? item.userId.phoneandname : item.userId.phoneandname;
     var image =
       item.userId.avatar == undefined
         ? "https://hinhgaixinh.com/wp-content/uploads/2021/12/bo-anh-girl-xinh-cap-2.jpg"

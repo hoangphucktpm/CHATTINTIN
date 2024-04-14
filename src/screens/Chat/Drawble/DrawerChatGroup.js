@@ -216,11 +216,13 @@ function DrawerChatGroup({ navigation }) {
                 />
                 <View style={styles.containerBody_Mid_ChangeName_Item_Text}>
                   <Text style={{ fontSize: 20, color: "black" }}>
-                    Xem thành viên 
+                    Xem thành viên
                   </Text>
-                  <Text style={{ fontSize: 18, marginRight : 140, color: "gray" }}>
+                  <Text
+                    style={{ fontSize: 18, marginRight: 140, color: "gray" }}
+                  >
                     (5)
-                    </Text>
+                  </Text>
                   <AntDesign
                     name="right"
                     size={15}
@@ -233,7 +235,7 @@ function DrawerChatGroup({ navigation }) {
                 style={styles.containerBody_Mid_ChangeName_Item}
               >
                 <AntDesign
-                    name="adduser"
+                  name="adduser"
                   size={24}
                   color="#828282"
                   style={{ width: "15%", height: "100%" }}
@@ -254,7 +256,7 @@ function DrawerChatGroup({ navigation }) {
                 style={styles.containerBody_Mid_ChangeName_Item}
               >
                 <AntDesign
-                    name="link"
+                  name="link"
                   size={24}
                   color="#828282"
                   style={{ width: "15%", height: "100%" }}
@@ -265,7 +267,7 @@ function DrawerChatGroup({ navigation }) {
                       Link tham gia nhóm
                     </Text>
                     <Text style={{ fontSize: 16, color: "gray" }}>
-                        https://chatapp.com/123456
+                      https://chatapp.com/123456
                     </Text>
                   </View>
                   <AntDesign
@@ -313,9 +315,7 @@ function DrawerChatGroup({ navigation }) {
                     <Text style={{ fontSize: 20, color: "black" }}>
                       Mục hiển thị
                     </Text>
-                    <Text style={{ fontSize: 16, color: "gray" }}>
-                      Ưu tiên
-                    </Text>
+                    <Text style={{ fontSize: 16, color: "gray" }}>Ưu tiên</Text>
                   </View>
                   <AntDesign
                     name="right"
@@ -345,7 +345,7 @@ function DrawerChatGroup({ navigation }) {
                   />
                 </View>
               </View>
-            
+
               <TouchableOpacity
                 style={styles.containerBody_Mid_ChangeName_Item}
               >
@@ -419,57 +419,53 @@ function DrawerChatGroup({ navigation }) {
               </TouchableOpacity>
 
               <TouchableOpacity
-                    style={styles.containerBody_Mid_ChangeName_Item}
-                >
-                    <MaterialCommunityIcons
-                        name="database"
-                        size={24}
-                        color="#828282"
-                        style={{ width: "15%", height: "100%" }}
-                    />
-                    <View style={styles.containerBody_Mid_ChangeName_Item_Text}>
-                        <Text style={{ fontSize: 20, color: "black" }}>
-                            Dung lượng trò chuyện
-                        </Text>
-                    </View>
+                style={styles.containerBody_Mid_ChangeName_Item}
+              >
+                <MaterialCommunityIcons
+                  name="database"
+                  size={24}
+                  color="#828282"
+                  style={{ width: "15%", height: "100%" }}
+                />
+                <View style={styles.containerBody_Mid_ChangeName_Item_Text}>
+                  <Text style={{ fontSize: 20, color: "black" }}>
+                    Dung lượng trò chuyện
+                  </Text>
+                </View>
+              </TouchableOpacity>
 
-                </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.containerBody_Mid_ChangeName_Item}
+              >
+                <MaterialCommunityIcons
+                  name="delete"
+                  size={24}
+                  color="#828282"
+                  style={{ width: "15%", height: "100%" }}
+                />
+                <View style={styles.containerBody_Mid_ChangeName_Item_Text}>
+                  <Text style={{ fontSize: 20, color: "black" }}>
+                    Xóa lịch sử trò chuyện
+                  </Text>
+                </View>
+              </TouchableOpacity>
 
+              {owner == userState.user._id ? (
                 <TouchableOpacity
-                    style={styles.containerBody_Mid_ChangeName_Item}
+                  onPress={outGroupHandleClick}
+                  style={styles.containerBody_Mid_ChangeName_Item}
                 >
-                    <MaterialCommunityIcons
-                        name="delete"
-                        size={24}
-                        color="#828282"
-                        style={{ width: "15%", height: "100%" }}
-                    />
-                    <View style={styles.containerBody_Mid_ChangeName_Item_Text}>
-                        <Text style={{ fontSize: 20, color: "black" }}>
-                            Xóa lịch sử trò chuyện
-                        </Text>
-                    </View>
-
+                  <MaterialIcons
+                    name="subdirectory-arrow-left"
+                    size={24}
+                    color="red"
+                    style={{ width: "15%", height: "100%" }}
+                  />
+                  <View style={styles.containerBody_Mid_ChangeName_Item_Text}>
+                    <Text style={{ fontSize: 20, color: "red" }}>Rời nhóm</Text>
+                  </View>
                 </TouchableOpacity>
-
-                {owner == userState.user._id ? (
-                  <TouchableOpacity
-                    onPress={outGroupHandleClick}
-                    style={styles.containerBody_Mid_ChangeName_Item}
-                  >
-                    <MaterialIcons
-                      name="subdirectory-arrow-left"
-                      size={24}
-                      color="red"
-                      style={{ width: "15%", height: "100%" }}
-                    />
-                    <View style={styles.containerBody_Mid_ChangeName_Item_Text}>
-                      <Text style={{ fontSize: 20, color: "red" }}>
-                        Rời nhóm
-                      </Text>
-                    </View>
-                  </TouchableOpacity>
-                ) : null}
+              ) : null}
             </View>
           </View>
         </ScrollView>
