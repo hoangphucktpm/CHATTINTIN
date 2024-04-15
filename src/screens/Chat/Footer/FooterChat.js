@@ -23,12 +23,11 @@ import * as DocumentPicker from "expo-document-picker";
 import styles from "./StyleFooter";
 import socket from "../../../services/socket";
 import { Buffer } from "buffer";
-const CHUNK_SIZE = 1024 * 1024; 
+const CHUNK_SIZE = 1024 * 1024;
 
 function FooterChat({ ID }) {
   const [text, setText] = useState("");
   const [showIcon, setShowIcon] = useState(false);
-  const chatData = useSelector((state) => state.room);
   const { conversation } = useSelector((state) => state.conversation);
 
   if (!conversation.length) return;
@@ -59,7 +58,6 @@ function FooterChat({ ID }) {
     socket.emit("send_message", data);
     setText("");
   };
-
 
   // send image
   const pickImage = async () => {
@@ -101,28 +99,28 @@ function FooterChat({ ID }) {
         allowsMultipleSelection: true,
         quality: 1,
         base64: true,
-    });
+      });
 
-    let videos = [];
-    if (!result.canceled) {
+      let videos = [];
+      if (!result.canceled) {
         for (const asset of result.assets) {
-            const fileUri = asset.uri;
-            const base64String = await FileSystem.readAsStringAsync(fileUri, {
-                encoding: FileSystem.EncodingType.Base64,
-            });
+          const fileUri = asset.uri;
+          const base64String = await FileSystem.readAsStringAsync(fileUri, {
+            encoding: FileSystem.EncodingType.Base64,
+          });
 
-            const videoData = Buffer.from(base64String, "base64");
-            videos.push(videoData);
-          }
-        } else {
-          console.log("Video selection cancelled");
+          const videoData = Buffer.from(base64String, "base64");
+          videos.push(videoData);
         }
-        const data = {
-            IDSender: user.ID,
-            video: videos,
-            IDConversation,
-        };
-        socket.emit("send_message", data);
+      } else {
+        console.log("Video selection cancelled");
+      }
+      const data = {
+        IDSender: user.ID,
+        video: videos,
+        IDConversation,
+      };
+      socket.emit("send_message", data);
     } catch (error) {
       console.error("Error picking Video:", error);
       alert("Error picking Video");
@@ -135,39 +133,34 @@ function FooterChat({ ID }) {
       const result = await DocumentPicker.getDocumentAsync({
         multiple: true,
         type: "application/*",
-    });
+      });
 
-    const fileList = [];
-    if (!result.canceled) {
-
+      const fileList = [];
+      if (!result.canceled) {
         for (const asset of result.assets) {
-            const fileSize = asset.size;
-            let position = 0;
+          const fileSize = asset.size;
+          let position = 0;
 
-                const chunkSize = Math.min(CHUNK_SIZE, fileSize - position);
-                const chunk = await FileSystem.readAsStringAsync(asset.uri, {
-                    encoding: FileSystem.EncodingType.Base64,
-                    length: chunkSize,
-                    position
-                });
+          const chunkSize = Math.min(CHUNK_SIZE, fileSize - position);
+          const chunk = await FileSystem.readAsStringAsync(asset.uri, {
+            encoding: FileSystem.EncodingType.Base64,
+            length: chunkSize,
+            position,
+          });
 
-                fileList.push({
-                    mimeType: asset.type,
-                    content: Buffer.from(chunk, "base64"),
-                    fileName: asset.name
-                });
-
+          fileList.push({
+            mimeType: asset.type,
+            content: Buffer.from(chunk, "base64"),
+            fileName: asset.name,
+          });
         }
-
-        
-        
       } else {
         console.log("Document selection cancelled");
       }
       const data = {
-          IDSender: user.ID,
-          fileList,
-          IDConversation,
+        IDSender: user.ID,
+        fileList,
+        IDConversation,
       };
 
       // console.log(data.fileList.length)
@@ -175,7 +168,6 @@ function FooterChat({ ID }) {
     } catch (error) {
       console.error("Error picking document:", error);
       alert("Error picking document");
-      
     }
   };
 
@@ -192,8 +184,6 @@ function FooterChat({ ID }) {
   const handlePressIcon = () => {
     setShowIcon(true);
   };
-
- 
 
   return (
     <KeyboardAvoidingView>
@@ -215,20 +205,16 @@ function FooterChat({ ID }) {
           />
         </View>
         <View style={styles.footer_Right}>
-        <TouchableOpacity onPress={handlePickDoc}>
+          <TouchableOpacity onPress={handlePickDoc}>
             <SimpleLineIcons name="link" size={24} color="#0091ff" />
           </TouchableOpacity>
           <TouchableOpacity
             // onPress={isRecording ? stopRecording : startRecording}
             onPress={handleUploadVideo}
           >
-            <MaterialIcons
-              name="video-library"
-              size={24}
-              color="#0091ff"
-            />
+            <MaterialIcons name="video-library" size={24} color="#0091ff" />
           </TouchableOpacity>
-       
+
           <TouchableOpacity onPress={pickImage}>
             <SimpleLineIcons name="picture" size={24} color="#0091ff" />
           </TouchableOpacity>

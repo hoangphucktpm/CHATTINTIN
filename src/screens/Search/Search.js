@@ -63,7 +63,7 @@ function Search() {
           onPress={handlePressCreateGroup}
           style={styles.containerIconAdd}
         >
-          <Ionicons name="md-add" size={30} color="white" />
+          <Ionicons name="add-outline" size={30} color="white" />
         </TouchableOpacity>
       </View>
       <View>

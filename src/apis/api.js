@@ -1,6 +1,6 @@
 import axios from "axios";
 
-export const myIP = "172.20.10.5";
+export const myIP = "192.168.1.7";
 
 export const http = axios.create({
   // timeout: 30000,
@@ -35,6 +35,8 @@ export const api = {
     http.post("user/process-friend-request", { id, type }),
   handleSendFriendRequest: ({ senderId, receiverId }) =>
     http.post("user/send-friend-request", { senderId, receiverId }),
+  getUsers: () => http.get("user/get-all-users"),
+
   getAllFriends: (username) =>
     http.post(`conversation/get-list-friend`, { username }),
   checkRequest: ({ senderId, receiverId }) =>
@@ -47,7 +49,6 @@ export const api = {
     }),
 
   // delete mess
-
   deleteMessage: (IDMessageDetail) =>
     http.post("message/remove", { IDMessageDetail }),
 };

@@ -211,9 +211,12 @@ function DrawerChat({ navigation }) {
               </View>
             </View>
             <View style={styles.containerBody_Mid_File}>
-              <TouchableOpacity style={styles.containerBody_Mid_File_Item}>
+              <TouchableOpacity
+                style={styles.containerBody_Mid_File_Item}
+                onPress={() => navigation.navigate("SourcesMessages")}
+              >
                 <Ionicons
-                  name="ios-folder-outline"
+                  name="folder-outline"
                   size={24}
                   color="#828282"
                   style={{ width: "15%", height: "100%" }}

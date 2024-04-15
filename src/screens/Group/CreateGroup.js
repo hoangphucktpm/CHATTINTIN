@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   Text,
   View,
@@ -13,37 +13,75 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useNavigation } from "@react-navigation/native";
 import { useSelector } from "react-redux";
 import { SwipeListView } from "react-native-swipe-list-view";
-import { Checkbox } from "react-native-paper";
 import axios from "axios";
 import { useDispatch } from "react-redux";
+import { api } from "../../apis/api";
+import Checkbox from "expo-checkbox";
+
 function CreateGroup() {
   const navigation = useNavigation();
-  const [name, setName] = useState();
-  const [email, setEmail] = useState();
-  const [phoneandname, setPhoneandName] = useState();
-  const [friends, setfriends] = useState([]);
-  const userState = useSelector((state) => state.user);
   const dispatch = useDispatch();
 
+  const [name, setName] = useState();
+  const [phoneandname, setPhoneandName] = useState();
+  const [checkedItems, setCheckedItems] = useState([]);
   const [listFriends, setListFriends] = useState([]);
+  const [users, setUsers] = useState([]);
+  const [dataResearch, setDataResearch] = useState([]);
 
-  useEffect(() => {}, []);
+  const user = useSelector((state) => state.auth.user);
+
+  useEffect(() => {
+    const fetchFriends = async () => {
+      const [resFriends, resUsers] = await Promise.all([
+        api.getAllFriends(user.username),
+        api.getUsers(),
+      ]);
+      setListFriends(resFriends.data);
+      setDataResearch(resFriends.data);
+      setUsers(resUsers.data);
+    };
+    fetchFriends();
+  }, []);
+
+  const sdt = useMemo(() => /^\84\d{9}$/, []);
+  useEffect(() => {
+    if (!phoneandname) {
+      setDataResearch(listFriends);
+      return;
+    }
+
+    const lowerCaseName = phoneandname.toLowerCase();
+
+    let rs = [];
+    if (sdt.test(phoneandname)) {
+      rs = users.filter(
+        (fr) => fr.phone === phoneandname && fr.phone !== user.phone
+      );
+    } else {
+      rs = listFriends.filter((fr) =>
+        fr.fullname.toLowerCase().includes(lowerCaseName)
+      );
+    }
+    setDataResearch(rs);
+  }, [phoneandname, listFriends, users, user]);
 
   const toggleItem = (id) => {
-    console.log(id);
     if (isChecked(id)) {
       setCheckedItems(checkedItems.filter((item) => item !== id));
     } else {
       setCheckedItems([...checkedItems, id]);
     }
   };
+
+  const isChecked = (id) => {
+    return checkedItems.includes(id);
+  };
+
   const renderItem = ({ item }) => {
-    var Name =
-      item.userId.name == undefined ? item.userId.phoneandname : item.userId.phoneandname;
     var image =
-      item.userId.avatar == undefined
-        ? "https://hinhgaixinh.com/wp-content/uploads/2021/12/bo-anh-girl-xinh-cap-2.jpg"
-        : item.userId.avatar;
+      item.urlavatar ??
+      "https://hinhgaixinh.com/wp-content/uploads/2021/12/bo-anh-girl-xinh-cap-2.jpg";
     return (
       <TouchableOpacity
         style={{
@@ -53,14 +91,15 @@ function CreateGroup() {
           flex: 1,
           marginBottom: 10,
         }}
-        onPress={() => toggleItem(item.userId._id)}
+        onPress={() => toggleItem(item.ID)}
       >
         <View
           style={{ flex: 0.15, justifyContent: "center", alignItems: "center" }}
         >
           <Checkbox
-            value={isChecked(item.userId._id) ? true : false}
-            style={{ height: 30, width: 30, borderRadius: 100 }}
+            value={isChecked(item.ID)}
+            style={{ height: 20, width: 20, borderRadius: 100 }}
+            onValueChange={() => toggleItem(item.ID)}
           />
         </View>
         <View style={{ flex: 0.15, borderRadius: 100 }}>
@@ -70,7 +109,7 @@ function CreateGroup() {
           />
         </View>
         <View style={{ flex: 0.7, marginLeft: 10, justifyContent: "center" }}>
-          <Text style={{ fontSize: 22 }}>{Name}</Text>
+          <Text style={{ fontSize: 22 }}>{item.fullname}</Text>
           <Text style={{ fontSize: 18, color: "grey" }}>2 giờ</Text>
         </View>
       </TouchableOpacity>
@@ -85,7 +124,6 @@ function CreateGroup() {
       alert("Nhắc nhỡ", "Nhập tên nhóm");
       return;
     }
-    console.log(checkedItems);
     axios
       .post(
         `http://54.254.183.128/api/rooms`,
@@ -98,7 +136,6 @@ function CreateGroup() {
         }
       )
       .then((r) => {
-        console.log(r.data);
         dispatch(userAPI.updateListRoomUI()(r.data));
       })
       .catch((err) => {
@@ -167,9 +204,9 @@ function CreateGroup() {
         <View style={styles.flatList}>
           <SwipeListView
             nestedScrollEnabled={true}
-            data={listFriends}
+            data={dataResearch}
             renderItem={renderItem}
-            keyExtractor={(item) => item.userId._id}
+            keyExtractor={(item, i) => item.ID + i}
           />
         </View>
         <View style={styles.buttonCreate}>

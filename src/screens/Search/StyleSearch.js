@@ -42,15 +42,14 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-around",
     flexShrink: 0,
+    alignItems: "center",
   },
   containerIconAdd: {
     justifyContent: "center",
-    marginBottom: 5,
     flexShrink: 0,
   },
   containerIconQR: {
     justifyContent: "center",
-    marginBottom: 10,
     flexShrink: 0,
   },
 });

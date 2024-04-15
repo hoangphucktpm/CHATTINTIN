@@ -34,6 +34,7 @@ function Contacts() {
   const [selectedButton, setSelectedButton] = useState(null);
   const [receiverId, setReceiverId] = useState(null);
   const [listFriends, setListFriends] = useState([]);
+  const [groupLists, setGroupLists] = useState([]);
 
   const phone = user?.phone;
 
@@ -59,7 +60,7 @@ function Contacts() {
         Alert.alert("Thông báo", "Bạn đã nhận được lời mời kết bạn");
 
         // Cập nhật danh sách lời mời kết bạn
-        setFriendRequests((prevRequests) => [...prevRequests, response]);
+        setFriendRequests((prevRequests) => [response, ...prevRequests]);
         setReceiverId(null);
       }
     });
@@ -67,53 +68,6 @@ function Contacts() {
     // Clean up the effect
     return () => socket.off("friend request received");
   }, [receiverId]);
-
-  const Data1 = [
-    {
-      id: "1",
-      name: "Nhóm 1",
-      image:
-        "https://hinhgaixinh.com/wp-content/uploads/2021/12/bo-anh-girl-xinh-cap-2.jpg",
-      lastMessage: "Chào bạn",
-      time: "2022-01-01",
-    },
-    {
-      id: "2",
-      name: "Nhóm 2",
-      image:
-        "https://hinhgaixinh.com/wp-content/uploads/2021/12/bo-anh-girl-xinh-cap-2.jpg",
-      lastMessage: "Chào bạn",
-      time: "2022-01-01",
-    },
-  ];
-
-  // Lời mời kết bạn kèm theo chức năng chấp nhận hoặc từ chối
-  const Data2 = [
-    {
-      id: "1",
-      name: "Nguyễn Văn AAA",
-      image:
-        "https://hinhgaixinh.com/wp-content/uploads/2021/12/bo-anh-girl-xinh-cap-2.jpg",
-      lastMessage: "Chào bạn",
-      time: "2022-01-01",
-    },
-    {
-      id: "2",
-      name: "Nguyễn Văn B",
-      image:
-        "https://hinhgaixinh.com/wp-content/uploads/2021/12/bo-anh-girl-xinh-cap-2.jpg",
-      lastMessage: "Chào bạn",
-      time: "2022-01-01",
-    },
-    {
-      id: "3",
-      name: "Nguyễn Văn B",
-      image:
-        "https://hinhgaixinh.com/wp-content/uploads/2021/12/bo-anh-girl-xinh-cap-2.jpg",
-      lastMessage: "Chào bạn",
-      time: "2022-01-01",
-    },
-  ];
 
   const hanldPress = () => {
     navigation.navigate("ScannerQR");
@@ -163,13 +117,15 @@ function Contacts() {
           <FlatList
             data={listFriends}
             renderItem={renderItem}
-            keyExtractor={(item) => item.ID}
+            keyExtractor={(item, i) => {
+              return `${item.ID} ${i.toString()}`;
+            }}
           />
         );
       case "Group":
         return (
           <FlatList
-            data={Data1}
+            data={groupLists}
             renderItem={renderItem1}
             keyExtractor={(item) => item.ID}
           />
@@ -199,7 +155,6 @@ function Contacts() {
   };
 
   const renderItem = ({ item }) => {
-    console.log(item);
     var imageItem =
       item.urlavatar ??
       "https://hinhgaixinh.com/wp-content/uploads/2021/12/bo-anh-girl-xinh-cap-2.jpg";
@@ -208,7 +163,6 @@ function Contacts() {
         underlayColor={"#E6E6FA"}
         style={styles.touchHightLight}
         onPress={() => {
-          const id = item.ID;
           navigation.navigate("Chat", item);
         }}
       >
@@ -352,7 +306,7 @@ function Contacts() {
             }}
             style={styles.containerIconAdd}
           >
-            <Ionicons name="md-people" size={26} color="white" />
+            <Ionicons name="people-circle" size={26} color="white" />
           </TouchableOpacity>
         </View>
       </View>
@@ -417,7 +371,6 @@ function Contacts() {
         </View>
 
         <View style={{ flex: 0.8, backgroundColor: "white" }}>
-          {/* <SwipeListView  nestedScrollEnabled={true} data ={Data} renderItem={renderItem} /> */}
           {renderList()}
         </View>
       </View>

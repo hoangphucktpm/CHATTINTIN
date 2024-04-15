@@ -33,6 +33,10 @@ import Story from "./src/screens/Story/Story";
 
 import { Provider } from "react-redux";
 import { store } from "./store";
+import SourcesMessage from "./src/screens/Chat/SourcesMessage";
+
+import { ApplicationProvider } from "@ui-kitten/components";
+import * as eva from "@eva-design/eva";
 
 const App = () => {
   const Stack = createNativeStackNavigator();
@@ -59,41 +63,48 @@ const App = () => {
   const changePassForgot = "ChangePassForgot";
   const otpPassForgot = "OTPPassForgot";
   const story = "Story";
+  const sourcesMessages = "SourcesMessages";
 
   return (
     <Provider store={store}>
-      <NavigationContainer>
-        <Stack.Navigator
-          initialRouteName={dashBoard}
-          screenOptions={{ headerShown: false }}
-        >
-          <Stack.Screen name={login} component={Login} />
-          <Stack.Screen name={register} component={Register} />
-          <Stack.Screen name={inputPass} component={InputPass} />
-          <Stack.Screen name={otp} component={OTP} />
-          <Stack.Screen name={changePassForgot} component={ChangePassForgot} />
-          <Stack.Screen name={inputProfile} component={InputProfile} />
-          <Stack.Screen name={dashBoard} component={DashBoard} />
-          <Stack.Screen name={forgotPassword} component={ForgotPassword} />
-          <Stack.Screen name={contacts} component={Contacts} />
-          <Stack.Screen name={addFriends} component={AddFriends} />
-          <Stack.Screen name={home} component={Home} />
-          <Stack.Screen name={chat} component={Chat} />
-          <Stack.Screen name={drawbleChat} component={DrawerChat} />
-          <Stack.Screen name={scannerQR} component={ScannerQR} />
-          <Stack.Screen name={myProfile} component={MyProfile} />
-          {/* <Stack.Screen name={friendProfile} component={FriendProfile} />
+      <ApplicationProvider {...eva} theme={eva.light}>
+        <NavigationContainer>
+          <Stack.Navigator
+            initialRouteName={dashBoard}
+            screenOptions={{ headerShown: false }}
+          >
+            <Stack.Screen name={login} component={Login} />
+            <Stack.Screen name={register} component={Register} />
+            <Stack.Screen name={inputPass} component={InputPass} />
+            <Stack.Screen name={otp} component={OTP} />
+            <Stack.Screen
+              name={changePassForgot}
+              component={ChangePassForgot}
+            />
+            <Stack.Screen name={inputProfile} component={InputProfile} />
+            <Stack.Screen name={dashBoard} component={DashBoard} />
+            <Stack.Screen name={forgotPassword} component={ForgotPassword} />
+            <Stack.Screen name={contacts} component={Contacts} />
+            <Stack.Screen name={addFriends} component={AddFriends} />
+            <Stack.Screen name={home} component={Home} />
+            <Stack.Screen name={chat} component={Chat} />
+            <Stack.Screen name={drawbleChat} component={DrawerChat} />
+            <Stack.Screen name={scannerQR} component={ScannerQR} />
+            <Stack.Screen name={myProfile} component={MyProfile} />
+            {/* <Stack.Screen name={friendProfile} component={FriendProfile} />
                 {/* <Stack.Screen name={createGroup} component={CreateGroup} /> */}
-          {/* <Stack.Screen name={imageChat} component={ImageChat} /> */}
-          {/* <Stack.Screen name={memberGroup} component={MemberGroup} /> */}
-          <Stack.Screen name={listFriend} component={ListFriend} />
-          <Stack.Screen name={drawbleChatGroup} component={DrawerChatGroup} />
-          <Stack.Screen name={createGroup} component={CreateGroup} />
-          <Stack.Screen name={otpPassForgot} component={OTPPassForgot} />
-          <Stack.Screen name={friendProfile} component={FriendProfile} />
-          <Stack.Screen name={story} component={Story} />
-        </Stack.Navigator>
-      </NavigationContainer>
+            {/* <Stack.Screen name={imageChat} component={ImageChat} /> */}
+            {/* <Stack.Screen name={memberGroup} component={MemberGroup} /> */}
+            <Stack.Screen name={listFriend} component={ListFriend} />
+            <Stack.Screen name={drawbleChatGroup} component={DrawerChatGroup} />
+            <Stack.Screen name={createGroup} component={CreateGroup} />
+            <Stack.Screen name={otpPassForgot} component={OTPPassForgot} />
+            <Stack.Screen name={friendProfile} component={FriendProfile} />
+            <Stack.Screen name={story} component={Story} />
+            <Stack.Screen name={sourcesMessages} component={SourcesMessage} />
+          </Stack.Navigator>
+        </NavigationContainer>
+      </ApplicationProvider>
     </Provider>
   );
 };
