@@ -25,15 +25,9 @@ import socket from "../../../services/socket";
 import { Buffer } from "buffer";
 const CHUNK_SIZE = 1024 * 1024;
 
-function FooterChat({ ID }) {
+function FooterChat({ IDConversation }) {
   const [text, setText] = useState("");
   const [showIcon, setShowIcon] = useState(false);
-  const { conversation } = useSelector((state) => state.conversation);
-
-  if (!conversation.length) return;
-  const IDConversation = conversation.find(
-    (convers) => convers.IDReceiver === ID
-  )?.IDConversation;
 
   const { transcript, startRecording, stopRecording, isRecording } =
     useSpeechRecognition();

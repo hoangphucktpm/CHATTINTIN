@@ -13,11 +13,12 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useNavigation } from "@react-navigation/native";
 import { useSelector } from "react-redux";
 import { SwipeListView } from "react-native-swipe-list-view";
-import axios from "axios";
+import * as ImagePicker from "expo-image-picker";
 import { useDispatch } from "react-redux";
 import { api } from "../../apis/api";
 import Checkbox from "expo-checkbox";
-
+import { Buffer } from "buffer";
+import socket from "../../services/socket";
 function CreateGroup() {
   const navigation = useNavigation();
   const dispatch = useDispatch();
@@ -28,18 +29,17 @@ function CreateGroup() {
   const [listFriends, setListFriends] = useState([]);
   const [users, setUsers] = useState([]);
   const [dataResearch, setDataResearch] = useState([]);
+  const [groupAvatar, setGroupAvatar] = useState(null);
+  const [imageSelected, setImageSelected] = useState(null);
 
   const user = useSelector((state) => state.auth.user);
 
   useEffect(() => {
     const fetchFriends = async () => {
-      const [resFriends, resUsers] = await Promise.all([
-        api.getAllFriends(user.username),
-        api.getUsers(),
-      ]);
+      const resFriends = await api.getAllFriends(user.username);
+
       setListFriends(resFriends.data);
       setDataResearch(resFriends.data);
-      setUsers(resUsers.data);
     };
     fetchFriends();
   }, []);
@@ -115,32 +115,57 @@ function CreateGroup() {
       </TouchableOpacity>
     );
   };
-  const createGroup = () => {
+
+  const pickImage = async () => {
+    try {
+      let result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        quality: 1,
+        allowsMultipleSelection: false,
+        base64: true,
+      });
+
+      if (!result.canceled) {
+        const image = result.assets.flatMap((img) =>
+          Buffer.from(img.base64, "base64")
+        );
+
+        setImageSelected(`data:image/jpeg;base64,${result.assets[0].base64}`);
+
+        setGroupAvatar(image[0]);
+      } else {
+        console.log("Image selection cancelled");
+      }
+    } catch (error) {
+      console.error("Error picking image:", error);
+      alert("Error picking image");
+    }
+  };
+
+  const createGroup = async () => {
     if (checkedItems.length <= 1) {
       Alert.alert("Nhắc nhỡ", "Tạo nhóm phải 2 người trở lên");
       return;
     }
     if (!name) {
-      alert("Nhắc nhỡ", "Nhập tên nhóm");
+      Alert.alert("Nhắc nhỡ", "Nhập tên nhóm");
       return;
     }
-    axios
-      .post(
-        `http://54.254.183.128/api/rooms`,
-        {
-          userIds: checkedItems,
-          name: name,
-        },
-        {
-          headers: { authorization: token },
-        }
-      )
-      .then((r) => {
-        dispatch(userAPI.updateListRoomUI()(r.data));
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+    const data = {
+      IDOwner: user.ID,
+      groupName: name,
+      groupMembers: [user.ID, ...checkedItems],
+      groupAvatar,
+    };
+
+    try {
+      socket.emit("create_group_conversation", data);
+      Alert.alert("Thành công", "Tạo nhóm thành công");
+      navigation.goBack();
+    } catch (error) {
+      console.log(error);
+      Alert.alert("Thất bại", "Tạo nhóm thất bại");
+    }
   };
   return (
     <SafeAreaView style={styles.container}>
@@ -160,8 +185,20 @@ function CreateGroup() {
       <View style={styles.containerBody}>
         <View style={styles.containerBodyHeader}>
           <View style={styles.containerBodyHeader_Image}>
-            <TouchableOpacity style={styles.buttonImage}>
-              <Feather name="camera" size={32} color="black" />
+            <TouchableOpacity style={styles.buttonImage} onPress={pickImage}>
+              {imageSelected ? (
+                <Image
+                  source={{ uri: imageSelected }}
+                  style={{
+                    width: 60,
+                    height: 60,
+                    objectFit: "cover",
+                    borderRadius: 100,
+                  }}
+                />
+              ) : (
+                <Feather name="camera" size={32} color="black" />
+              )}
             </TouchableOpacity>
           </View>
           <View style={styles.containerBodyHeader_Input}>

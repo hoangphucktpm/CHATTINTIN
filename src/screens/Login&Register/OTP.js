@@ -33,10 +33,19 @@ const OTP = (props) => {
       Alert.alert("Thông báo", "Mã OTP không hợp lệ");
     } else {
       navigation.navigate("InputPass", { phoneNumber: phoneNumber });
+      // sendPhoneVerification(auth.currentUser)
+      //   .then(() => {
+      //     Alert.alert(
+      //       "Thông báo",
+      //       `Đăng ký thành công ! ${"\n"}Mời bạn kiểm tra điện thoại để xác nhận`
+      //     );
 
+      //   })
+      //   .catch((error) => {
+      //     Alert.alert("Thông báo", "Xảy ra lỗi! \n Mời bạn thử lại");
+      //   });
     }
   };
- 
 
   return (
     <View style={styles.container}>

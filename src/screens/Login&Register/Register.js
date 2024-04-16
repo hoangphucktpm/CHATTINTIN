@@ -38,10 +38,9 @@ const Register = () => {
       return;
     }
     try {
-      const res = await api.checkUserExist({
-        phone: phone,
-      });
-      if (res.data.status) {
+      const res = await api.getUserByPhone(phone);
+      console.log(res);
+      if (!res.data.status) {
         setShowOtp(true);
         setLoading(true);
         try {
@@ -56,6 +55,7 @@ const Register = () => {
         Alert.alert("Số điện thoại đã tồn tại");
       }
     } catch (error) {
+      console.log(error);
       Alert.alert(error.message);
       setShowOtp(false);
       setLoading(false);

@@ -9,8 +9,6 @@ export const ViewImageFullScreen = () => {
   const tete = useSelector((state) => state.chat.viewFullImage);
   const dispatch = useDispatch();
 
-  console.log(tete);
-
   const handleClose = () => {
     // dispatch(setViewFullImage({ show: false, data: null }));
   };

@@ -3,7 +3,6 @@ import React from "react";
 
 const ChatWithLink = (props) => {
   const { title, desciption, image, url } = props;
-  console.log(props);
 
   const handleView = () => {
     Linking.openURL(image);
