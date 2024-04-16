@@ -13,7 +13,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useNavigation } from "@react-navigation/native";
 import { useSelector } from "react-redux";
 import { SwipeListView } from "react-native-swipe-list-view";
-import axios from "axios";
+import * as ImagePicker from "expo-image-picker";
 import { useDispatch } from "react-redux";
 import { api } from "../../apis/api";
 import Checkbox from "expo-checkbox";
@@ -28,6 +28,7 @@ function CreateGroup() {
   const [listFriends, setListFriends] = useState([]);
   const [users, setUsers] = useState([]);
   const [dataResearch, setDataResearch] = useState([]);
+  const [groupAvatar, setGroupAvatar] = useState(null);
 
   const user = useSelector((state) => state.auth.user);
 
@@ -115,32 +116,57 @@ function CreateGroup() {
       </TouchableOpacity>
     );
   };
-  const createGroup = () => {
-    if (checkedItems.length <= 1) {
-      Alert.alert("Nhắc nhỡ", "Tạo nhóm phải 2 người trở lên");
-      return;
+
+  const pickImage = async () => {
+    try {
+      let result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        quality: 1,
+        allowsMultipleSelection: true,
+        base64: true,
+      });
+
+      if (!result.canceled) {
+        const image = result.assets.flatMap((img) =>
+          Buffer.from(img.base64, "base64")
+        );
+
+        setGroupAvatar(image);
+
+        socket.emit("send_message", data);
+      } else {
+        console.log("Image selection cancelled");
+      }
+    } catch (error) {
+      console.error("Error picking image:", error);
+      alert("Error picking image");
     }
+  };
+  const createGroup = async () => {
+    // if (checkedItems.length <= 1) {
+    //   Alert.alert("Nhắc nhỡ", "Tạo nhóm phải 2 người trở lên");
+    //   return;
+    // }
+    console.log(checkedItems);
     if (!name) {
       alert("Nhắc nhỡ", "Nhập tên nhóm");
       return;
     }
-    axios
-      .post(
-        `http://54.254.183.128/api/rooms`,
-        {
-          userIds: checkedItems,
-          name: name,
-        },
-        {
-          headers: { authorization: token },
-        }
-      )
-      .then((r) => {
-        dispatch(userAPI.updateListRoomUI()(r.data));
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+    const data = {
+      IDOwner: user.ID,
+      groupName: name,
+      groupMembers: checkedItems,
+      groupAvatar,
+    };
+
+    try {
+      await api.createGroup(data);
+      Alert.alert("Thành công", "Tạo nhóm thành công");
+      navigation.goBack();
+    } catch (error) {
+      console.log(error);
+      Alert.alert("Thất bại", "Tạo nhóm thất bại");
+    }
   };
   return (
     <SafeAreaView style={styles.container}>
@@ -160,7 +186,7 @@ function CreateGroup() {
       <View style={styles.containerBody}>
         <View style={styles.containerBodyHeader}>
           <View style={styles.containerBodyHeader_Image}>
-            <TouchableOpacity style={styles.buttonImage}>
+            <TouchableOpacity style={styles.buttonImage} onPress={pickImage}>
               <Feather name="camera" size={32} color="black" />
             </TouchableOpacity>
           </View>

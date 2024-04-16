@@ -1,5 +1,5 @@
 import React, { memo, useEffect, useState } from "react";
-import { ActivityIndicator, StatusBar, View } from "react-native";
+import { ActivityIndicator, StatusBar, Text, View } from "react-native";
 import styles from "./StyleChat";
 import Header from "./Header/Header";
 import Body from "./Body/Body";
@@ -10,6 +10,7 @@ import { setMessages, updateMessages } from "../../redux/chatSlice";
 import PopUpOptions from "../../components/PopUpOptions";
 import socket from "../../services/socket";
 import { ViewImageFullScreen } from "../../components/ImageMessage";
+import BlurViewMessage from "../../components/BlurView";
 
 function Chat({ route }) {
   const { ID, fullname, urlavatar, owner } = route.params;
@@ -51,9 +52,7 @@ function Chat({ route }) {
     const handleReceiveMessage = (data) => {
       setMessageData((prev) => [data, ...prev]);
     };
-    socket.on("sending_message", (data) => {
-
-    });
+    socket.on("sending_message", (data) => {});
 
     socket.on("receive_message", handleReceiveMessage);
     return () => {
@@ -75,6 +74,7 @@ function Chat({ route }) {
         messageData={messageData}
       />
       <ViewImageFullScreen />
+      {/* <BlurViewMessage /> */}
       <Footer ID={ID} />
       <PopUpOptions />
     </View>

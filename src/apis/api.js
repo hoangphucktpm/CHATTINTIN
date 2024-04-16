@@ -1,6 +1,7 @@
 import axios from "axios";
 
-export const myIP = "192.168.1.7";
+export const myIP = "192.168.0.134";
+// export const myIP = "192.168.1.7";
 
 export const http = axios.create({
   // timeout: 30000,
@@ -51,4 +52,9 @@ export const api = {
   // delete mess
   deleteMessage: (IDMessageDetail) =>
     http.post("message/remove", { IDMessageDetail }),
+
+  // group
+
+  createGroup: (data) =>
+    http.post("conversation/createNewGroupConversation", data),
 };

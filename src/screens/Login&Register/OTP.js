@@ -32,15 +32,18 @@ const OTP = (props) => {
     } else if (!regexOTP.test(otp)) {
       Alert.alert("Thông báo", "Mã OTP không hợp lệ");
     } else {
-      // sendPhoneVerification(auth.currentUser)
-      //     .then(() => {
-      //         Alert.alert("Thông báo", `Đăng ký thành công ! ${'\n'}Mời bạn kiểm tra điện thoại để xác nhận`);
-
       navigation.navigate("InputPass", { phoneNumber: phoneNumber });
-      // })
-      // .catch(error => {
+      // sendPhoneVerification(auth.currentUser)
+      //   .then(() => {
+      //     Alert.alert(
+      //       "Thông báo",
+      //       `Đăng ký thành công ! ${"\n"}Mời bạn kiểm tra điện thoại để xác nhận`
+      //     );
+
+      //   })
+      //   .catch((error) => {
       //     Alert.alert("Thông báo", "Xảy ra lỗi! \n Mời bạn thử lại");
-      // });
+      //   });
     }
   };
   // createUserWithPhoneAndPassword(auth,phone,passWord)

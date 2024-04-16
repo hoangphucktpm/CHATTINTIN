@@ -29,6 +29,7 @@ import { removeData } from "../../utils/localStorageConfig";
 import { logout, setUser } from "../../redux/authSclice";
 import * as FileSystem from "expo-file-system";
 import Footer from "../Footer/Footer";
+import { requestPermissions } from "../../utils/requestPermission";
 
 const MyProfile = () => {
   const navigation = useNavigation();
@@ -105,28 +106,6 @@ const MyProfile = () => {
         resolve(response);
       });
     });
-  };
-
-  const requestPermissions = async () => {
-    try {
-      if (Platform.OS === "android") {
-        const cameraPermission = await PermissionsAndroid.request(
-          PermissionsAndroid.PERMISSIONS.CAMERA
-        );
-        const photoPermission = await PermissionsAndroid.request(
-          PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE
-        );
-        return (
-          cameraPermission === PermissionsAndroid.RESULTS.GRANTED &&
-          photoPermission === PermissionsAndroid.RESULTS.GRANTED
-        );
-      } else {
-        return true;
-      }
-    } catch (error) {
-      console.log("Đã xảy ra lỗi khi yêu cầu quyền:", error);
-      return false;
-    }
   };
 
   const handleUpdatePress = () => {

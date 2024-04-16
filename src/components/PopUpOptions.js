@@ -24,6 +24,8 @@ const PopUpOptions = () => {
   const user = useSelector((state) => state.auth.user);
 
   const handlePress = () => {
+    if (item.IDSender !== user.ID) return;
+
     Alert.alert(
       "Thông báo",
       "Bạn có chắc chắn muốn thu hồi?",
@@ -153,6 +155,7 @@ const styles = StyleSheet.create({
     marginTop: 22,
   },
   modalView: {
+    minWidth: 200,
     backgroundColor: "white",
     borderRadius: 20,
     padding: 10,

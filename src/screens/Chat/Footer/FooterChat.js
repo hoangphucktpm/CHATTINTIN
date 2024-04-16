@@ -29,8 +29,9 @@ function FooterChat({ ID }) {
   const [text, setText] = useState("");
   const [showIcon, setShowIcon] = useState(false);
   const { conversation } = useSelector((state) => state.conversation);
+  console.log(conversation);
 
-  if (!conversation.length) return;
+  // if (!conversation.length) return;
   const IDConversation = conversation.find(
     (convers) => convers.IDReceiver === ID
   )?.IDConversation;
