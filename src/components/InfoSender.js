@@ -1,47 +1,55 @@
-import { View, Text } from "react-native";
 import React, { memo, useEffect, useState } from "react";
 import { api } from "../apis/api";
 import { Avatar } from "@ui-kitten/components";
 
-const InfoSender = memo(({ IDSender, dataSender, isSelf, children }) => {
-  if (!IDSender || isSelf) return children;
-  const [sender, setSender] = useState(null);
+const InfoSender = memo(
+  ({ IDSender, dataSender, isSelf, children, isGroup = false }) => {
+    const [sender, setSender] = useState(dataSender);
 
-  useEffect(() => {
-    const fetchDataSender = async () => {
-      if (!IDSender) return;
-      const res = await api.getUserByPhone(IDSender);
-      setSender(res.data);
-    };
-    if (dataSender) setSender(dataSender);
-    else fetchDataSender();
-    return () => fetchDataSender();
-  }, [IDSender]);
+    useEffect(() => {
+      const fetchDataSender = async () => {
+        if (!IDSender || isGroup) return;
+        const res = await api.getUserByPhone(IDSender);
+        setSender(res.data);
+      };
 
-  if (!sender) return children;
+      if (!sender) {
+        fetchDataSender();
+      }
+    }, [IDSender, isGroup, sender]);
 
-  return (
-    <View style={{ display: "flex", flexDirection: "column" }}>
+    if (!sender || isSelf) return children;
+
+    return (
       <View
         style={{
           display: "flex",
-          flexDirection: "row",
-          alignItems: "center",
-          gap: 5,
+          flexDirection: "column",
+          marginTop: 10,
+          padding: 10,
         }}
       >
-        <Avatar
-          source={{ uri: dataSender.urlavatar }}
-          alt={dataSender?.fullname}
-          style={{ width: 30, height: 30, objectFit: "cover" }}
-        />
-        <Text style={{ fontSize: 16, fontWeight: 600 }}>
-          {dataSender?.fullname}
-        </Text>
+        <View
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            alignItems: "center",
+            gap: 5,
+          }}
+        >
+          <Avatar
+            source={{ uri: sender.urlavatar }}
+            alt={sender.fullname}
+            style={{ width: 30, height: 30, objectFit: "cover" }}
+          />
+          <Text style={{ fontSize: 16, fontWeight: 600 }}>
+            {sender.fullname}
+          </Text>
+        </View>
+        <View style={{ marginLeft: 20 }}>{children}</View>
       </View>
-      {children}
-    </View>
-  );
-});
+    );
+  }
+);
 
 export default InfoSender;

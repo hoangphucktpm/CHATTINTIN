@@ -36,7 +36,7 @@ const MessageReact = ({ children, item, isSelf, setDataModal }) => {
       onLongPress={handleLongPress}
       style={{
         flexDirection: isSelf ? "row-reverse" : "row",
-        paddingVertical: 5,
+        paddingBottom: 5,
         maxWidth: "70%",
         alignSelf: isSelf ? "flex-end" : "flex-start",
         alignItems: "center",
