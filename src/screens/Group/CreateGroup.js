@@ -17,7 +17,8 @@ import * as ImagePicker from "expo-image-picker";
 import { useDispatch } from "react-redux";
 import { api } from "../../apis/api";
 import Checkbox from "expo-checkbox";
-
+import { Buffer } from "buffer";
+import socket from "../../services/socket";
 function CreateGroup() {
   const navigation = useNavigation();
   const dispatch = useDispatch();
@@ -29,18 +30,16 @@ function CreateGroup() {
   const [users, setUsers] = useState([]);
   const [dataResearch, setDataResearch] = useState([]);
   const [groupAvatar, setGroupAvatar] = useState(null);
+  const [imageSelected, setImageSelected] = useState(null);
 
   const user = useSelector((state) => state.auth.user);
 
   useEffect(() => {
     const fetchFriends = async () => {
-      const [resFriends, resUsers] = await Promise.all([
-        api.getAllFriends(user.username),
-        api.getUsers(),
-      ]);
+      const resFriends = await api.getAllFriends(user.username);
+
       setListFriends(resFriends.data);
       setDataResearch(resFriends.data);
-      setUsers(resUsers.data);
     };
     fetchFriends();
   }, []);
@@ -122,7 +121,7 @@ function CreateGroup() {
       let result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
         quality: 1,
-        allowsMultipleSelection: true,
+        allowsMultipleSelection: false,
         base64: true,
       });
 
@@ -131,9 +130,9 @@ function CreateGroup() {
           Buffer.from(img.base64, "base64")
         );
 
-        setGroupAvatar(image);
+        setImageSelected(`data:image/jpeg;base64,${result.assets[0].base64}`);
 
-        socket.emit("send_message", data);
+        setGroupAvatar(image[0]);
       } else {
         console.log("Image selection cancelled");
       }
@@ -142,25 +141,25 @@ function CreateGroup() {
       alert("Error picking image");
     }
   };
+
   const createGroup = async () => {
-    // if (checkedItems.length <= 1) {
-    //   Alert.alert("Nhắc nhỡ", "Tạo nhóm phải 2 người trở lên");
-    //   return;
-    // }
-    console.log(checkedItems);
+    if (checkedItems.length <= 1) {
+      Alert.alert("Nhắc nhỡ", "Tạo nhóm phải 2 người trở lên");
+      return;
+    }
     if (!name) {
-      alert("Nhắc nhỡ", "Nhập tên nhóm");
+      Alert.alert("Nhắc nhỡ", "Nhập tên nhóm");
       return;
     }
     const data = {
       IDOwner: user.ID,
       groupName: name,
-      groupMembers: checkedItems,
+      groupMembers: [user.ID, ...checkedItems],
       groupAvatar,
     };
 
     try {
-      await api.createGroup(data);
+      socket.emit("create_group_conversation", data);
       Alert.alert("Thành công", "Tạo nhóm thành công");
       navigation.goBack();
     } catch (error) {
@@ -187,7 +186,19 @@ function CreateGroup() {
         <View style={styles.containerBodyHeader}>
           <View style={styles.containerBodyHeader_Image}>
             <TouchableOpacity style={styles.buttonImage} onPress={pickImage}>
-              <Feather name="camera" size={32} color="black" />
+              {imageSelected ? (
+                <Image
+                  source={{ uri: imageSelected }}
+                  style={{
+                    width: 60,
+                    height: 60,
+                    objectFit: "cover",
+                    borderRadius: 100,
+                  }}
+                />
+              ) : (
+                <Feather name="camera" size={32} color="black" />
+              )}
             </TouchableOpacity>
           </View>
           <View style={styles.containerBodyHeader_Input}>

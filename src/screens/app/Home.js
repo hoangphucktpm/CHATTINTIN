@@ -1,51 +1,79 @@
 import React, { useCallback, useEffect, useState } from "react";
-import styles from "./App_Style";
 import { ActivityIndicator, View } from "react-native";
-import Search from "../Search/Search";
-import ListFriend from "../ListFriend/ListFriend";
-import Footer from "../Footer/Footer";
-import { useRoute } from "@react-navigation/native";
-import { useSelector } from "react-redux";
-import { getData } from "../../utils/localStorageConfig";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
+import { useSelector, useDispatch } from "react-redux";
+import { getData } from "../../utils/localStorageConfig";
 import { api } from "../../apis/api";
-import { useDispatch } from "react-redux";
 import { setUser } from "../../redux/authSclice";
 import socket from "../../services/socket";
 import { setConversation } from "../../redux/conversationSlice";
 import { updateMessages } from "../../redux/chatSlice";
+import Search from "../Search/Search";
+import ListFriend from "../ListFriend/ListFriend";
+import Footer from "../Footer/Footer";
+import styles from "./App_Style";
 
 function Home(props) {
-  const route = useRoute();
   const navigation = useNavigation();
   const dispatch = useDispatch();
 
-  const [user, setUserData] = useState(null);
+  const [userData, setUserData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const getUser = async () => {
+    const fetchData = async () => {
       const phone = await getData("user-phone");
       if (!phone) return navigation.navigate("Login");
       const res = await api.getUserByPhone(phone);
       setUserData(res.data);
       dispatch(setUser(res.data));
       setIsLoading(false);
+      socket.emit("load_conversations", { IDUser: res.data.ID });
     };
-    getUser();
+    fetchData();
+
+    return () => {
+      socket.off("new_group_conversation");
+      socket.off("load_conversations_server");
+    };
   }, []);
-  const phone = user?.phone;
+
+  const phone = userData?.phone;
+  const user = useSelector((state) => state.auth.user);
+
+  useEffect(() => {
+    if (user) {
+      const handleNewGroupConversation = (data) => {
+        socket.emit("load_conversations", { IDUser: user.ID });
+      };
+      socket.on("new_group_conversation", handleNewGroupConversation);
+      return () => {
+        socket.off("new_group_conversation", handleNewGroupConversation);
+      };
+    }
+  }, [user]);
 
   useFocusEffect(
     useCallback(() => {
-      user && socket.emit("load_conversations", { IDUser: user.ID });
-    }, [user])
+      if (!userData) return;
+      socket.emit("load_conversations", { IDUser: userData.ID });
+
+      return () => {
+        socket.off("load_conversations", { IDUser: userData.ID });
+      };
+    }, [userData])
   );
 
   useEffect(() => {
-    socket.on("load_conversations_server", (data) => {
+    const handleLoadConversationsServer = (data) => {
       if (data) dispatch(setConversation(data));
-    });
+    };
+
+    socket.on("load_conversations_server", handleLoadConversationsServer);
+
+    return () => {
+      socket.off("load_conversations_server", handleLoadConversationsServer);
+    };
   }, []);
 
   return (

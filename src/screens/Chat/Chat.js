@@ -13,7 +13,8 @@ import { ViewImageFullScreen } from "../../components/ImageMessage";
 import BlurViewMessage from "../../components/BlurView";
 
 function Chat({ route }) {
-  const { ID, fullname, urlavatar, owner } = route.params;
+  const { owner, IDConversation } = route.params;
+  const { ID, fullname, urlavatar } = route.params.Receiver;
 
   const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(false);
@@ -21,14 +22,9 @@ function Chat({ route }) {
   const { conversation } = useSelector((state) => state.conversation);
   const popupOptions = useSelector((state) => state.chat.popup);
   const [messageData, setMessageData] = useState([]);
-
   async function fetchMessages() {
     try {
       dispatch(setMessages([])); // Clear previous messages
-      if (!conversation.length) return;
-      const IDConversation = conversation.find(
-        (convers) => convers.IDReceiver === ID
-      )?.IDConversation;
       if (!IDConversation) return;
       const response = await api.getMessageByConversationId({
         IDConversation,
@@ -44,19 +40,26 @@ function Chat({ route }) {
     }
   }
 
+  const user = useSelector((state) => state.auth.user);
+
   useEffect(() => {
+    setMessageData([]);
     fetchMessages();
+    return () => fetchMessages();
   }, [conversation, dispatch, ID, popupOptions.show]);
 
   useEffect(() => {
+    socket.on("new_group_conversation", (data) => {
+      socket.emit("load_conversations", { IDUser: user.ID });
+    });
     const handleReceiveMessage = (data) => {
       setMessageData((prev) => [data, ...prev]);
     };
-    socket.on("sending_message", (data) => {});
+    // socket.on("sending_message", (data) => {});
 
     socket.on("receive_message", handleReceiveMessage);
     return () => {
-      // socket.off("receive_message");
+      socket.off("new_group_conversation");
       socket.off("sending_message");
     };
   }, []);
@@ -66,7 +69,7 @@ function Chat({ route }) {
       <StatusBar />
       <Header fullname={fullname} id={ID} image={urlavatar} owner={owner} />
       <Body
-        id={ID}
+        id={IDConversation}
         owner={owner}
         nameGroup={fullname}
         imageGroup={urlavatar}
@@ -75,7 +78,7 @@ function Chat({ route }) {
       />
       <ViewImageFullScreen />
       {/* <BlurViewMessage /> */}
-      <Footer ID={ID} />
+      <Footer IDConversation={IDConversation} />
       <PopUpOptions />
     </View>
   );

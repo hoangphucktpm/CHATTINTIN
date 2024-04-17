@@ -1,12 +1,5 @@
 import React, { memo, useEffect, useState } from "react";
-import {
-  ActivityIndicator,
-  FlatList,
-  Linking,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { FlatList, Linking, Text, TouchableOpacity, View } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import MessageItem from "../../../components/MessageItem";
 import ImageMessage, {
@@ -15,11 +8,7 @@ import ImageMessage, {
 import VideoMessage from "../../../components/VideoMessage";
 import { SimpleLineIcons } from "@expo/vector-icons";
 import { Ionicons } from "@expo/vector-icons";
-import {
-  setPopup,
-  setViewFullImage,
-  updateMessages,
-} from "../../../redux/chatSlice";
+import { setViewFullImage } from "../../../redux/chatSlice";
 import { A } from "@expo/html-elements";
 import { format } from "date-fns";
 import MessageReact from "../../../components/MessageReact";

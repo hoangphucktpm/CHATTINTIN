@@ -46,18 +46,6 @@ const OTP = (props) => {
       //   });
     }
   };
-  // createUserWithPhoneAndPassword(auth,phone,passWord)
-  // .then((userCredential)=>{
-  //     var user = userCredential.user;
-  // sendPhoneVerification(user);
-  //     Alert.alert("Thông báo",`Đăng ký thành công ! ${'\n'}Mời bạn kiểm tra điện thoại để xác nhận`);
-  //     setPhone("");
-  //     setuserName("");
-  // navigation.navigate("InputPass");
-  // })
-  // .catch(error =>{
-  //     Alert.alert("Thông báo","Xảy ra lỗi! \n Mời bạn nhập lại tài khoản và mật khẩu")
-  // })
 
   return (
     <View style={styles.container}>

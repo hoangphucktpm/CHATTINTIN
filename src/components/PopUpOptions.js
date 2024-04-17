@@ -24,7 +24,7 @@ const PopUpOptions = () => {
   const user = useSelector((state) => state.auth.user);
 
   const handlePress = () => {
-    if (item.IDSender !== user.ID) return;
+    if (popupOptions.data.IDSender !== user.ID) return;
 
     Alert.alert(
       "Thông báo",

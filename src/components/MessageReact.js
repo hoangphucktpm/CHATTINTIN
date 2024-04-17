@@ -106,7 +106,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 5,
     paddingVertical: 2,
     zIndex: 10,
-    right: 0,
+    right: -90,
   },
   reactionItem: {
     flexDirection: "row",

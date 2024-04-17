@@ -13,10 +13,9 @@ import { useSelector } from "react-redux";
 
 const ItemFriend = ({ navigation }) => {
   const { conversation } = useSelector((state) => state.conversation);
-  const chatLists = useMemo(() => {
-    if (!conversation) return [];
-    return conversation.flatMap((convers) => convers.Receiver);
-  }, [conversation]);
+
+  const chatLists =
+    conversation?.map((convers) => convers).filter(Boolean) || [];
 
   // Function to handle delete action
   const deleteGroupHandleClick = () => {
@@ -43,15 +42,19 @@ const ItemFriend = ({ navigation }) => {
               <Image
                 style={styles.itemFriend_avatar_avatar}
                 source={{
-                  uri: item.urlavatar,
+                  uri: item.Receiver.urlavatar,
                 }}
               />
             </View>
           </View>
           <View style={styles.itemFriend_right}>
             <View style={styles.itemFriend_message}>
-              <Text style={styles.itemFriend_name}>{item.fullname}</Text>
-              <Text style={styles.itemFriend_content}>{item.lastMessage}</Text>
+              <Text style={styles.itemFriend_name}>
+                {item.Receiver.fullname}
+              </Text>
+              <Text style={styles.itemFriend_content}>
+                {item.Receiver.lastMessage}
+              </Text>
             </View>
             {/* <View style={styles.itemFriend_timeBlock}>
               <Text style={styles.itemFriend_time}>1 phút trước</Text>
