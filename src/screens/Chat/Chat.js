@@ -71,8 +71,7 @@ function Chat({ route }) {
       <Body
         id={IDConversation}
         owner={owner}
-        nameGroup={fullname}
-        imageGroup={urlavatar}
+        dataSender={route.params.Receiver}
         isLoading={isLoading}
         messageData={messageData}
       />

@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   Image,
   Alert,
+  FlatList,
 } from "react-native";
 import styles from "./StyleCreateGroup";
 import { AntDesign, Feather, EvilIcons } from "@expo/vector-icons";
@@ -19,6 +20,7 @@ import { api } from "../../apis/api";
 import Checkbox from "expo-checkbox";
 import { Buffer } from "buffer";
 import socket from "../../services/socket";
+import { Avatar } from "@ui-kitten/components";
 function CreateGroup() {
   const navigation = useNavigation();
   const dispatch = useDispatch();
@@ -66,16 +68,16 @@ function CreateGroup() {
     setDataResearch(rs);
   }, [phoneandname, listFriends, users, user]);
 
-  const toggleItem = (id) => {
-    if (isChecked(id)) {
-      setCheckedItems(checkedItems.filter((item) => item !== id));
+  const toggleItem = (item) => {
+    if (isChecked(item.ID)) {
+      setCheckedItems(checkedItems.filter((item) => item.ID !== item.ID));
     } else {
-      setCheckedItems([...checkedItems, id]);
+      setCheckedItems([...checkedItems, item]);
     }
   };
 
   const isChecked = (id) => {
-    return checkedItems.includes(id);
+    return checkedItems.find((item) => item.ID === id);
   };
 
   const renderItem = ({ item }) => {
@@ -91,7 +93,7 @@ function CreateGroup() {
           flex: 1,
           marginBottom: 10,
         }}
-        onPress={() => toggleItem(item.ID)}
+        onPress={() => toggleItem(item)}
       >
         <View
           style={{ flex: 0.15, justifyContent: "center", alignItems: "center" }}
@@ -99,7 +101,7 @@ function CreateGroup() {
           <Checkbox
             value={isChecked(item.ID)}
             style={{ height: 20, width: 20, borderRadius: 100 }}
-            onValueChange={() => toggleItem(item.ID)}
+            onValueChange={() => toggleItem(item)}
           />
         </View>
         <View style={{ flex: 0.15, borderRadius: 100 }}>
@@ -154,7 +156,7 @@ function CreateGroup() {
     const data = {
       IDOwner: user.ID,
       groupName: name,
-      groupMembers: [user.ID, ...checkedItems],
+      groupMembers: [user.ID, ...checkedItems.flatMap((item) => item.ID)],
       groupAvatar,
     };
 
@@ -247,6 +249,22 @@ function CreateGroup() {
           />
         </View>
         <View style={styles.buttonCreate}>
+          <FlatList
+            data={checkedItems}
+            keyExtractor={(item, i) => item.ID + i}
+            renderItem={({ item }) => (
+              <TouchableOpacity onPress={() => toggleItem(item)}>
+                <Avatar
+                  source={{ uri: item.urlavatar }}
+                  alt={item.fullname}
+                  style={{
+                    width: 60,
+                    height: 60,
+                  }}
+                />
+              </TouchableOpacity>
+            )}
+          />
           <TouchableOpacity
             onPress={createGroup}
             style={styles.buttonCreateGroup}

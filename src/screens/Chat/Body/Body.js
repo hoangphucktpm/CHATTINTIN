@@ -12,8 +12,9 @@ import { setViewFullImage } from "../../../redux/chatSlice";
 import { A } from "@expo/html-elements";
 import { format } from "date-fns";
 import MessageReact from "../../../components/MessageReact";
-import { Avatar, Button, Card, Modal } from "@ui-kitten/components";
-function Body({ messageData }) {
+import { Avatar, Card, Modal } from "@ui-kitten/components";
+import InfoSender from "../../../components/InfoSender";
+function Body({ messageData, dataSender }) {
   const { user } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
 
@@ -52,170 +53,169 @@ function Body({ messageData }) {
           if (item?.isRemove) return null;
           if (item.isRecall)
             return (
-              <View
-                style={{
-                  margin: 10,
-                  alignSelf: getItemAlignment(item),
-                  backgroundColor: getItemBackgroundColor(item),
-                  borderRadius: 8,
-                  marginBottom: 5,
-                  maxWidth: "70%",
-                  display: "flex",
-                  gap: 5,
-                  padding: 5,
-                }}
+              <InfoSender
+                IDSender={item.IDSender}
+                isSelf={isSelf}
+                key={item.IDConversation}
+                dataSender={dataSender}
               >
-                <Text
+                <View
                   style={{
-                    fontStyle: "italic",
-                    color: getItemTextColor(item),
+                    margin: 10,
+                    alignSelf: getItemAlignment(item),
+                    backgroundColor: getItemBackgroundColor(item),
+                    borderRadius: 8,
+                    marginBottom: 5,
+                    maxWidth: "70%",
+                    display: "flex",
+                    gap: 5,
+                    padding: 5,
                   }}
                 >
-                  Tin nhắn đã bị thu hồi
-                </Text>
-              </View>
+                  <Text
+                    style={{
+                      fontStyle: "italic",
+                      color: getItemTextColor(item),
+                    }}
+                  >
+                    Tin nhắn đã bị thu hồi
+                  </Text>
+                </View>
+              </InfoSender>
             );
 
           if (item?.type === "image")
             return (
-              <MessageReact
-                item={item}
+              <InfoSender
+                IDSender={item.IDSender}
                 isSelf={isSelf}
                 key={item.IDConversation}
-                setDataModal={setDataModal}
+                dataSender={dataSender}
               >
-                <TouchableOpacity
-                  onPress={() => handleShowFullImage(item.content)}
-                  style={{
-                    margin: 10,
-                    alignSelf: getItemAlignment(item),
-                    backgroundColor: getItemBackgroundColor(item),
-                    borderRadius: 8,
-                    marginBottom: 5,
-                    maxWidth: "70%",
-                    display: "flex",
-                    gap: 5,
-                  }}
+                <MessageReact
+                  item={item}
+                  isSelf={isSelf}
+                  setDataModal={setDataModal}
                 >
-                  <ImageMessage url={item.content} />
-                </TouchableOpacity>
-              </MessageReact>
+                  <TouchableOpacity
+                    onPress={() => handleShowFullImage(item.content)}
+                    style={{
+                      margin: 10,
+                      alignSelf: getItemAlignment(item),
+                      backgroundColor: getItemBackgroundColor(item),
+                      borderRadius: 8,
+                      marginBottom: 5,
+                      maxWidth: "70%",
+                      display: "flex",
+                      gap: 5,
+                    }}
+                  >
+                    <ImageMessage url={item.content} />
+                  </TouchableOpacity>
+                </MessageReact>
+              </InfoSender>
             );
           if (item?.type === "video")
             return (
-              <MessageReact
-                item={item}
+              <InfoSender
+                dataSender={dataSender}
+                IDSender={item.IDSender}
                 isSelf={isSelf}
                 key={item.IDConversation}
-                setDataModal={setDataModal}
               >
-                <View
-                  style={{
-                    margin: 10,
-                    alignSelf: getItemAlignment(item),
-                    backgroundColor: getItemBackgroundColor(item),
-                    borderRadius: 8,
-                    marginBottom: 5,
-                    maxWidth: "70%",
-                  }}
+                <MessageReact
+                  item={item}
+                  isSelf={isSelf}
+                  setDataModal={setDataModal}
                 >
-                  <VideoMessage uri={item.content} />
-                </View>
-              </MessageReact>
+                  <View
+                    style={{
+                      margin: 10,
+                      alignSelf: getItemAlignment(item),
+                      backgroundColor: getItemBackgroundColor(item),
+                      borderRadius: 8,
+                      marginBottom: 5,
+                      maxWidth: "70%",
+                    }}
+                  >
+                    <VideoMessage uri={item.content} />
+                  </View>
+                </MessageReact>
+              </InfoSender>
             );
 
           if (item?.type === "file")
             return (
-              <MessageReact
-                item={item}
+              <InfoSender
+                dataSender={dataSender}
+                IDSender={item.IDSender}
                 isSelf={isSelf}
                 key={item.IDConversation}
-                setDataModal={setDataModal}
               >
-                <TouchableOpacity
-                  onPress={() => handleDownload(item.content)}
-                  style={{
-                    margin: 10,
-                    alignSelf: getItemAlignment(item),
-                    backgroundColor: getItemBackgroundColor(item),
-                    borderRadius: 8,
-                    marginBottom: 5,
-                    maxWidth: "70%",
-                    padding: 5,
-                    display: "flex",
-                    flexDirection: "row",
-                    gap: 5,
-                    alignItems: "center",
-                  }}
-                >
-                  <Ionicons
-                    name="document"
-                    size={50}
-                    color={getItemTextColor(item)}
-                  />
-                  <Text style={{ color: getItemTextColor(item) }}>
-                    {item.fileName}
-                  </Text>
-                  <Text style={{ color: getItemTextColor(item) }}>
-                    Tải xuống
-                  </Text>
-                  <SimpleLineIcons
-                    name="cloud-download"
-                    size={24}
-                    color={getItemTextColor(item)}
-                  />
-                </TouchableOpacity>
-              </MessageReact>
+                <InfoSender IDSender={item.IDSender} isSelf={isSelf} />
+              </InfoSender>
             );
 
           if (item?.type === "link")
             return (
-              <MessageReact
-                item={item}
-                isSelf={isSelf}
+              <InfoSender
+                IDSender={item.IDSender}
+                isSelf={item.IDSender === user.ID}
+                dataSender={dataSender}
                 key={item.IDConversation}
-                setDataModal={setDataModal}
               >
-                <View
-                  style={{
-                    margin: 10,
-                    alignSelf: getItemAlignment(item),
-                    backgroundColor: getItemBackgroundColor(item),
-                    borderRadius: 8,
-                    marginBottom: 5,
-                    maxWidth: "70%",
-                    display: "flex",
-                    gap: 5,
-                    padding: 5,
-                    fontSize: 20,
-                  }}
+                <MessageReact
+                  item={item}
+                  isSelf={isSelf}
+                  setDataModal={setDataModal}
                 >
-                  <A
-                    href={item.content}
+                  <View
                     style={{
-                      color: getItemTextColor(item),
-                      textDecorationLine: "underline",
-                      fontStyle: "italic",
+                      margin: 10,
+                      alignSelf: getItemAlignment(item),
+                      backgroundColor: getItemBackgroundColor(item),
+                      borderRadius: 8,
+                      marginBottom: 5,
+                      maxWidth: "70%",
+                      display: "flex",
+                      gap: 5,
+                      padding: 5,
+                      fontSize: 20,
                     }}
                   >
-                    {item.content}
-                  </A>
-                  <Text style={{ color: getItemTextColor(item) }}>
-                    {format(item.dateTime, "HH:mm:s")}
-                  </Text>
-                </View>
-              </MessageReact>
+                    <A
+                      href={item.content}
+                      style={{
+                        color: getItemTextColor(item),
+                        textDecorationLine: "underline",
+                        fontStyle: "italic",
+                      }}
+                    >
+                      {item.content}
+                    </A>
+                    <Text style={{ color: getItemTextColor(item) }}>
+                      {format(item.dateTime, "HH:mm:s")}
+                    </Text>
+                  </View>
+                </MessageReact>
+              </InfoSender>
             );
 
           return (
-            <MessageReact
-              item={item}
+            <InfoSender
+              IDSender={item.IDSender}
               isSelf={isSelf}
               key={item.IDConversation}
-              setDataModal={setDataModal}
+              dataSender={dataSender}
             >
-              <MessageItem item={item} user={user} />
-            </MessageReact>
+              <MessageReact
+                item={item}
+                isSelf={isSelf}
+                setDataModal={setDataModal}
+              >
+                <MessageItem item={item} user={user} />
+              </MessageReact>
+            </InfoSender>
           );
         }}
         inverted={true}
@@ -273,128 +273,3 @@ function Body({ messageData }) {
 }
 
 export default Body;
-
-// import React, { memo } from "react";
-// import { View, FlatList } from "react-native";
-// import MessageItem from "../../../components/MessageItem";
-// import ImageMessage, {
-//   ViewImageFullScreen,
-// } from "../../../components/ImageMessage";
-// import VideoMessage from "../../../components/VideoMessage";
-// import { SimpleLineIcons } from "@expo/vector-icons";
-// import { Ionicons } from "@expo/vector-icons";
-// import { A } from "@expo/html-elements";
-// import { format } from "date-fns";
-// import { useDispatch, useSelector } from "react-redux";
-
-// const renderItem = ({ item, user }) => {
-//   if (item.isRemove || item.isRecall) return null;
-
-//   const getItemAlignment =
-//     item.IDSender === user.ID ? "flex-end" : "flex-start";
-//   const getItemBackgroundColor = item.IDSender === user.ID ? "#0094FF" : "#fff";
-//   const getItemTextColor = item.IDSender === user.ID ? "white" : "black";
-
-//   const handleDownload = (url) => Linking.openURL(url);
-//   const handleLongPress = (item) => {
-//     if (item.IDSender !== user.ID) return;
-//     dispatch(setPopup({ show: true, data: item }));
-//   };
-//   const handleShowFullImage = (url) =>
-//     dispatch(setViewFullImage({ show: true, data: url }));
-
-//   return (
-//     <View
-//       style={{
-//         margin: 10,
-//         alignSelf: getItemAlignment,
-//         backgroundColor: getItemBackgroundColor,
-//         borderRadius: 8,
-//         marginBottom: 5,
-//         maxWidth: "70%",
-//       }}
-//     >
-//       {item.type === "image" && (
-//         <TouchableOpacity
-//           onPress={() => handleShowFullImage(item.content)}
-//           onLongPress={() => handleLongPress(item)}
-//         >
-//           <ImageMessage url={item.content} />
-//         </TouchableOpacity>
-//       )}
-//       {item.type === "video" && (
-//         <TouchableOpacity onLongPress={() => handleLongPress(item)}>
-//           <VideoMessage uri={item.content} />
-//         </TouchableOpacity>
-//       )}
-//       {item.type === "file" && (
-//         <TouchableOpacity
-//           onLongPress={() => handleLongPress(item)}
-//           onPress={() => handleDownload(item.content)}
-//         >
-//           <Ionicons name="document" size={50} color={getItemTextColor} />
-//           <Text style={{ color: getItemTextColor }}>{item.fileName}</Text>
-//           <Text style={{ color: getItemTextColor }}>Tải xuống</Text>
-//           <SimpleLineIcons
-//             name="cloud-download"
-//             size={24}
-//             color={getItemTextColor}
-//           />
-//         </TouchableOpacity>
-//       )}
-//       {item.type === "link" && (
-//         <View
-//           style={{
-//             margin: 10,
-//             alignSelf: getItemAlignment,
-//             backgroundColor: getItemBackgroundColor,
-//             borderRadius: 8,
-//             marginBottom: 5,
-//             maxWidth: "70%",
-//             display: "flex",
-//             gap: 5,
-//             padding: 5,
-//             fontSize: 20,
-//           }}
-//         >
-//           <A
-//             onLongPress={() => handleLongPress(item)}
-//             href={item.content}
-//             style={{
-//               color: getItemTextColor,
-//               textDecorationLine: "underline",
-//               fontStyle: "italic",
-//             }}
-//           >
-//             {item.content}
-//           </A>
-//           <Text style={{ color: getItemTextColor }}>
-//             {format(item.dateTime, "HH:mm:s")}
-//           </Text>
-//         </View>
-//       )}
-//       {item.type !== "image" &&
-//         item.type !== "video" &&
-//         item.type !== "file" &&
-//         item.type !== "link" && <MessageItem item={item} user={user} />}
-//     </View>
-//   );
-// };
-
-// const Body = ({ isLoading, messageData }) => {
-//   const { user } = useSelector((state) => state.auth);
-//   const dispatch = useDispatch();
-
-//   return (
-//     <View style={{ flex: 1 }}>
-//       <FlatList
-//         data={[...messageData, 1]}
-//         keyExtractor={(item, index) => index.toString()}
-//         renderItem={(item) => renderItem({ item, user })}
-//         inverted={true}
-//       />
-//     </View>
-//   );
-// };
-
-// export default memo(Body);

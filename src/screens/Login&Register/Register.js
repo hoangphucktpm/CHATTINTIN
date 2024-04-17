@@ -40,7 +40,7 @@ const Register = () => {
     try {
       const res = await api.getUserByPhone(phone);
       console.log(res);
-      if (!res.data.status) {
+      if (!res.data) {
         setShowOtp(true);
         setLoading(true);
         try {

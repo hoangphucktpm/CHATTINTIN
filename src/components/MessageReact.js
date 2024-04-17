@@ -1,8 +1,9 @@
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { useDispatch } from "react-redux";
 import { setPopup } from "../redux/chatSlice";
+import { api } from "../apis/api";
 
 const icons = ["❤️", "👍", "😀", "😂", "😍", "😡"];
 
@@ -21,7 +22,6 @@ const MessageReact = ({ children, item, isSelf, setDataModal }) => {
 
   const handleReaction = (emoji) => {
     const data = { user, icon: emoji };
-    console.log(data);
     setReactSelected(emoji);
     setShowReactions(false);
   };
@@ -36,7 +36,7 @@ const MessageReact = ({ children, item, isSelf, setDataModal }) => {
       onLongPress={handleLongPress}
       style={{
         flexDirection: isSelf ? "row-reverse" : "row",
-        paddingVertical: 10,
+        paddingVertical: 5,
         maxWidth: "70%",
         alignSelf: isSelf ? "flex-end" : "flex-start",
         alignItems: "center",
