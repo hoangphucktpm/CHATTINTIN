@@ -210,6 +210,7 @@ function DrawerChatGroup({ navigation }) {
             <View style={styles.containerBody_Mid_Group}>
               <TouchableOpacity
                 style={styles.containerBody_Mid_ChangeName_Item}
+                onPress={() => navigation.navigate("ShowMemberGroup")}
               >
                 <MaterialIcons
                   name="groups"

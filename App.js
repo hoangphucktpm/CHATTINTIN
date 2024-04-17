@@ -24,7 +24,7 @@ import MyProfile from "./src/screens/Profile/MyProfile";
 import FriendProfile from "./src/screens/Profile/FriendProfile";
 import CreateGroup from "./src/screens/Group/CreateGroup";
 import ImageChat from "./src/screens/Chat/ShowImageChat";
-import MemberGroup from "./src/screens/Chat/ShowMemberGroup";
+import ShowMemberGroup from "./src/screens/Chat/ShowMemberGroup";
 import ListFriend from "./src/screens/ListFriend/ListFriend";
 import ChangePassForgot from "./src/screens/ForgotPassword&DashBoard/ChangePassForgot";
 import DrawerChatGroup from "./src/screens/Chat/Drawble/DrawerChatGroup";
@@ -59,7 +59,7 @@ const App = () => {
   const addFriends = "AddFriends";
   const createGroup = "CreateGroup";
   const imageChat = "ImageChat";
-  const memberGroup = "MemberGroup";
+  const showMemberGroup = "ShowMemberGroup";
   const changePassForgot = "ChangePassForgot";
   const otpPassForgot = "OTPPassForgot";
   const story = "Story";
@@ -94,7 +94,7 @@ const App = () => {
             {/* <Stack.Screen name={friendProfile} component={FriendProfile} />
                 {/* <Stack.Screen name={createGroup} component={CreateGroup} /> */}
             {/* <Stack.Screen name={imageChat} component={ImageChat} /> */}
-            {/* <Stack.Screen name={memberGroup} component={MemberGroup} /> */}
+            <Stack.Screen name={showMemberGroup} component={ShowMemberGroup} />
             <Stack.Screen name={listFriend} component={ListFriend} />
             <Stack.Screen name={drawbleChatGroup} component={DrawerChatGroup} />
             <Stack.Screen name={createGroup} component={CreateGroup} />
