@@ -77,11 +77,14 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   buttonCreate: {
-    flex: 0.15,
-    marginRight: 20,
-    marginLeft: 20,
-    alignItems: "flex-end",
+    flex: 0.1,
+    marginTop: "auto",
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
     justifyContent: "center",
+    backgroundColor: "white",
+    padding: 5,
   },
   buttonCreateGroup: {
     paddingTop: 20,
