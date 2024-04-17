@@ -1,23 +1,21 @@
 import React, { memo, useEffect, useState } from "react";
-import { ActivityIndicator, StatusBar, Text, View } from "react-native";
+import { StatusBar, View } from "react-native";
 import styles from "./StyleChat";
 import Header from "./Header/Header";
 import Body from "./Body/Body";
 import Footer from "./Footer/FooterChat";
 import { useDispatch, useSelector } from "react-redux";
 import { api } from "../../apis/api";
-import { setMessages, updateMessages } from "../../redux/chatSlice";
+import { setMessages } from "../../redux/chatSlice";
 import PopUpOptions from "../../components/PopUpOptions";
 import socket from "../../services/socket";
 import { ViewImageFullScreen } from "../../components/ImageMessage";
-import BlurViewMessage from "../../components/BlurView";
 
 function Chat({ route }) {
   const { owner, IDConversation } = route.params;
   const { ID, fullname, urlavatar } = route.params.Receiver;
 
   const dispatch = useDispatch();
-  const [isLoading, setIsLoading] = useState(false);
 
   const { conversation } = useSelector((state) => state.conversation);
   const popupOptions = useSelector((state) => state.chat.popup);
@@ -72,8 +70,8 @@ function Chat({ route }) {
         id={IDConversation}
         owner={owner}
         dataSender={route.params.Receiver}
-        isLoading={isLoading}
         messageData={messageData}
+        isGroup={route.params.isGroup}
       />
       <ViewImageFullScreen />
       {/* <BlurViewMessage /> */}
