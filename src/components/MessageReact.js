@@ -13,11 +13,11 @@ const MessageReact = ({ children, item, isSelf, setDataModal }) => {
 
   const user = "example";
   const dataTemo = [
-    { user: "h", icon: "❤️" },
-    {
-      user: "https://products111.s3.ap-southeast-1.amazonaws.com/84329457746_4235c59e-fa5a-4b42-a2a9-023d8916964f",
-      icon: "😀",
-    },
+    // { user: "h", icon: "❤️" },
+    // {
+    //   user: "https://products111.s3.ap-southeast-1.amazonaws.com/84329457746_4235c59e-fa5a-4b42-a2a9-023d8916964f",
+    //   icon: "😀",
+    // },
   ];
 
   const handleReaction = (emoji) => {
@@ -35,9 +35,10 @@ const MessageReact = ({ children, item, isSelf, setDataModal }) => {
     <TouchableOpacity
       onLongPress={handleLongPress}
       style={{
+        zIndex: 2,
         flexDirection: isSelf ? "row-reverse" : "row",
         paddingBottom: 5,
-        maxWidth: "70%",
+        //maxWidth: "70%",
         alignSelf: isSelf ? "flex-end" : "flex-start",
         alignItems: "center",
       }}

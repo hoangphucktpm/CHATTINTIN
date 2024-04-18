@@ -37,6 +37,7 @@ import SourcesMessage from "./src/screens/Chat/SourcesMessage";
 
 import { ApplicationProvider } from "@ui-kitten/components";
 import * as eva from "@eva-design/eva";
+import AddMembers from "./src/screens/Group/AddMembers";
 
 const App = () => {
   const Stack = createNativeStackNavigator();
@@ -64,6 +65,7 @@ const App = () => {
   const otpPassForgot = "OTPPassForgot";
   const story = "Story";
   const sourcesMessages = "SourcesMessages";
+  const addMemberGroups = "AddMemberGroups";
 
   return (
     <Provider store={store}>
@@ -87,6 +89,7 @@ const App = () => {
             <Stack.Screen name={contacts} component={Contacts} />
             <Stack.Screen name={addFriends} component={AddFriends} />
             <Stack.Screen name={home} component={Home} />
+            <Stack.Screen name={addMemberGroups} component={AddMembers} />
             <Stack.Screen name={chat} component={Chat} />
             <Stack.Screen name={drawbleChat} component={DrawerChat} />
             <Stack.Screen name={scannerQR} component={ScannerQR} />

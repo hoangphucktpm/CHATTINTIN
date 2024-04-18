@@ -5,7 +5,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#DCDCDC",
   },
 
-
   containerTabBar: {
     flexDirection: "row",
     alignContent: "center",
@@ -16,6 +15,7 @@ const styles = StyleSheet.create({
   containerBody: {
     display: "flex",
     flexDirection: "column",
+    flex: 1,
     // paddingBottom: 70,
   },
   containerBody_Top: {
@@ -144,7 +144,8 @@ const styles = StyleSheet.create({
     display: "flex",
     flexDirection: "column",
     backgroundColor: "white",
-    height: 300,
+    height: 460,
+    // height: "auto",
   },
 });
 export default styles;
