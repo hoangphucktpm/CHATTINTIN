@@ -1,24 +1,28 @@
+import { View, Text } from "react-native";
 import React, { memo, useEffect, useState } from "react";
 import { api } from "../apis/api";
 import { Avatar } from "@ui-kitten/components";
 
 const InfoSender = memo(
   ({ IDSender, dataSender, isSelf, children, isGroup = false }) => {
-    const [sender, setSender] = useState(dataSender);
+    if (!IDSender || isSelf) return children;
+    const [sender, setSender] = useState(null);
 
     useEffect(() => {
       const fetchDataSender = async () => {
-        if (!IDSender || isGroup) return;
+        if (!IDSender) return;
         const res = await api.getUserByPhone(IDSender);
         setSender(res.data);
       };
-
-      if (!sender) {
+      if (!isGroup) {
+        setSender(dataSender);
+      } else {
         fetchDataSender();
+        return () => fetchDataSender();
       }
-    }, [IDSender, isGroup, sender]);
+    }, [IDSender]);
 
-    if (!sender || isSelf) return children;
+    if (!sender) return children;
 
     return (
       <View
@@ -38,12 +42,12 @@ const InfoSender = memo(
           }}
         >
           <Avatar
-            source={{ uri: sender.urlavatar }}
-            alt={sender.fullname}
+            source={{ uri: sender?.urlavatar }}
+            alt={sender?.fullname}
             style={{ width: 30, height: 30, objectFit: "cover" }}
           />
           <Text style={{ fontSize: 16, fontWeight: 600 }}>
-            {sender.fullname}
+            {sender?.fullname}
           </Text>
         </View>
         <View style={{ marginLeft: 20 }}>{children}</View>
