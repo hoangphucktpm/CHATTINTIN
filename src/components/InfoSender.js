@@ -2,6 +2,7 @@ import { View, Text } from "react-native";
 import React, { memo, useEffect, useState } from "react";
 import { api } from "../apis/api";
 import { Avatar } from "@ui-kitten/components";
+import { max } from "date-fns";
 
 const InfoSender = memo(
   ({ IDSender, dataSender, isSelf, children, isGroup = false }) => {

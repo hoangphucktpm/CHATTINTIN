@@ -122,7 +122,7 @@ function CreateGroup() {
     try {
       let result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
-        quality: 1,
+        quality: 0,
         allowsMultipleSelection: false,
         base64: true,
       });
@@ -162,6 +162,7 @@ function CreateGroup() {
 
     try {
       socket.emit("create_group_conversation", data);
+
       Alert.alert("Thành công", "Tạo nhóm thành công");
       navigation.goBack();
     } catch (error) {
@@ -250,6 +251,7 @@ function CreateGroup() {
         </View>
         <View style={styles.buttonCreate}>
           <FlatList
+            horizontal
             data={checkedItems}
             keyExtractor={(item, i) => item.ID + i}
             renderItem={({ item }) => (

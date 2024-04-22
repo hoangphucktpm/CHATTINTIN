@@ -57,4 +57,16 @@ export const api = {
 
   createGroup: (data) =>
     http.post("conversation/createNewGroupConversation", data),
+
+  getMembers: (data) => http.post("conversation/get-member-info", data),
+
+  addCoOwnerToGroup: (data) =>
+    http.post("conversation/addCoOwnerToGroup", data),
+
+  removeCoOwnerFromGroup: (data) =>
+    http.post("conversation/removeCoOwnerFromGroup", data),
+
+  leaveGroup: (data) => http.post("conversation/leave-group", data),
+
+  updateGroup: (data) => http.post("conversation/update-info-group", data),
 };

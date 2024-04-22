@@ -10,7 +10,7 @@ export const ViewImageFullScreen = () => {
   const dispatch = useDispatch();
 
   const handleClose = () => {
-    // dispatch(setViewFullImage({ show: false, data: null }));
+    dispatch(setViewFullImage({ show: false, data: null }));
   };
   return (
     <Modal

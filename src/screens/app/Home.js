@@ -1,79 +1,91 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { ActivityIndicator, View } from "react-native";
-import { useNavigation, useFocusEffect } from "@react-navigation/native";
+import { View } from "react-native";
+import { useFocusEffect } from "@react-navigation/native";
 import { useSelector, useDispatch } from "react-redux";
 import { getData } from "../../utils/localStorageConfig";
 import { api } from "../../apis/api";
 import { setUser } from "../../redux/authSclice";
 import socket from "../../services/socket";
 import { setConversation } from "../../redux/conversationSlice";
-import { updateMessages } from "../../redux/chatSlice";
 import Search from "../Search/Search";
 import ListFriend from "../ListFriend/ListFriend";
 import Footer from "../Footer/Footer";
 import styles from "./App_Style";
 
 function Home(props) {
-  const navigation = useNavigation();
   const dispatch = useDispatch();
-
-  const [userData, setUserData] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      const phone = await getData("user-phone");
-      if (!phone) return navigation.navigate("Login");
-      const res = await api.getUserByPhone(phone);
-      setUserData(res.data);
-      dispatch(setUser(res.data));
-      setIsLoading(false);
-      socket.emit("load_conversations", { IDUser: res.data.ID });
-    };
-    fetchData();
-
-    return () => {
-      socket.off("new_group_conversation");
-      socket.off("load_conversations_server");
-    };
-  }, []);
-
-  const phone = userData?.phone;
   const user = useSelector((state) => state.auth.user);
+  const [phone, setPhone] = useState(null);
+  const [conversations, setConversations] = useState([]);
 
-  useEffect(() => {
-    if (user) {
-      const handleNewGroupConversation = (data) => {
-        socket.emit("load_conversations", { IDUser: user.ID });
-      };
-      socket.on("new_group_conversation", handleNewGroupConversation);
-      return () => {
-        socket.off("new_group_conversation", handleNewGroupConversation);
-      };
-    }
-  }, [user]);
+  const getPhone = async () => {
+    const phoneUser = await getData("user-phone");
+    setPhone(phoneUser);
+  };
 
   useFocusEffect(
     useCallback(() => {
-      if (!userData) return;
-      socket.emit("load_conversations", { IDUser: userData.ID });
+      const fetchUserAndConversations = async () => {
+        if (!phone) {
+          getPhone();
+        } else {
+          socket.emit("load_conversations", { IDUser: phone });
+          const res = await api.getUserByPhone(phone);
+          dispatch(setUser(res.data));
+        }
+      };
+
+      fetchUserAndConversations();
+
+      socket.on("new_group_conversation", () => {
+        if (phone) {
+          socket.emit("load_conversations", { IDUser: phone });
+        }
+      });
 
       return () => {
-        socket.off("load_conversations", { IDUser: userData.ID });
+        socket.off("new_group_conversation");
       };
-    }, [userData])
+    }, [phone])
   );
 
   useEffect(() => {
+    socket.on("new_group_conversation", () => {
+      if (phone) {
+        socket.emit("load_conversations", { IDUser: phone });
+      }
+    });
+    conversations.length &&
+      socket.on("receive_message", (data) => {
+        console.log(123);
+        const currentIndex = conversations.findIndex(
+          (conversation) => conversation.IDConversation === data.IDConversation
+        );
+
+        if (currentIndex > -1) {
+          const updatedConversations = [
+            conversations[currentIndex],
+            ...conversations,
+          ];
+
+          updatedConversations.splice(currentIndex + 1, 1);
+
+          dispatch(setConversation(updatedConversations));
+        }
+      });
+
+    phone && socket.emit("load_conversations", { IDUser: phone });
+  }, []);
+
+  useEffect(() => {
     const handleLoadConversationsServer = (data) => {
-      if (data) dispatch(setConversation(data));
+      if (data) {
+        setConversations(data);
+        dispatch(setConversation(data));
+      }
     };
 
     socket.on("load_conversations_server", handleLoadConversationsServer);
-
-    return () => {
-      socket.off("load_conversations_server", handleLoadConversationsServer);
-    };
   }, []);
 
   return (
@@ -81,11 +93,7 @@ function Home(props) {
       <View style={styles.containerItem}>
         <Search style={styles.containerSearch} />
         <View style={styles.containerList}>
-          {isLoading ? (
-            <ActivityIndicator />
-          ) : (
-            <ListFriend {...props} style={styles.main} />
-          )}
+          {user && phone && <ListFriend {...props} style={styles.main} />}
         </View>
         <Footer phone={phone} style={styles.footer} />
       </View>

@@ -6,10 +6,15 @@ import Body from "./Body/Body";
 import Footer from "./Footer/FooterChat";
 import { useDispatch, useSelector } from "react-redux";
 import { api } from "../../apis/api";
-import { setMessages } from "../../redux/chatSlice";
+import {
+  setLoadingUpload,
+  setMessages,
+  updateMessages,
+} from "../../redux/chatSlice";
 import PopUpOptions from "../../components/PopUpOptions";
 import socket from "../../services/socket";
 import { ViewImageFullScreen } from "../../components/ImageMessage";
+import ForwardModal from "../../components/ForwardModal";
 
 function Chat({ route }) {
   const { owner, IDConversation } = route.params;
@@ -17,7 +22,8 @@ function Chat({ route }) {
 
   const dispatch = useDispatch();
 
-  const { conversation } = useSelector((state) => state.conversation);
+  const messages = useSelector((state) => state.chat.messages);
+
   const popupOptions = useSelector((state) => state.chat.popup);
   const [messageData, setMessageData] = useState([]);
   async function fetchMessages() {
@@ -44,21 +50,44 @@ function Chat({ route }) {
     setMessageData([]);
     fetchMessages();
     return () => fetchMessages();
-  }, [conversation, dispatch, ID, popupOptions.show]);
+  }, [ID]);
 
+  const handleReceiveMessage = (data) => {
+    if (data.isPass) return;
+    setMessageData((prev) => [data, ...prev]);
+
+    dispatch(setLoadingUpload(false));
+  };
   useEffect(() => {
     socket.on("new_group_conversation", (data) => {
       socket.emit("load_conversations", { IDUser: user.ID });
     });
-    const handleReceiveMessage = (data) => {
-      setMessageData((prev) => [data, ...prev]);
-    };
     // socket.on("sending_message", (data) => {});
 
     socket.on("receive_message", handleReceiveMessage);
+
     return () => {
       socket.off("new_group_conversation");
       socket.off("sending_message");
+    };
+  }, []);
+
+  useEffect(() => {
+    socket.on("changeStateMessage", (data) => {
+      setMessageData((prev) => {
+        const newData = prev.map((item) => {
+          if (item.IDMessageDetail === data.IDMessageDetail) {
+            return { ...item, isRecall: data.isRecall };
+          }
+          return item;
+        });
+        return newData;
+      });
+    });
+
+    dispatch(setLoadingUpload(false));
+    return () => {
+      socket.off("changeStateMessage");
     };
   }, []);
 
@@ -76,7 +105,8 @@ function Chat({ route }) {
       <ViewImageFullScreen />
       {/* <BlurViewMessage /> */}
       <Footer IDConversation={IDConversation} />
-      <PopUpOptions />
+      <PopUpOptions setMessageData={setMessageData} />
+      <ForwardModal />
     </View>
   );
 }

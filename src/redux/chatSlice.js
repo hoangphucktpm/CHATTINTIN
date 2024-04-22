@@ -1,4 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { set } from "date-fns";
 
 const initialState = {
   chatList: [], // [{message: 'Hello', fromSelf: true}]
@@ -12,6 +13,18 @@ const initialState = {
     show: false,
     data: null,
   },
+
+  reply: {
+    show: false,
+    data: null,
+  },
+
+  forward: {
+    show: false,
+    data: null,
+  },
+
+  isLoading: false,
 };
 
 const chatSlice = createSlice({
@@ -33,6 +46,15 @@ const chatSlice = createSlice({
     setViewFullImage: (state, action) => {
       state.viewFullImage = action.payload;
     },
+    setReply: (state, action) => {
+      state.reply = action.payload;
+    },
+    setForward: (state, action) => {
+      state.forward = action.payload;
+    },
+    setLoadingUpload: (state, action) => {
+      state.isLoading = action.payload;
+    },
   },
 });
 
@@ -42,5 +64,8 @@ export const {
   setPopup,
   updateMessages,
   setViewFullImage,
+  setReply,
+  setForward,
+  setLoadingUpload,
 } = chatSlice.actions;
 export default chatSlice.reducer;

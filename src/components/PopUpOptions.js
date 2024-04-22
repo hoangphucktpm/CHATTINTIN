@@ -9,19 +9,27 @@ import {
 } from "react-native";
 import React from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { setPopup } from "../redux/chatSlice";
+import {
+  setForward,
+  setMessages,
+  setPopup,
+  setReply,
+  updateMessages,
+} from "../redux/chatSlice";
 import { FontAwesome } from "@expo/vector-icons";
 import { api } from "../apis/api";
 import socket from "../services/socket";
 
-const PopUpOptions = () => {
+const PopUpOptions = ({ setMessageData }) => {
   const popupOptions = useSelector((state) => state.chat.popup);
+  const user = useSelector((state) => state.auth.user);
+  const messages = useSelector((state) => state.chat.messages);
 
   const dispatch = useDispatch();
 
-  const handleClose = () => dispatch(setPopup({ show: false, data: null }));
+  if (!popupOptions.show) return null;
 
-  const user = useSelector((state) => state.auth.user);
+  const handleClose = () => dispatch(setPopup({ show: false, data: null }));
 
   const handlePress = () => {
     if (popupOptions.data.IDSender !== user.ID) return;
@@ -50,7 +58,15 @@ const PopUpOptions = () => {
     );
   };
 
-  const handleRepply = () => {};
+  const handleReply = () => {
+    dispatch(
+      setReply({
+        show: true,
+        data: popupOptions.data,
+      })
+    );
+    handleClose();
+  };
 
   const handleDelete = () => {
     Alert.alert(
@@ -66,6 +82,17 @@ const PopUpOptions = () => {
           text: "Có",
           onPress: async () => {
             await api.deleteMessage(popupOptions.data.IDMessageDetail);
+            setMessageData((prev) => {
+              const newData = prev.map((item) => {
+                if (
+                  item.IDMessageDetail === popupOptions.data.IDMessageDetail
+                ) {
+                  return { ...item, isRemove: true };
+                }
+                return item;
+              });
+              return newData;
+            });
             handleClose();
           },
         },
@@ -97,7 +124,7 @@ const PopUpOptions = () => {
               : popupOptions.data?.content}
           </Text>
           <TouchableOpacity
-            onPress={handleRepply}
+            onPress={handleReply}
             style={{
               display: "flex",
               flexDirection: "row",
@@ -110,7 +137,15 @@ const PopUpOptions = () => {
           </TouchableOpacity>
 
           <TouchableOpacity
-            onPress={handlePress}
+            onPress={() => {
+              dispatch(
+                setForward({
+                  show: true,
+                  data: popupOptions.data,
+                })
+              );
+              handleClose();
+            }}
             style={{
               display: "flex",
               flexDirection: "row",
@@ -118,9 +153,23 @@ const PopUpOptions = () => {
               gap: 5,
             }}
           >
-            <Text style={styles.modalText}>Thu hồi</Text>
-            <FontAwesome name="repeat" size={20} color="orange" />
+            <Text style={styles.modalText}>Chuyển tiếp</Text>
+            <FontAwesome name="send-o" size={20} color="green" />
           </TouchableOpacity>
+          {popupOptions.data.userSender.ID === user.ID && (
+            <TouchableOpacity
+              onPress={handlePress}
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
+                gap: 5,
+              }}
+            >
+              <Text style={styles.modalText}>Thu hồi</Text>
+              <FontAwesome name="repeat" size={20} color="orange" />
+            </TouchableOpacity>
+          )}
 
           <TouchableOpacity
             onPress={handleDelete}

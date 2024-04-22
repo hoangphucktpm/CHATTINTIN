@@ -47,6 +47,7 @@ function Contacts() {
         api.getAllFriendRequests(user.ID),
         api.getAllFriends(user.ID),
       ]);
+      console.log(allFriends.data.length);
       setFriendRequests(allFriendRequests.data);
       setListFriends(allFriends.data);
     };

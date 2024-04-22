@@ -9,13 +9,17 @@ import React, { useMemo, useState } from "react";
 import styles from "./StyleItemFriend";
 import { AntDesign, Feather } from "@expo/vector-icons";
 import { SwipeListView } from "react-native-swipe-list-view";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { setGroupDetails } from "../../redux/groupSlice";
+import { setForward, setPopup, setReply } from "../../redux/chatSlice";
 
 const ItemFriend = ({ navigation }) => {
   const { conversation } = useSelector((state) => state.conversation);
 
-  const chatLists =
-    conversation?.map((convers) => convers).filter(Boolean) || [];
+  const chatLists = useMemo(
+    () => conversation?.map((convers) => convers).filter(Boolean) || [],
+    [conversation]
+  );
 
   // Function to handle delete action
   const deleteGroupHandleClick = () => {
@@ -29,10 +33,20 @@ const ItemFriend = ({ navigation }) => {
     console.log("Ghim action clicked");
   };
 
+  const dispatch = useDispatch();
+
+  const handleChat = (item) => {
+    dispatch(setReply({ show: false, data: null }));
+    dispatch(setGroupDetails(item));
+    dispatch(setForward({ show: false, data: null }));
+    dispatch(setPopup({ show: false, data: null }));
+    navigation.navigate("Chat", item);
+  };
+
   const renderItem = ({ item }) => {
     return (
       <TouchableHighlight
-        onPress={() => navigation.navigate("Chat", item)}
+        onPress={() => handleChat(item)}
         underlayColor={"#E6E6FA"}
         style={styles.touchHightLight}
       >

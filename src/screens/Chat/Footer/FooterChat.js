@@ -5,6 +5,7 @@ import {
   View,
   TouchableOpacity,
   Text,
+  ActivityIndicator,
 } from "react-native";
 import {
   MaterialIcons,
@@ -23,11 +24,17 @@ import * as DocumentPicker from "expo-document-picker";
 import styles from "./StyleFooter";
 import socket from "../../../services/socket";
 import { Buffer } from "buffer";
+import { setLoadingUpload, setReply } from "../../../redux/chatSlice";
 const CHUNK_SIZE = 1024 * 1024;
 
 function FooterChat({ IDConversation }) {
   const [text, setText] = useState("");
   const [showIcon, setShowIcon] = useState(false);
+  const reply = useSelector((state) => state.chat.reply);
+  const user = useSelector((state) => state.auth.user);
+
+  const dispatch = useDispatch();
+  const isLoading = useSelector((state) => state.chat.isLoading);
 
   const { transcript, startRecording, stopRecording, isRecording } =
     useSpeechRecognition();
@@ -38,7 +45,18 @@ function FooterChat({ IDConversation }) {
     }
   }, [transcript]);
 
-  const user = useSelector((state) => state.auth.user);
+  const handleReplyMessage = async () => {
+    const data = {
+      IDConversation: reply.data.IDConversation,
+      IDUser: user.ID,
+      IDReplyMessage: reply.data.IDMessageDetail,
+      content: text,
+    };
+
+    socket.emit("reply_message", data);
+    setText("");
+    dispatch(setReply({ show: false, data: null }));
+  };
 
   const sendMessageSocket = async () => {
     if (!text) return;
@@ -56,6 +74,7 @@ function FooterChat({ IDConversation }) {
   // send image
   const pickImage = async () => {
     try {
+      dispatch(setLoadingUpload(true));
       let result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
         quality: 1,
@@ -88,6 +107,7 @@ function FooterChat({ IDConversation }) {
   // send video
   const handleUploadVideo = async () => {
     try {
+      dispatch(setLoadingUpload(true));
       let result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Videos,
         allowsMultipleSelection: true,
@@ -124,6 +144,8 @@ function FooterChat({ IDConversation }) {
   // send document
   const handlePickDoc = async () => {
     try {
+      dispatch(setLoadingUpload(true));
+
       const result = await DocumentPicker.getDocumentAsync({
         multiple: true,
         type: "application/*",
@@ -143,7 +165,7 @@ function FooterChat({ IDConversation }) {
           });
 
           fileList.push({
-            mimeType: asset.type,
+            mimeType: asset.mimeType,
             content: Buffer.from(chunk, "base64"),
             fileName: asset.name,
           });
@@ -157,7 +179,6 @@ function FooterChat({ IDConversation }) {
         IDConversation,
       };
 
-      // console.log(data.fileList.length)
       socket.emit("send_message", data);
     } catch (error) {
       console.error("Error picking document:", error);
@@ -167,7 +188,6 @@ function FooterChat({ IDConversation }) {
 
   const stop = async () => {
     const audioFile = await AudioRecord.stop();
-    console.log("audioFile", audioFile);
 
     // Save the audio file to the device's storage
     const destPath = RNFS.DocumentDirectoryPath + "/test.wav";
@@ -179,8 +199,31 @@ function FooterChat({ IDConversation }) {
     setShowIcon(true);
   };
 
+  const handleClose = () => {
+    dispatch(setReply({ show: false, data: null }));
+  };
+
   return (
     <KeyboardAvoidingView>
+      {reply.show && (
+        <View
+          style={{
+            width: "100%",
+            background: "white",
+            display: "flex",
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "space-between",
+            padding: 10,
+          }}
+        >
+          <MaterialIcons name="reply" size={30} color={"blue"} />
+          <Text>{reply.data.content}</Text>
+          <TouchableOpacity onPress={handleClose}>
+            <MaterialIcons name="close" size={30} color={"red"} />
+          </TouchableOpacity>
+        </View>
+      )}
       <View style={[styles.container]}>
         <View style={styles.foorter_left}>
           <MaterialIcons
@@ -212,8 +255,15 @@ function FooterChat({ IDConversation }) {
           <TouchableOpacity onPress={pickImage}>
             <SimpleLineIcons name="picture" size={24} color="#0091ff" />
           </TouchableOpacity>
-          <TouchableOpacity onPress={sendMessageSocket}>
-            <FontAwesome name="send" size={24} color="#0091ff" />
+          <TouchableOpacity
+            onPress={reply.show ? handleReplyMessage : sendMessageSocket}
+            disabled={isLoading}
+          >
+            {isLoading ? (
+              <ActivityIndicator />
+            ) : (
+              <FontAwesome name="send" size={24} color="#0091ff" />
+            )}
           </TouchableOpacity>
         </View>
         {transcript && <Text>{transcript}</Text>}

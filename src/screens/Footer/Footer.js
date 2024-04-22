@@ -29,60 +29,62 @@ function Footer(props) {
   };
 
   return (
-    <View style={styles.container}>
-      <TouchableOpacity onPress={handlePress} style={styles.containerIcon}>
-        <View style={{ flexDirection: "column", alignItems: "center" }}>
-          <AntDesign
-            name="message1"
-            size={20}
-            color={activeIcon === "message1" ? "blue" : "grey"}
-          />
-          <Text style={[styles.textIcon, { marginLeft: 5 }]}>Tin nhắn</Text>
-        </View>
-      </TouchableOpacity>
+    <View>
+      <View style={styles.container}>
+        <TouchableOpacity onPress={handlePress} style={styles.containerIcon}>
+          <View style={{ flexDirection: "column", alignItems: "center" }}>
+            <AntDesign
+              name="message1"
+              size={20}
+              color={activeIcon === "message1" ? "blue" : "grey"}
+            />
+            <Text style={[styles.textIcon, { marginLeft: 5 }]}>Tin nhắn</Text>
+          </View>
+        </TouchableOpacity>
 
-      <TouchableOpacity
-        onPress={handleContactsPress}
-        style={[
-          styles.containerIcon,
-          { flexDirection: "column", alignItems: "center" },
-        ]}
-      >
-        <FontAwesome5
-          name="user-friends"
-          size={20}
-          color={activeIcon === "user-friends" ? "blue" : "grey"}
-        />
-        <Text style={styles.textIcon}>Danh bạ</Text>
-      </TouchableOpacity>
-      <TouchableOpacity
-        onPress={handleClockPress}
-        style={[
-          styles.containerIcon,
-          { flexDirection: "column", alignItems: "center" },
-        ]}
-      >
-        <AntDesign
-          name="clockcircleo"
-          size={20}
-          color={activeIcon === "clockcircleo" ? "blue" : "grey"}
-        />
-        <Text style={styles.textIcon}>Nhật ký</Text>
-      </TouchableOpacity>
-      <TouchableOpacity
-        onPress={handleProfilePress}
-        style={[
-          styles.containerIcon,
-          { flexDirection: "column", alignItems: "center" },
-        ]}
-      >
-        <FontAwesome
-          name="user"
-          size={20}
-          color={activeIcon === "user" ? "blue" : "grey"}
-        />
-        <Text style={styles.textIcon}>Cá nhân</Text>
-      </TouchableOpacity>
+        <TouchableOpacity
+          onPress={handleContactsPress}
+          style={[
+            styles.containerIcon,
+            { flexDirection: "column", alignItems: "center" },
+          ]}
+        >
+          <FontAwesome5
+            name="user-friends"
+            size={20}
+            color={activeIcon === "user-friends" ? "blue" : "grey"}
+          />
+          <Text style={styles.textIcon}>Danh bạ</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={handleClockPress}
+          style={[
+            styles.containerIcon,
+            { flexDirection: "column", alignItems: "center" },
+          ]}
+        >
+          <AntDesign
+            name="clockcircleo"
+            size={20}
+            color={activeIcon === "clockcircleo" ? "blue" : "grey"}
+          />
+          <Text style={styles.textIcon}>Nhật ký</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={handleProfilePress}
+          style={[
+            styles.containerIcon,
+            { flexDirection: "column", alignItems: "center" },
+          ]}
+        >
+          <FontAwesome
+            name="user"
+            size={20}
+            color={activeIcon === "user" ? "blue" : "grey"}
+          />
+          <Text style={styles.textIcon}>Cá nhân</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 }
