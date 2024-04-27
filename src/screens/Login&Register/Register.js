@@ -3,14 +3,13 @@ import {
   Text,
   TouchableOpacity,
   TextInput,
-  Image,
   Alert,
   ActivityIndicator,
 } from "react-native";
-import { AntDesign, Entypo, Feather, FontAwesome5 } from "@expo/vector-icons";
+import { Feather, FontAwesome5 } from "@expo/vector-icons";
 import { Ionicons } from "@expo/vector-icons";
 import styles from "./StyleRegister";
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { StatusBar } from "expo-status-bar";
 import { useNavigation } from "@react-navigation/native";
 import { api } from "../../apis/api";
@@ -28,6 +27,18 @@ const Register = () => {
   };
   const [loading, setLoading] = useState(false);
 
+  const getOtp = async () => {
+    setShowOtp(true);
+    setLoading(true);
+    try {
+      const confirmation = await auth().signInWithPhoneNumber(phone);
+      setConfirm(confirmation);
+      setLoading(false);
+    } catch (error) {
+      setLoading(false);
+    }
+  };
+
   const onRegister = async () => {
     if (!phone) {
       Alert.alert("Vui lòng nhập số điện thoại");
@@ -39,23 +50,15 @@ const Register = () => {
     }
     try {
       const res = await api.getUserByPhone(phone);
-      console.log(res);
       if (!res.data) {
-        setShowOtp(true);
-        setLoading(true);
-        try {
-          const confirmation = await auth().signInWithPhoneNumber(phone);
-          setConfirm(confirmation);
-          setLoading(false);
-        } catch (error) {
-          console.log(error);
-          setLoading(false);
-        }
+        await getOtp();
       } else {
         Alert.alert("Số điện thoại đã tồn tại");
       }
     } catch (error) {
-      console.log(error);
+      if (error.response && error.response.status === 404) {
+        return await getOtp();
+      }
       Alert.alert(error.message);
       setShowOtp(false);
       setLoading(false);

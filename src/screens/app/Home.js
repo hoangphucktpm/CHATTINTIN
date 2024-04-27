@@ -57,7 +57,6 @@ function Home(props) {
     });
     conversations.length &&
       socket.on("receive_message", (data) => {
-        console.log(123);
         const currentIndex = conversations.findIndex(
           (conversation) => conversation.IDConversation === data.IDConversation
         );

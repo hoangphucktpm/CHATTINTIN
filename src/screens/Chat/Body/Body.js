@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { FlatList, Text, TouchableOpacity, View } from "react-native";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import MessageItem from "../../../components/MessageItem";
 import MessageReact from "../../../components/MessageReact";
 import { Avatar, Card, Modal } from "@ui-kitten/components";
@@ -8,6 +8,7 @@ import InfoSender from "../../../components/InfoSender";
 import ReplyMessage from "../../../components/ReplyMessage";
 
 function Body({ messageData, dataSender, isGroup }) {
+  console.log(messageData);
   const { user } = useSelector((state) => state.auth);
 
   const [dataModal, setDataModal] = useState({
