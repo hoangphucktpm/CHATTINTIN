@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
   Text,
   View,
@@ -15,15 +15,13 @@ import { useNavigation } from "@react-navigation/native";
 import { useSelector } from "react-redux";
 import { SwipeListView } from "react-native-swipe-list-view";
 import * as ImagePicker from "expo-image-picker";
-import { useDispatch } from "react-redux";
 import { api } from "../../apis/api";
 import Checkbox from "expo-checkbox";
 import { Buffer } from "buffer";
 import socket from "../../services/socket";
 import { Avatar } from "@ui-kitten/components";
-function CreateGroup() {
+function CreateGroup({ route }) {
   const navigation = useNavigation();
-  const dispatch = useDispatch();
 
   const [name, setName] = useState();
   const [phoneandname, setPhoneandName] = useState();
@@ -37,6 +35,8 @@ function CreateGroup() {
   const user = useSelector((state) => state.auth.user);
 
   useEffect(() => {
+    if (route.params?.member) setCheckedItems([route.params.member]);
+
     const fetchFriends = async () => {
       const resFriends = await api.getAllFriends(user.username);
 
@@ -76,9 +76,12 @@ function CreateGroup() {
     }
   };
 
-  const isChecked = (id) => {
-    return checkedItems.find((item) => item.ID === id);
-  };
+  const isChecked = useCallback(
+    (id) => {
+      return checkedItems.find((item) => item.ID === id);
+    },
+    [checkedItems]
+  );
 
   const renderItem = ({ item }) => {
     var image =

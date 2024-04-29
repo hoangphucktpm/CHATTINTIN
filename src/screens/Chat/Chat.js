@@ -9,13 +9,12 @@ import { api } from "../../apis/api";
 import { setLoadingUpload, setMessages } from "../../redux/chatSlice";
 import PopUpOptions from "../../components/PopUpOptions";
 import socket from "../../services/socket";
-import { ViewImageFullScreen } from "../../components/ImageMessage";
 import ForwardModal from "../../components/ForwardModal";
+import { ViewImageFullScreen } from "../../components/ImageFullView";
 
 const Chat = memo(({ route }) => {
-  const { owner, IDConversation } = route.params;
-  console.log("router", route.params);
-  const { ID, fullname, urlavatar } = route.params.Receiver;
+  const { IDConversation, isGroup } = route.params;
+  const { ID, fullname, urlavatar } = route.params.Receiver ?? route.params;
 
   const dispatch = useDispatch();
 
@@ -43,11 +42,6 @@ const Chat = memo(({ route }) => {
 
   useEffect(() => {
     fetchMessages();
-    return () => {
-      socket.off("new_group_conversation");
-      socket.off("sending_message");
-      socket.off("changeStateMessage");
-    };
   }, [fetchMessages]);
 
   const handleReceiveMessage = useCallback(
@@ -95,10 +89,9 @@ const Chat = memo(({ route }) => {
   return (
     <View style={styles.container}>
       <StatusBar />
-      <Header fullname={fullname} id={ID} image={urlavatar} owner={owner} />
+      <Header fullname={fullname} id={ID} image={urlavatar} isGroup={isGroup} />
       <Body
         id={IDConversation}
-        owner={owner}
         dataSender={route.params.Receiver}
         messageData={messageData}
         isGroup={route.params.isGroup}

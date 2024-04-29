@@ -74,7 +74,6 @@ function FooterChat({ IDConversation }) {
   // send image
   const pickImage = async () => {
     try {
-      dispatch(setLoadingUpload(true));
       let result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
         quality: 1,
@@ -83,6 +82,7 @@ function FooterChat({ IDConversation }) {
       });
 
       if (!result.canceled) {
+        dispatch(setLoadingUpload(true));
         const image = result.assets.flatMap((img) =>
           Buffer.from(img.base64, "base64")
         );

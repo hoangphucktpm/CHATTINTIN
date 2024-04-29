@@ -26,7 +26,6 @@ function Search() {
         friend.fullname.toLowerCase().includes(searchTerm.toLowerCase())
       );
       setSearchResults(results);
-      console.log(results);
     } else {
       setSearchResults([]);
     }

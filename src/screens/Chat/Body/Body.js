@@ -8,7 +8,6 @@ import InfoSender from "../../../components/InfoSender";
 import ReplyMessage from "../../../components/ReplyMessage";
 
 function Body({ messageData, dataSender, isGroup }) {
-  console.log(messageData);
   const { user } = useSelector((state) => state.auth);
 
   const [dataModal, setDataModal] = useState({

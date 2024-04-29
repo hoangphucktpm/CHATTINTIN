@@ -2,7 +2,7 @@ import React from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 import { format } from "date-fns";
 import { useDispatch } from "react-redux";
-import { setPopup } from "../redux/chatSlice";
+import { setPopup, setViewFullImage } from "../redux/chatSlice";
 import { A } from "@expo/html-elements";
 import { MaterialIcons } from "@expo/vector-icons";
 import ImageMessage from "./ImageMessage";
@@ -18,7 +18,7 @@ const MessageItem = ({ item, user }) => {
   };
 
   const getItemAlignment = () => {
-    return item.IDSender === user.ID ? "flex-end" : "flex-start";
+    return item.IDSender === user.ID ? "flex-start" : "flex-end";
   };
 
   const getItemBackgroundColor = () => {
@@ -29,10 +29,20 @@ const MessageItem = ({ item, user }) => {
     return item.IDSender === user.ID ? "white" : "black";
   };
 
+  const handleShowFullImage = (uri) => {
+    dispatch(
+      setViewFullImage({
+        show: true,
+        data: uri,
+      })
+    );
+  };
+
   return (
     <View
       style={{
-        margin: 10,
+        marginLeft: item.IDSender === user.ID ? 5 : 15,
+        marginRight: 5,
         alignSelf: getItemAlignment(),
         backgroundColor: getItemBackgroundColor(),
         borderRadius: 8,
@@ -63,7 +73,7 @@ const MessageItem = ({ item, user }) => {
       ) : item.type === "video" ? (
         <VideoMessage uri={item.content} />
       ) : item.type === "file" ? (
-        <View style={{ padding: 5 }}>
+        <View style={{ padding: 5, display: "flex", flexDirection: "row" }}>
           <MaterialIcons name="download" size={20} color={getItemTextColor()} />
           <A
             href={item.content}
@@ -106,7 +116,7 @@ const MessageItem = ({ item, user }) => {
         style={{
           color: getItemTextColor(),
           fontSize: 10,
-          alignSelf: "flex-end",
+          alignSelf: getItemAlignment(),
           padding: 5,
           paddingTop: 0,
         }}

@@ -78,6 +78,7 @@ function Home(props) {
 
   useEffect(() => {
     const handleLoadConversationsServer = (data) => {
+      console.log(123);
       if (data) {
         setConversations(data);
         dispatch(setConversation(data));

@@ -1,5 +1,4 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { set } from "date-fns";
 
 const initialState = {
   chatList: [], // [{message: 'Hello', fromSelf: true}]
@@ -25,6 +24,12 @@ const initialState = {
   },
 
   isLoading: false,
+
+  drawerModal: {
+    show: false,
+    data: null,
+    selection: null,
+  },
 };
 
 const chatSlice = createSlice({
@@ -55,6 +60,9 @@ const chatSlice = createSlice({
     setLoadingUpload: (state, action) => {
       state.isLoading = action.payload;
     },
+    setDrawerModal: (state, action) => {
+      state.drawerModal = action.payload;
+    },
   },
 });
 
@@ -67,5 +75,6 @@ export const {
   setReply,
   setForward,
   setLoadingUpload,
+  setDrawerModal,
 } = chatSlice.actions;
 export default chatSlice.reducer;

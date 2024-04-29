@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback, useMemo } from "react";
 import {
   ScrollView,
   View,
@@ -18,40 +18,81 @@ import { Feather } from "@expo/vector-icons";
 import { FontAwesome5 } from "@expo/vector-icons";
 import { useState } from "react";
 import styles from "./StyleDrawerChat";
+import { useDispatch, useSelector } from "react-redux";
+import { useFocusEffect } from "@react-navigation/native";
+import DrawerChatModal from "./DrawerChatModal";
+import { setDrawerModal } from "../../../redux/chatSlice";
 
-function DrawerChat({ navigation }) {
+function DrawerChat({ navigation, route }) {
+  const { fullname, phone, urlavatar } = route.params;
+
+  const dispatch = useDispatch();
+
+  const user = useSelector((state) => state.auth.user);
+  const messages = useSelector((state) => state.chat.messages);
+  const { conversation } = useSelector((state) => state.conversation);
+
+  const groupLists = useMemo(() => {
+    return conversation
+      ?.map((convers) => convers)
+      .filter(
+        (data) =>
+          data.isGroup &&
+          (data.rules.IDOwner === user.ID ||
+            data.rules.listIDCoOwner.includes(user.ID)) &&
+          !data.groupMembers.includes(phone)
+      );
+  }, [conversation]);
+
+  useFocusEffect(
+    useCallback(() => {
+      const imgs = messages
+        .filter((msg) => msg.type === "image" && !msg.isRecall)
+        .flatMap((msg) => msg.content);
+      setImages(imgs);
+    }, [messages])
+  );
+
   // Add navigation prop here
   const [isDialogVisible, setIsDialogVisible] = useState(false);
-  const [nameChange, setnameChange] = useState("AppTinTin");
+  const [name, setName] = useState(fullname);
   const [isBFF, setIsBFF] = useState(false);
-  const [avtChange, setavtChange] = useState(
-    "https://st.quantrimang.com/photos/image/2021/05/21/AVT-Doi11-1.jpg"
-  );
-  const [owner, setOwner] = useState("1");
-  const [userState, setUserState] = useState({
-    user: {
-      _id: "1",
-    },
-  });
-
-  const pickImage = async () => {
-    // Add code here
-  };
-
-  const deleteGroupHandleClick = async () => {
-    // Add code here
-  };
+  const [images, setImages] = useState([]);
 
   const hanldPressGoBack = () => {
     navigation.goBack();
   };
 
-  const hanldPressMemberGroup = () => {
-    navigation.goBack();
-  };
-
   const updateName = async () => {
     setIsDialogVisible(false);
+  };
+
+  const onOpenDrawerModal = () => {
+    dispatch(
+      setDrawerModal({
+        show: true,
+        data: groupLists,
+        selection: phone,
+      })
+    );
+  };
+
+  handleCreateGroup = () => {
+    navigation.navigate("CreateGroup", {
+      member: { ID: phone, urlavatar, fullname },
+    });
+  };
+
+  const handleViewGeneralGroup = () => {
+    const generalGroup = conversation
+      ?.map((convers) => convers)
+      .filter((data) => data.isGroup && data.groupMembers.includes(phone));
+    dispatch(
+      setDrawerModal({
+        show: true,
+        data: generalGroup,
+      })
+    );
   };
 
   return (
@@ -78,7 +119,7 @@ function DrawerChat({ navigation }) {
             <View style={styles.containerBody_Top}>
               <Image
                 style={styles.containerBody_Top_Avt}
-                source={{ uri: avtChange }}
+                source={{ uri: urlavatar }}
               />
               <Text
                 style={{
@@ -88,7 +129,7 @@ function DrawerChat({ navigation }) {
                   marginTop: 10,
                 }}
               >
-                {nameChange}
+                {name}
               </Text>
               <View style={styles.containerBody_Top_Icon}>
                 <TouchableOpacity style={styles.containerBody_Top_Icon_Icon}>
@@ -101,34 +142,7 @@ function DrawerChat({ navigation }) {
                     </Text>
                   </View>
                 </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={hanldPressMemberGroup}
-                  style={styles.containerBody_Top_Icon_Icon}
-                >
-                  <View style={styles.containerBody_Top_Icon_IconItem}>
-                    <AntDesign name="user" size={20} color="black" />
-                  </View>
-                  <View style={styles.containerBody_Top_Icon_IconText}>
-                    <Text style={{ color: "#4F4F4F", textAlign: "center" }}>
-                      Xem {"\n"} thành viên
-                    </Text>
-                  </View>
-                </TouchableOpacity>
-                {owner == userState.user._id ? (
-                  <TouchableOpacity
-                    onPress={pickImage}
-                    style={styles.containerBody_Top_Icon_Icon}
-                  >
-                    <View style={styles.containerBody_Top_Icon_IconItem}>
-                      <FontAwesome5 name="brush" size={20} color="black" />
-                    </View>
-                    <View style={styles.containerBody_Top_Icon_IconText}>
-                      <Text style={{ color: "#4F4F4F", textAlign: "center" }}>
-                        Đổi {"\n"} hình nền
-                      </Text>
-                    </View>
-                  </TouchableOpacity>
-                ) : null}
+
                 <TouchableOpacity style={styles.containerBody_Top_Icon_Icon}>
                   <View style={styles.containerBody_Top_Icon_IconItem}>
                     <AntDesign name="bells" size={20} color="black" />
@@ -143,13 +157,7 @@ function DrawerChat({ navigation }) {
             </View>
             <View style={styles.containerBody_Mid}>
               <View style={styles.containerBody_Mid_ChangeName}>
-                {/* <TouchableOpacity onPress={() => setIsDialogVisible(true)} style={styles.containerBody_Mid_ChangeName_Item}>
-                                <Ionicons name="pencil" size={24} color="#828282"  style={{width:"15%",height:"100%"}} />
-                                <View style={styles.containerBody_Mid_ChangeName_Item_Text}>
-                                    <Text style={{fontSize:20,color:'black',}}>Đổi tên gợi nhớ</Text>
-                                </View>
-                            </TouchableOpacity> */}
-                {owner == userState.user._id ? (
+                {user.iD !== phone ? (
                   <TouchableOpacity
                     onPress={() => setIsDialogVisible(true)}
                     style={styles.containerBody_Mid_ChangeName_Item}
@@ -213,7 +221,7 @@ function DrawerChat({ navigation }) {
             <View style={styles.containerBody_Mid_File}>
               <TouchableOpacity
                 style={styles.containerBody_Mid_File_Item}
-                onPress={() => navigation.navigate("SourcesMessages")}
+                onPress={() => navigation.navigate("SourcesMessages", messages)}
               >
                 <Ionicons
                   name="folder-outline"
@@ -223,7 +231,7 @@ function DrawerChat({ navigation }) {
                 />
                 <View style={styles.containerBody_Mid_File_Item_Text}>
                   <Text style={{ fontSize: 20, color: "black" }}>
-                    Ảnh, file , link đã gửi
+                    Ảnh, file, link đã gửi
                   </Text>
                   <AntDesign
                     name="right"
@@ -236,39 +244,21 @@ function DrawerChat({ navigation }) {
               <View style={styles.containerBody_Mid_File_Item}>
                 <View style={{ width: "15%", height: "100%" }} />
                 <View style={styles.containerBody_Mid_File_Item_Img}>
-                  <TouchableOpacity>
-                    <Image
-                      style={styles.fileImg}
-                      source={{
-                        uri: "https://st.quantrimang.com/photos/image/2021/05/21/AVT-Doi11-1.jpg",
-                      }}
-                    />
-                  </TouchableOpacity>
-                  <TouchableOpacity>
-                    <Image
-                      style={styles.fileImg}
-                      source={{
-                        uri: "https://st.quantrimang.com/photos/image/2021/05/21/AVT-Doi14-2.jpg",
-                      }}
-                    />
-                  </TouchableOpacity>
-                  <TouchableOpacity>
-                    <Image
-                      style={styles.fileImg}
-                      source={{
-                        uri: "https://i.pinimg.com/736x/a6/2c/c3/a62cc3642d8da0c8202c968d266ec96f.jpg",
-                      }}
-                    />
-                  </TouchableOpacity>
-                  <TouchableOpacity>
-                    <Image
-                      style={styles.fileImg}
-                      source={{
-                        uri: "https://i.pinimg.com/736x/1c/26/e2/1c26e224c5af80ac5decff6af5080efb.jpg",
-                      }}
-                    />
-                  </TouchableOpacity>
-                  <TouchableOpacity>
+                  {images.slice(0, 4).map((img, index) => (
+                    <TouchableOpacity key={index}>
+                      <Image
+                        style={styles.fileImg}
+                        source={{
+                          uri: img,
+                        }}
+                      />
+                    </TouchableOpacity>
+                  ))}
+                  <TouchableOpacity
+                    onPress={() =>
+                      navigation.navigate("SourcesMessages", messages)
+                    }
+                  >
                     <View style={styles.fileImg_View}>
                       <Feather name="arrow-right" size={24} color="black" />
                     </View>
@@ -279,6 +269,7 @@ function DrawerChat({ navigation }) {
             <View style={styles.containerBody_Mid_Group}>
               <TouchableOpacity
                 style={styles.containerBody_Mid_ChangeName_Item}
+                onPress={handleCreateGroup}
               >
                 <MaterialIcons
                   name="groups"
@@ -288,7 +279,7 @@ function DrawerChat({ navigation }) {
                 />
                 <View style={styles.containerBody_Mid_ChangeName_Item_Text}>
                   <Text style={{ fontSize: 20, color: "black" }}>
-                    Tạo nhóm với Phước
+                    Tạo nhóm với {fullname}
                   </Text>
                   <AntDesign
                     name="right"
@@ -300,6 +291,7 @@ function DrawerChat({ navigation }) {
               </TouchableOpacity>
               <TouchableOpacity
                 style={styles.containerBody_Mid_ChangeName_Item}
+                onPress={onOpenDrawerModal}
               >
                 <AntDesign
                   name="addusergroup"
@@ -321,6 +313,7 @@ function DrawerChat({ navigation }) {
               </TouchableOpacity>
               <TouchableOpacity
                 style={styles.containerBody_Mid_ChangeName_Item}
+                onPress={handleViewGeneralGroup}
               >
                 <MaterialIcons
                   name="group"
@@ -499,9 +492,8 @@ function DrawerChat({ navigation }) {
                   </Text>
                 </View>
               </TouchableOpacity>
-              {owner == userState.user._id ? (
+              {user.ID !== phone ? (
                 <TouchableOpacity
-                  onPress={deleteGroupHandleClick}
                   style={styles.containerBody_Mid_ChangeName_Item}
                 >
                   <MaterialIcons
@@ -530,8 +522,8 @@ function DrawerChat({ navigation }) {
             </Dialog.Title>
             <Dialog.Content>
               <TextInput
-                value={nameChange}
-                onChangeText={(text) => setnameChange(text)}
+                value={name}
+                onChangeText={(text) => setName(text)}
                 style={{ fontSize: 24, borderBottomWidth: 1 }}
               />
             </Dialog.Content>
@@ -542,6 +534,7 @@ function DrawerChat({ navigation }) {
           </Dialog>
         </Portal>
       </View>
+      <DrawerChatModal />
     </Provider>
   );
 }

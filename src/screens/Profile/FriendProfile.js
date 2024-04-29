@@ -11,17 +11,15 @@ import React, { useEffect, useState } from "react";
 import styles from "./StyleFriendProfile";
 import { useNavigation } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
-import Icon from "react-native-vector-icons/Ionicons";
 import { api } from "../../apis/api";
 import { useSelector } from "react-redux";
+import socket from "../../services/socket";
 
 function FriendProfile({ route }) {
-  const { phone, fullname, urlavatar } = route.params;
+  const { phone, fullname, urlavatar, ID } = route.params;
   const navigation = useNavigation();
   const { user } = useSelector((state) => state.auth);
 
-  const [friendRequests, setFriendRequests] = useState([]);
-  const [isFriend, setIsFriend] = useState(false);
   const [isAdd, setIsAdd] = useState(false);
   const [add, setAdd] = useState("Kết bạn");
   const [isRequest, setIsRequest] = useState(false);
@@ -34,30 +32,35 @@ function FriendProfile({ route }) {
           api.getAllFriendRequests(user.ID),
           api.checkRequest({
             senderId: user.ID,
-            receiverId: route.params.ID,
+            receiverId: ID,
           }),
           api.checkRequest({
-            senderId: route.params.ID,
+            senderId: ID,
             receiverId: user.ID,
           }),
         ]);
-      if (allFriendsRequest.data?.find((rq) => rq.ID === route.params.ID))
+      if (allFriendsRequest.data?.find((rq) => rq.ID === ID))
         setIsRequest(true);
       if (
         (checkRequestFromSelf.data && checkRequestFromSelf.data.code == 2) ||
         (checkRequestFromFriend.data && checkRequestFromFriend.data.code == 2)
       )
         setIsAdd(true);
+
+      if (!checkRequestFromFriend.data.code) setAdd("Hủy lời mời");
     };
     getFriendRequests();
   }, [user, isAdd, route.params.ID]);
 
+  useEffect(() => {
+    socket.on("send friend request server", (data) => {
+      setAdd("Hủy lời mời");
+    });
+  }, []);
+
   const hanldPressGoBack = () => {
     navigation.goBack();
   };
-
-  // const infoState = useSelector(state => state.info);
-  // const token = tokenService.getAccessToken();
 
   const handelPress = () => {
     if (isAdd) {
@@ -65,17 +68,10 @@ function FriendProfile({ route }) {
       setIsAdd(false);
     } else {
       try {
-        api
-          .handleSendFriendRequest({
-            senderId: user.ID,
-            receiverId: route.params.ID,
-          })
-          .then((res) => {
-            console.log(res.data);
-            Alert.alert("Thông báo", res.data.message);
-            setAdd("Hủy lời mời");
-            setIsAdd(true);
-          });
+        socket.emit("new friend request client", {
+          senderId: user.ID,
+          receiverId: route.params.ID,
+        });
       } catch (error) {
         console.log(error);
       }
@@ -83,10 +79,10 @@ function FriendProfile({ route }) {
   };
   const handleRequest = (type) => {
     api
-      .handleFriendRequest({ id: route.params.ID, type })
+      .handleFriendRequest({ id: ID, type })
       .then((res) => {
         Alert.alert(res.data.message);
-        setReceiverId(id);
+        setReceiverId(ID);
       })
       .catch((err) => {
         Alert.alert("Error handle friend requests");

@@ -6,7 +6,7 @@ import { Feather } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { useEffect } from "react";
 
-function Header({ fullname, id, name, image, owner }) {
+function Header({ fullname, id, image, isGroup }) {
   const navigation = useNavigation();
   const [isSearchVisible, setIsSearchVisible] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
@@ -35,7 +35,6 @@ function Header({ fullname, id, name, image, owner }) {
     const regex = new RegExp(`\\b${searchTerm}\\b`, "i");
     const results = messages.filter((message) => regex.test(message.body));
     setSearchResults(results);
-    console.log(results);
 
     // If there are results, navigate to the first one
     if (results.length > 0) {
@@ -82,9 +81,9 @@ function Header({ fullname, id, name, image, owner }) {
         <TouchableOpacity
           style={styles.container_right_icon}
           onPress={() =>
-            navigation.navigate("DrawerChatGroup", {
+            navigation.navigate(isGroup ? "DrawerChatGroup" : "DrawerChat", {
               phone: id,
-              fullname: name,
+              fullname: fullname,
               urlavatar: image,
             })
           }

@@ -20,7 +20,7 @@ import { FontAwesome5 } from "@expo/vector-icons";
 import { useState } from "react";
 import styles from "./StyleDrawerChatGroup";
 import { useDispatch, useSelector } from "react-redux";
-import { useFocusEffect, useNavigation } from "@react-navigation/native";
+import { useFocusEffect } from "@react-navigation/native";
 import { Avatar, Card, CheckBox, Input, Modal } from "@ui-kitten/components";
 import { api } from "../../../apis/api";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
@@ -62,7 +62,7 @@ function DrawerChatGroup({ navigation }) {
   useFocusEffect(
     useCallback(() => {
       const imgs = messages
-        .filter((msg) => msg.type === "image")
+        .filter((msg) => msg.type === "image" && !msg.isRecall)
         .flatMap((msg) => msg.content);
       setImages(imgs);
     }, [messages])
@@ -102,7 +102,6 @@ function DrawerChatGroup({ navigation }) {
           groupName: groupDetails.groupName,
           groupAvatar: image[0],
         };
-        console.log(data);
         await api.updateGroup(data);
         Alert.alert("Thành công", "Đổi ảnh đại diện nhóm thành công");
       } else {
@@ -114,15 +113,7 @@ function DrawerChatGroup({ navigation }) {
     }
   };
 
-  const outGroupHandleClick = async () => {
-    // Add code here
-  };
-
   const hanldPressGoBack = () => {
-    navigation.goBack();
-  };
-
-  const hanldPressMemberGroup = () => {
     navigation.goBack();
   };
 
@@ -326,7 +317,9 @@ function DrawerChatGroup({ navigation }) {
               <View style={styles.containerBody_Mid_File}>
                 <TouchableOpacity
                   style={styles.containerBody_Mid_File_Item}
-                  onPress={() => navigation.navigate("SourcesMessages")}
+                  onPress={() =>
+                    navigation.navigate("SourcesMessages", messages)
+                  }
                 >
                   <Ionicons
                     name="folder-outline"
@@ -336,7 +329,7 @@ function DrawerChatGroup({ navigation }) {
                   />
                   <View style={styles.containerBody_Mid_File_Item_Text}>
                     <Text style={{ fontSize: 20, color: "black" }}>
-                      Ảnh, file , link đã gửi
+                      Ảnh, file, link đã gửi
                     </Text>
                     <AntDesign
                       name="right"
@@ -359,7 +352,11 @@ function DrawerChatGroup({ navigation }) {
                         />
                       </TouchableOpacity>
                     ))}
-                    <TouchableOpacity>
+                    <TouchableOpacity
+                      onPress={() =>
+                        navigation.navigate("SourcesMessages", messages)
+                      }
+                    >
                       <View style={styles.fileImg_View}>
                         <Feather name="arrow-right" size={24} color="black" />
                       </View>
