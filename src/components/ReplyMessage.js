@@ -11,9 +11,9 @@ const ReplyMessage = ({ messages, item, isSelf, children }) => {
   const renderItem = () => {
     if (reply.type === "image") return <ImageMessage url={reply.content} />;
     if (reply.type === "file")
-      return <Text style={{ fontSize: 20, color: "#555" }}>File</Text>;
+      return <Text style={{ fontSize: 16, color: "#555" }}>File</Text>;
 
-    return <Text style={{ fontSize: 20, color: "#555" }}>{reply.content}</Text>;
+    return <Text style={{ fontSize: 16, color: "#555" }}>{reply.content}</Text>;
   };
   return (
     <View
@@ -40,7 +40,9 @@ const ReplyMessage = ({ messages, item, isSelf, children }) => {
           isSelf ? { right: 10 } : { left: 0 },
         ]}
       >
-        <Text style={{ fontSize: 20, color: "#333" }}>{reply.fullname}</Text>
+        <Text style={{ fontSize: 18, fontWeight: 600, color: "#555" }}>
+          {reply.userSender.fullname}
+        </Text>
         {renderItem()}
       </View>
       <View>{children}</View>

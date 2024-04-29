@@ -32,7 +32,6 @@ const InfoSender = memo(
           flexDirection: "column",
           marginTop: 10,
           padding: 10,
-          maxWidth: "70%",
         }}
       >
         <View
