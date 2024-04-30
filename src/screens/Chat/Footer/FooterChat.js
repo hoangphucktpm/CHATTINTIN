@@ -104,7 +104,7 @@ function FooterChat({ IDConversation }) {
     }
   };
 
-  // send video
+  // send video file
   const handleUploadVideo = async () => {
     try {
       dispatch(setLoadingUpload(true));
