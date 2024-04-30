@@ -6,6 +6,7 @@ import MessageReact from "../../../components/MessageReact";
 import { Avatar, Card, Modal } from "@ui-kitten/components";
 import InfoSender from "../../../components/InfoSender";
 import ReplyMessage from "../../../components/ReplyMessage";
+import AvatarCustomer from "../../../components/AvatarCustomer";
 
 function Body({ messageData, dataSender, isGroup }) {
   const { user } = useSelector((state) => state.auth);
@@ -60,7 +61,7 @@ function Body({ messageData, dataSender, isGroup }) {
                   gap: 5,
                 }}
               >
-                <Avatar
+                <AvatarCustomer
                   source={{ uri: item.user }}
                   alt="user-avatar"
                   style={{ width: 50, height: 50 }}

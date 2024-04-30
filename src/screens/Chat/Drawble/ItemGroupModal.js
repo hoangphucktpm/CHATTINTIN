@@ -1,5 +1,6 @@
 import { TouchableOpacity } from "react-native";
-import { Avatar, Text } from "@ui-kitten/components";
+import { Text } from "@ui-kitten/components";
+import AvatarCustomer from "../../../components/AvatarCustomer";
 
 export default ItemGroupModal = ({ name, avatar, handleAddToGroup }) => {
   return (
@@ -13,7 +14,7 @@ export default ItemGroupModal = ({ name, avatar, handleAddToGroup }) => {
         marginBottom: 10,
       }}
     >
-      <Avatar source={{ uri: avatar }} />
+      <AvatarCustomer alt={name} source={{ uri: avatar }} />
       <Text category="h6">{name}</Text>
     </TouchableOpacity>
   );

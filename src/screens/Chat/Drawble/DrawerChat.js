@@ -22,6 +22,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useFocusEffect } from "@react-navigation/native";
 import DrawerChatModal from "./DrawerChatModal";
 import { setDrawerModal } from "../../../redux/chatSlice";
+import AvatarCustomer from "../../../components/AvatarCustomer";
 
 function DrawerChat({ navigation, route }) {
   const { fullname, phone, urlavatar } = route.params;
@@ -118,9 +119,10 @@ function DrawerChat({ navigation, route }) {
         <ScrollView style={{ paddingBottom: 600 }}>
           <View style={styles.containerBody}>
             <View style={styles.containerBody_Top}>
-              <Image
+              <AvatarCustomer
                 style={styles.containerBody_Top_Avt}
                 source={{ uri: urlavatar }}
+                alt={fullname}
               />
               <Text
                 style={{

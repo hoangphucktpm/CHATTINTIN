@@ -3,6 +3,7 @@ import React, { memo, useEffect, useState } from "react";
 import { api } from "../apis/api";
 import { Avatar } from "@ui-kitten/components";
 import { max } from "date-fns";
+import AvatarCustomer from "./AvatarCustomer";
 
 const InfoSender = memo(
   ({ IDSender, dataSender, isSelf, children, isGroup = false }) => {
@@ -42,10 +43,10 @@ const InfoSender = memo(
             gap: 5,
           }}
         >
-          <Avatar
+          <AvatarCustomer
             source={{ uri: sender?.urlavatar }}
-            alt={sender?.fullname}
             style={{ width: 30, height: 30, objectFit: "cover" }}
+            alt={sender?.fullname}
           />
           <Text style={{ fontSize: 16, fontWeight: 600 }}>
             {sender?.fullname}

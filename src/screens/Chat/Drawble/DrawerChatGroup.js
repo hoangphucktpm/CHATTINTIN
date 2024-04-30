@@ -22,7 +22,7 @@ import styles from "./StyleDrawerChatGroup";
 import { useDispatch, useSelector } from "react-redux";
 import { useFocusEffect } from "@react-navigation/native";
 import { Avatar, Card, CheckBox, Input, Modal } from "@ui-kitten/components";
-import { api } from "../../../apis/api";
+import { api, http } from "../../../apis/api";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import {
   BottomSheetModal,
@@ -33,10 +33,11 @@ import { setGroupDetails, setMemberGroups } from "../../../redux/groupSlice";
 import socket from "../../../services/socket";
 import * as ImagePicker from "expo-image-picker";
 import { Buffer } from "buffer";
+import AvatarCustomer from "../../../components/AvatarCustomer";
 
 function DrawerChatGroup({ navigation }) {
   const [isDialogVisible, setIsDialogVisible] = useState(false);
-  const [nameChange, setnameChange] = useState("Hehhee");
+  const [nameChange, setnameChange] = useState("");
   const [isBFF, setIsBFF] = useState(false);
   const [isLeave, setIsLeave] = useState(false);
   const [images, setImages] = useState([]);
@@ -49,6 +50,7 @@ function DrawerChatGroup({ navigation }) {
   const [newNameGroup, setNewNameGroup] = useState(null);
   const [isEditNameGroup, seTisEditNameGroup] = useState(false);
 
+  const { conversation } = useSelector((state) => state.conversation);
   const groupDetails = useSelector((state) => state.group.groupDetails);
   const messages = useSelector((state) => state.chat.messages);
   const user = useSelector((state) => state.auth.user);
@@ -79,38 +81,70 @@ function DrawerChatGroup({ navigation }) {
       setDataResearch(res.data.filter((item) => !item.isOwner));
     };
     fetchMembers();
-  }, [user.ID]);
+  }, [user.ID, conversation]);
 
   const pickImage = async () => {
     try {
-      let result = await ImagePicker.launchImageLibraryAsync({
+      const result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
-        quality: 0,
+        quality: 1,
         allowsMultipleSelection: false,
         base64: true,
       });
 
-      if (!result.canceled) {
-        const image = result.assets.flatMap((img) =>
-          Buffer.from(img.base64, "base64")
-        );
-
-        setImageSelected(`data:image/jpeg;base64,${result.assets[0].base64}`);
-
-        const data = {
-          IDConversation: groupDetails.IDConversation,
-          groupName: groupDetails.groupName,
-          groupAvatar: image[0],
-        };
-        await api.updateGroup(data);
-        Alert.alert("Thành công", "Đổi ảnh đại diện nhóm thành công");
-      } else {
+      if (result.cancelled) {
         console.log("Image selection cancelled");
+        return;
       }
+
+      const formData = new FormData();
+      formData.append("IDConversation", groupDetails.IDConversation);
+      formData.append("groupName", groupDetails.groupName);
+      formData.append("groupAvatar", {
+        uri: result.assets[0].uri,
+        type: "image/jpeg",
+        name: "avatar.jpg",
+      });
+
+      await updateGroupInfo(formData, "Đổi ảnh đại diện nhóm thành công");
+      setImageSelected(`data:image/jpeg;base64,${result.assets[0].base64}`);
     } catch (error) {
       console.error("Error picking image:", error);
-      alert("Error picking image");
+      Alert.alert("Error picking image");
     }
+  };
+
+  const handleEditNameGroup = async () => {
+    try {
+      const formData = new FormData();
+      formData.append("IDConversation", groupDetails.IDConversation);
+      formData.append("groupName", newNameGroup);
+      // formData.append("groupAvatar", {
+      //   uri: groupDetails.groupAvatar,
+      //   type: "image/jpeg",
+      //   name: "avatar.jpg",
+      // });
+      formData.append("groupAvatar", undefined);
+
+      await updateGroupInfo(formData, "Đổi tên nhóm thành công");
+      dispatch(setGroupDetails({ ...groupDetails, groupName: newNameGroup }));
+      seTisEditNameGroup(false);
+    } catch (error) {
+      console.error("Error update name group:", error);
+      Alert.alert("Thất bại", "Đổi tên nhóm thất bại");
+    }
+  };
+
+  const updateGroupInfo = async (formData, successMessage) => {
+    await http.post("conversation/update-info-group", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    Alert.alert("Thành công", successMessage);
+    socket.emit("load_member_of_group", {
+      IDConversation: groupDetails.IDConversation,
+    });
   };
 
   const hanldPressGoBack = () => {
@@ -175,23 +209,6 @@ function DrawerChatGroup({ navigation }) {
     navigation.navigate("Home");
   };
 
-  const handleEditNameGroup = async () => {
-    try {
-      const data = {
-        IDConversation: groupDetails.IDConversation,
-        groupName: newNameGroup,
-        //groupAvatar: groupDetails.groupAvatar,
-      };
-      await api.updateGroup(data);
-      dispatch(setGroupDetails({ ...groupDetails, groupName: newNameGroup }));
-      Alert.alert("Thành công", "Đổi tên nhóm thành công");
-      seTisEditNameGroup(false);
-    } catch (error) {
-      console.error("Error update name group:", error);
-      Alert.alert("Thất bại", "Đổi tên nhóm thất bại");
-    }
-  };
-
   return (
     <Provider>
       <GestureHandlerRootView style={styles.container}>
@@ -219,7 +236,7 @@ function DrawerChatGroup({ navigation }) {
           <ScrollView>
             <View style={styles.containerBody}>
               <View style={styles.containerBody_Top}>
-                <Image
+                <AvatarCustomer
                   style={styles.containerBody_Top_Avt}
                   source={{ uri: imageSelected || groupDetails.groupAvatar }}
                 />
@@ -726,7 +743,7 @@ function DrawerChatGroup({ navigation }) {
                     <View
                       style={{ flexDirection: "row", alignItems: "center" }}
                     >
-                      <Avatar
+                      <AvatarCustomer
                         source={{ uri: mem.urlavatar }}
                         alt={mem.fullname}
                         width={60}

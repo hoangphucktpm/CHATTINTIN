@@ -20,6 +20,7 @@ import Checkbox from "expo-checkbox";
 import { Buffer } from "buffer";
 import socket from "../../services/socket";
 import { Avatar } from "@ui-kitten/components";
+import AvatarCustomer from "../../components/AvatarCustomer";
 function CreateGroup({ route }) {
   const navigation = useNavigation();
 
@@ -84,9 +85,7 @@ function CreateGroup({ route }) {
   );
 
   const renderItem = ({ item }) => {
-    var image =
-      item.urlavatar ??
-      "https://hinhgaixinh.com/wp-content/uploads/2021/12/bo-anh-girl-xinh-cap-2.jpg";
+    var image = item.urlavatar;
     return (
       <TouchableOpacity
         style={{
@@ -108,9 +107,10 @@ function CreateGroup({ route }) {
           />
         </View>
         <View style={{ flex: 0.15, borderRadius: 100 }}>
-          <Image
+          <AvatarCustomer
+            alt={item.fullname}
             source={{ uri: image }}
-            style={{ flex: 1, borderRadius: 100 }}
+            style={{ flex: 1, borderRadius: 100, width: 60 }}
           />
         </View>
         <View style={{ flex: 0.7, marginLeft: 10, justifyContent: "center" }}>
@@ -125,7 +125,7 @@ function CreateGroup({ route }) {
     try {
       let result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
-        quality: 0,
+        quality: 1,
         allowsMultipleSelection: false,
         base64: true,
       });
@@ -258,8 +258,11 @@ function CreateGroup({ route }) {
             data={checkedItems}
             keyExtractor={(item, i) => item.ID + i}
             renderItem={({ item }) => (
-              <TouchableOpacity onPress={() => toggleItem(item)}>
-                <Avatar
+              <TouchableOpacity
+                onPress={() => toggleItem(item)}
+                style={{ marginRight: 5 }}
+              >
+                <AvatarCustomer
                   source={{ uri: item.urlavatar }}
                   alt={item.fullname}
                   style={{
