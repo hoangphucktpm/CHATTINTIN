@@ -24,6 +24,7 @@ import { logout, setUser } from "../../redux/authSclice";
 import Footer from "../Footer/Footer";
 import * as ImagePicker from "expo-image-picker";
 import { setConversation } from "../../redux/conversationSlice";
+import AvatarCustomer from "../../components/AvatarCustomer";
 
 const MyProfile = () => {
   const navigation = useNavigation();
@@ -261,9 +262,10 @@ const MyProfile = () => {
               <View style={styles.containerBody_Top}>
                 <TouchableOpacity onPress={handleAvatarPress}>
                   {avatarImage ? (
-                    <Image
+                    <AvatarCustomer
                       style={styles.containerBody_Top_Avt}
                       source={{ uri: avatarImage }}
+                      alt={fullname}
                     />
                   ) : (
                     <Image

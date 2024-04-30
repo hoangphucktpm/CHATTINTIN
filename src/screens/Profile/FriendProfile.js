@@ -14,6 +14,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { api } from "../../apis/api";
 import { useSelector } from "react-redux";
 import socket from "../../services/socket";
+import AvatarCustomer from "../../components/AvatarCustomer";
 
 function FriendProfile({ route }) {
   const { phone, fullname, urlavatar, ID } = route.params;
@@ -55,6 +56,16 @@ function FriendProfile({ route }) {
   useEffect(() => {
     socket.on("send friend request server", (data) => {
       setAdd("Hủy lời mời");
+      if (data?.code === 1) {
+        Alert.alert("Gửi lời mời kết bạn", "Đã gửi lời mời kết bạn thành công");
+      } else if (data?.code === 0) {
+        Alert.alert(
+          "Gửi lời mời kết bạn",
+          "Lời mời kết bạn đã được gửi trước đó"
+        );
+      } else if (data?.code === 2) {
+        Alert.alert("Gửi lời mời kết bạn", "Đã có trong danh sách bạn bè");
+      }
     });
   }, []);
 
@@ -121,13 +132,12 @@ function FriendProfile({ route }) {
             }}
             style={styles.containerBody_Top}
           >
-            <Image
+            <AvatarCustomer
               style={styles.containerBody_Top_Avt}
               source={{
-                uri:
-                  urlavatar ||
-                  "https://hinhgaixinh.com/wp-content/uploads/2021/12/bo-anh-girl-xinh-cap-2.jpg",
+                uri: urlavatar,
               }}
+              alt={fullname}
             />
             <Text
               style={{

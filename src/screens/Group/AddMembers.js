@@ -19,6 +19,7 @@ import { useNavigation } from "@react-navigation/native";
 import { Icon, IconElement } from "@ui-kitten/components";
 import socket from "../../services/socket";
 import { setGroupDetails, setMemberGroups } from "../../redux/groupSlice";
+import AvatarCustomer from "../../components/AvatarCustomer";
 
 const AddMembers = () => {
   const [phoneandname, setPhoneandName] = useState(null);
@@ -62,9 +63,7 @@ const AddMembers = () => {
   const dispatch = useDispatch();
 
   const renderItem = ({ item }) => {
-    var image =
-      item.urlavatar ??
-      "https://hinhgaixinh.com/wp-content/uploads/2021/12/bo-anh-girl-xinh-cap-2.jpg";
+    var image = item.urlavatar;
     return (
       <TouchableOpacity
         style={{
@@ -86,7 +85,8 @@ const AddMembers = () => {
           />
         </View>
         <View style={{ flex: 0.15, borderRadius: 100 }}>
-          <Image
+          <AvatarCustomer
+            alt={item.fullname}
             source={{ uri: image }}
             style={{ borderRadius: 100, width: 40, height: 40 }}
           />
@@ -158,17 +158,6 @@ const AddMembers = () => {
         </View>
       </View>
       <View style={styles.flatList}>
-        {/* <SwipeListView
-          nestedScrollEnabled={true}
-          data={dataResearch}
-          renderItem={({ item }) => {
-            if (members.some((mem) => mem.ID === item.ID)) return null;
-
-            return renderItem;
-          }}
-          keyExtractor={(item, i) => item.ID + i}
-        /> */}
-
         {dataResearch.map((item) => {
           if (members.some((mem) => mem.ID === item.ID) || item.ID === user.ID)
             return null;
@@ -185,7 +174,7 @@ const AddMembers = () => {
               onPress={() => toggleItem(item)}
               style={{ marginRight: 5 }}
             >
-              <Avatar
+              <AvatarCustomer
                 source={{ uri: item.urlavatar }}
                 alt={item.fullname}
                 style={{

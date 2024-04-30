@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, Image, Linking } from "react-native";
+import { Text, TouchableOpacity, Image, Linking } from "react-native";
 import React from "react";
 
 const ChatWithLink = (props) => {

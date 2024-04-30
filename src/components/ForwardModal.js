@@ -1,9 +1,10 @@
-import { View, Text, FlatList, TouchableOpacity } from "react-native";
+import { Text, FlatList, TouchableOpacity } from "react-native";
 import React, { useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Avatar, Card, Modal } from "@ui-kitten/components";
+import { Card, Modal } from "@ui-kitten/components";
 import { setForward } from "../redux/chatSlice";
 import socket from "../services/socket";
+import AvatarCustomer from "./AvatarCustomer";
 
 const ForwardModal = () => {
   const forward = useSelector((state) => state.chat.forward);
@@ -51,7 +52,7 @@ const ForwardModal = () => {
                 marginBottom: 10,
               }}
             >
-              <Avatar
+              <AvatarCustomer
                 source={{ uri: item.Receiver.urlavatar }}
                 style={{ width: 40, height: 40 }}
                 resizeMode="cover"

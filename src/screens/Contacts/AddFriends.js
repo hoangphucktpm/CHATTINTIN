@@ -17,6 +17,7 @@ import { api } from "../../apis/api";
 import socket from "../../services/socket";
 import { useEffect } from "react";
 import { useSelector } from "react-redux";
+import AvatarCustomer from "../../components/AvatarCustomer";
 
 // Import FireBase
 const AddFriends = (props) => {
@@ -46,9 +47,6 @@ const AddFriends = (props) => {
   };
 
   const renderItem = ({ item }) => {
-    const urlavatar =
-      item.urlavatar ||
-      "https://hinhgaixinh.com/wp-content/uploads/2021/12/bo-anh-girl-xinh-cap-2.jpg";
     return (
       <TouchableHighlight
         underlayColor={"#E6E6FA"}
@@ -63,9 +61,10 @@ const AddFriends = (props) => {
         <View style={styles.containerItem}>
           <View style={styles.itemFriend_info}>
             <View style={styles.itemFriend_avatar}>
-              <Image
+              <AvatarCustomer
                 style={styles.itemFriend_avatar_avatar}
-                source={{ uri: urlavatar }}
+                source={{ uri: item.urlavatar }}
+                alt={item.fullname}
               />
             </View>
           </View>
@@ -184,7 +183,6 @@ const AddFriends = (props) => {
         </View>
       </View>
       <View style={{ flex: 0.8, backgroundColor: "white" }}>
-        {console.log(Array.isArray(searchData))}
         <FlatList
           data={searchData}
           renderItem={renderItem}

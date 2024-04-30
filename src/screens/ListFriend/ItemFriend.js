@@ -1,9 +1,11 @@
 import React, { useCallback } from "react";
 import { Text, View, Image, TouchableHighlight, FlatList } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
+
 import { setGroupDetails } from "../../redux/groupSlice";
 import { setForward, setPopup, setReply } from "../../redux/chatSlice";
 import styles from "./StyleItemFriend";
+import AvatarCustomer from "../../components/AvatarCustomer";
 
 const ItemFriend = React.memo(({ navigation }) => {
   const { conversation } = useSelector((state) => state.conversation);
@@ -30,9 +32,10 @@ const ItemFriend = React.memo(({ navigation }) => {
         <View style={styles.container}>
           <View style={styles.itemFriend_info}>
             <View style={styles.itemFriend_avatar}>
-              <Image
+              <AvatarCustomer
                 style={styles.itemFriend_avatar_avatar}
                 source={{ uri: item.Receiver.urlavatar }}
+                alt={item.groupName || item.Receiver.fullname}
               />
             </View>
           </View>

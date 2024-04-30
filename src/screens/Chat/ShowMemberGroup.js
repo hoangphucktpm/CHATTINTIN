@@ -29,6 +29,7 @@ import BottomSheet, {
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { Ionicons } from "@expo/vector-icons";
 import socket from "../../services/socket";
+import AvatarCustomer from "../../components/AvatarCustomer";
 
 function MemberGroup() {
   const navigation = useNavigation();
@@ -149,7 +150,7 @@ function MemberGroup() {
               key={index}
               style={styles.memberItem}
             >
-              <Avatar
+              <AvatarCustomer
                 source={{ uri: item.urlavatar }}
                 alt={item.fullname}
                 style={styles.avatar}
@@ -257,7 +258,10 @@ function MemberGroup() {
                         position: "relative",
                       }}
                     >
-                      <Avatar source={{ uri: memberSelected.urlavatar }} />
+                      <AvatarCustomer
+                        alt={memberSelected.fullname}
+                        source={{ uri: memberSelected.urlavatar }}
+                      />
                       {memberSelected.ID === groupDetails.rules.IDOwner && (
                         <Ionicons
                           name="key-sharp"
