@@ -64,6 +64,9 @@ function MemberGroup() {
         IDCoOwner: memberSelected.ID,
       });
       // Alert.alert("Success", "Appointed member as co-owner successfully!");
+      socket.emit("load_member_of_group", {
+        IDConversation: groupDetails.IDConversation,
+      });
       handleCloseModal();
       const dataMembersUpdated = members.map((member) => {
         if (member.ID === memberSelected.ID) {
@@ -84,6 +87,9 @@ function MemberGroup() {
         IDCoOwner: memberSelected.ID,
       });
       // Alert.alert("Success", "Unappointed member as co-owner successfully!");
+      socket.emit("load_member_of_group", {
+        IDConversation: groupDetails.IDConversation,
+      });
       handleCloseModal();
       const dataMembersUpdated = members.map((member) => {
         if (member.ID === memberSelected.ID) {
@@ -110,6 +116,9 @@ function MemberGroup() {
     // add alert confirm
 
     socket.emit("remove_member_from_group", data);
+    socket.emit("load_member_of_group", {
+      IDConversation: groupDetails.IDConversation,
+    });
     const dataMembersUpdated = members.filter(
       (member) => member.ID !== memberSelected.ID
     );

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { FlatList, Text, TouchableOpacity, View } from "react-native";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import MessageItem from "../../../components/MessageItem";
 import MessageReact from "../../../components/MessageReact";
 import { Avatar, Card, Modal } from "@ui-kitten/components";

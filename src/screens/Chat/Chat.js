@@ -1,4 +1,4 @@
-import React, { memo, useEffect, useState } from "react";
+import React, { memo, useEffect, useState, useCallback } from "react";
 import { StatusBar, View } from "react-native";
 import styles from "./StyleChat";
 import Header from "./Header/Header";
@@ -6,27 +6,21 @@ import Body from "./Body/Body";
 import Footer from "./Footer/FooterChat";
 import { useDispatch, useSelector } from "react-redux";
 import { api } from "../../apis/api";
-import {
-  setLoadingUpload,
-  setMessages,
-  updateMessages,
-} from "../../redux/chatSlice";
+import { setLoadingUpload, setMessages } from "../../redux/chatSlice";
 import PopUpOptions from "../../components/PopUpOptions";
 import socket from "../../services/socket";
-import { ViewImageFullScreen } from "../../components/ImageMessage";
 import ForwardModal from "../../components/ForwardModal";
+import { ViewImageFullScreen } from "../../components/ImageFullView";
 
-function Chat({ route }) {
-  const { owner, IDConversation } = route.params;
-  const { ID, fullname, urlavatar } = route.params.Receiver;
+const Chat = memo(({ route }) => {
+  const { IDConversation, isGroup } = route.params;
+  const { ID, fullname, urlavatar } = route.params.Receiver ?? route.params;
 
   const dispatch = useDispatch();
 
-  const messages = useSelector((state) => state.chat.messages);
-
-  const popupOptions = useSelector((state) => state.chat.popup);
   const [messageData, setMessageData] = useState([]);
-  async function fetchMessages() {
+
+  const fetchMessages = useCallback(async () => {
     try {
       dispatch(setMessages([])); // Clear previous messages
       if (!IDConversation) return;
@@ -42,35 +36,36 @@ function Chat({ route }) {
       console.error("Error fetching messages:", error);
       // Handle error
     }
-  }
+  }, [IDConversation, dispatch]);
 
   const user = useSelector((state) => state.auth.user);
 
   useEffect(() => {
-    setMessageData([]);
     fetchMessages();
-    return () => fetchMessages();
-  }, [ID]);
+  }, [fetchMessages]);
 
-  const handleReceiveMessage = (data) => {
-    if (data.isPass) return;
-    setMessageData((prev) => [data, ...prev]);
+  const handleReceiveMessage = useCallback(
+    (data) => {
+      if (!data.isPass) {
+        setMessageData((prev) => [data, ...prev]);
+        dispatch(setLoadingUpload(false));
+      }
+    },
+    [dispatch]
+  );
 
-    dispatch(setLoadingUpload(false));
-  };
   useEffect(() => {
-    socket.on("new_group_conversation", (data) => {
+    socket.on("new_group_conversation", () => {
       socket.emit("load_conversations", { IDUser: user.ID });
     });
-    // socket.on("sending_message", (data) => {});
 
     socket.on("receive_message", handleReceiveMessage);
 
     return () => {
       socket.off("new_group_conversation");
-      socket.off("sending_message");
+      socket.off("receive_message", handleReceiveMessage);
     };
-  }, []);
+  }, [handleReceiveMessage, user.ID]);
 
   useEffect(() => {
     socket.on("changeStateMessage", (data) => {
@@ -89,26 +84,24 @@ function Chat({ route }) {
     return () => {
       socket.off("changeStateMessage");
     };
-  }, []);
+  }, [dispatch]);
 
   return (
     <View style={styles.container}>
       <StatusBar />
-      <Header fullname={fullname} id={ID} image={urlavatar} owner={owner} />
+      <Header fullname={fullname} id={ID} image={urlavatar} isGroup={isGroup} />
       <Body
         id={IDConversation}
-        owner={owner}
         dataSender={route.params.Receiver}
         messageData={messageData}
         isGroup={route.params.isGroup}
       />
       <ViewImageFullScreen />
-      {/* <BlurViewMessage /> */}
       <Footer IDConversation={IDConversation} />
       <PopUpOptions setMessageData={setMessageData} />
       <ForwardModal />
     </View>
   );
-}
+});
 
 export default Chat;

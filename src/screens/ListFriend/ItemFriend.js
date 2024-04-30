@@ -1,53 +1,30 @@
-import {
-  Text,
-  View,
-  Image,
-  TouchableHighlight,
-  TouchableOpacity,
-} from "react-native";
-import React, { useMemo, useState } from "react";
-import styles from "./StyleItemFriend";
-import { AntDesign, Feather } from "@expo/vector-icons";
-import { SwipeListView } from "react-native-swipe-list-view";
+import React, { useCallback } from "react";
+import { Text, View, Image, TouchableHighlight, FlatList } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { setGroupDetails } from "../../redux/groupSlice";
 import { setForward, setPopup, setReply } from "../../redux/chatSlice";
+import styles from "./StyleItemFriend";
 
-const ItemFriend = ({ navigation }) => {
+const ItemFriend = React.memo(({ navigation }) => {
   const { conversation } = useSelector((state) => state.conversation);
-
-  const chatLists = useMemo(
-    () => conversation?.map((convers) => convers).filter(Boolean) || [],
-    [conversation]
-  );
-
-  // Function to handle delete action
-  const deleteGroupHandleClick = () => {
-    // Implement delete action here
-    console.log("Delete action clicked");
-  };
-
-  // Function to handle Ghim action
-  const GhimHandleClick = () => {
-    // Implement Ghim action here
-    console.log("Ghim action clicked");
-  };
-
   const dispatch = useDispatch();
 
-  const handleChat = (item) => {
-    dispatch(setReply({ show: false, data: null }));
-    dispatch(setGroupDetails(item));
-    dispatch(setForward({ show: false, data: null }));
-    dispatch(setPopup({ show: false, data: null }));
-    navigation.navigate("Chat", item);
-  };
+  const handleChat = useCallback(
+    (item) => {
+      dispatch(setReply({ show: false, data: null }));
+      dispatch(setGroupDetails(item));
+      dispatch(setForward({ show: false, data: null }));
+      dispatch(setPopup({ show: false, data: null }));
+      navigation.navigate("Chat", item);
+    },
+    [dispatch, navigation]
+  );
 
-  const renderItem = ({ item }) => {
-    return (
+  const renderItem = useCallback(
+    ({ item }) => (
       <TouchableHighlight
         onPress={() => handleChat(item)}
-        underlayColor={"#E6E6FA"}
+        underlayColor="#E6E6FA"
         style={styles.touchHightLight}
       >
         <View style={styles.container}>
@@ -55,9 +32,7 @@ const ItemFriend = ({ navigation }) => {
             <View style={styles.itemFriend_avatar}>
               <Image
                 style={styles.itemFriend_avatar_avatar}
-                source={{
-                  uri: item.Receiver.urlavatar,
-                }}
+                source={{ uri: item.Receiver.urlavatar }}
               />
             </View>
           </View>
@@ -70,60 +45,28 @@ const ItemFriend = ({ navigation }) => {
                 {item.Receiver.lastMessage}
               </Text>
             </View>
-            {/* <View style={styles.itemFriend_timeBlock}>
-              <Text style={styles.itemFriend_time}>1 phút trước</Text>
-            </View> */}
           </View>
         </View>
       </TouchableHighlight>
-    );
-  };
+    ),
+    [handleChat]
+  );
 
-  const HiddenItemWithActions = () => {
+  if (!conversation?.length) {
     return (
-      <View style={styles.rowBack}>
-        <View style={styles.rowBackLeft}></View>
-        <View style={styles.rowBackRight}>
-          <View style={styles.rowBackRight_Left}>
-            <Feather name="more-horizontal" size={24} color="white" />
-            <Text style={styles.txtItemRowBack}>Thêm</Text>
-          </View>
-          <TouchableOpacity
-            style={styles.rowBackRight_Mid}
-            onPress={GhimHandleClick}
-          >
-            <AntDesign name="pushpino" size={24} color="white" />
-            <Text style={styles.txtItemRowBack}>Ghim</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={deleteGroupHandleClick}
-            style={styles.rowBackRight_Right}
-          >
-            <AntDesign name="delete" size={24} color="white" />
-            <Text style={styles.txtItemRowBack}>Xóa</Text>
-          </TouchableOpacity>
-        </View>
+      <View>
+        <Text style={{ textAlign: "center" }}>Chưa có tin nhắn</Text>
       </View>
     );
-  };
+  }
 
-  const renderHideItem = ({ item, index }) => {
-    return <HiddenItemWithActions />;
-  };
-
-  return !chatLists.length ? (
-    <View>
-      <Text style={{ textAlign: "center" }}>Chưa có tin nhắn</Text>
-    </View>
-  ) : (
-    <SwipeListView
-      nestedScrollEnabled={true}
-      data={chatLists}
+  return (
+    <FlatList
+      data={conversation}
       renderItem={renderItem}
-      renderHiddenItem={renderHideItem}
-      rightOpenValue={-230}
+      keyExtractor={(item, index) => index.toString()}
     />
   );
-};
+});
 
 export default ItemFriend;

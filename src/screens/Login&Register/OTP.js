@@ -1,12 +1,5 @@
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  TextInput,
-  Image,
-  Alert,
-} from "react-native";
-import { AntDesign, Entypo, Feather, FontAwesome5 } from "@expo/vector-icons";
+import { View, Text, TouchableOpacity, TextInput, Alert } from "react-native";
+import { Feather, FontAwesome5 } from "@expo/vector-icons";
 import { Ionicons } from "@expo/vector-icons";
 import styles from "./StyleOTP";
 import { useState } from "react";

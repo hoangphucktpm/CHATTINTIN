@@ -13,7 +13,6 @@ import { useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 import { Button } from "react-native";
 import { FlatList } from "react-native";
-import { useRoute } from "@react-navigation/native";
 import { api } from "../../apis/api";
 import socket from "../../services/socket";
 import { useEffect } from "react";
@@ -25,7 +24,7 @@ const AddFriends = (props) => {
 
   const [phoneNumber, setPhoneNumber] = useState(""); // Số điện thoại người dùng nhập
   const [searchData, setSearchData] = useState([]); // Dữ liệu tìm kiếm
-  const route = useRoute();
+
   const { user } = useSelector((state) => state.auth);
   const phone = user.phone;
 
@@ -36,7 +35,6 @@ const AddFriends = (props) => {
   const Search = async () => {
     try {
       const res = await api.getUserByPhone(phoneNumber);
-      console.log("Response from api.getUserByPhone:", res);
       if (res.data) {
         setSearchData([res.data]);
       } else {
@@ -120,10 +118,7 @@ const AddFriends = (props) => {
       senderId: phone,
       receiverId: phoneNumber,
     });
-    Alert.alert("Thông báo", "Bạn đã gửi lời mời kết bạn thành công");
-
-    console.log("senderId:", phone);
-    console.log("receiverId:", phoneNumber);
+    // Alert.alert("Thông báo", "Bạn đã gửi lời mời kết bạn thành công");
   };
 
   return (

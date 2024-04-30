@@ -41,7 +41,7 @@ const styles = StyleSheet.create({
   },
   container_right_icon: {
     justifyContent: "flex-end",
-    paddingBottom: 8,
+    // paddingBottom: 8,
     paddingRight: 70,
   },
   button: {

@@ -15,6 +15,7 @@ const styles = StyleSheet.create({
   containerBody: {
     display: "flex",
     flexDirection: "column",
+    flex: 1,
   },
   containerBody_Top: {
     display: "flex",
@@ -124,8 +125,7 @@ const styles = StyleSheet.create({
     display: "flex",
     flexDirection: "row",
     justifyContent: "center",
-    paddingRight: 10,
-    marginTop: 10,
+    marginTop: "auto",
   },
   bottom2: {
     flex: 1,

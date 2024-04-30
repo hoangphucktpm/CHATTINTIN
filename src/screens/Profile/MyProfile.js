@@ -5,42 +5,34 @@ import {
   Text,
   TouchableOpacity,
   Image,
-  ImageBackground,
   TextInput,
   Modal,
   Alert,
 } from "react-native";
 import styles from "./StyleMyProfile";
-import { Ionicons, Feather, FontAwesome5, Entypo } from "@expo/vector-icons";
+import { Feather, Entypo } from "@expo/vector-icons";
 import { RadioButton } from "react-native-paper";
 import DateTimePicker from "@react-native-community/datetimepicker";
-import { format, set } from "date-fns";
+import { format } from "date-fns";
 import { useNavigation } from "@react-navigation/native";
-import is from "date-fns/locale/is";
-import { api } from "../../apis/api";
+import { api, http } from "../../apis/api";
 import { useEffect } from "react";
-import { useRoute } from "@react-navigation/native";
-import { differenceInYears } from "date-fns";
-import { launchImageLibrary } from "react-native-image-picker";
-import { PermissionsAndroid, Platform } from "react-native";
 import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
 import { removeData } from "../../utils/localStorageConfig";
 import { logout, setUser } from "../../redux/authSclice";
-import * as FileSystem from "expo-file-system";
 import Footer from "../Footer/Footer";
-import { requestPermissions } from "../../utils/requestPermission";
+import * as ImagePicker from "expo-image-picker";
+import { setConversation } from "../../redux/conversationSlice";
 
 const MyProfile = () => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
 
   const { user } = useSelector((state) => state.auth);
-  const route = useRoute();
   const phone = user?.phone;
 
   const [fullname, setFullName] = useState("");
-  const [idUser, setIdUser] = useState("");
   const [gender, setGender] = useState("");
   const [birthday, setBirthday] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
@@ -55,10 +47,6 @@ const MyProfile = () => {
   const [isPasswordVisibleOld, setPasswordVisibleOld] = useState(false); // State for password visibility
   const [isPasswordVisibleNew, setPasswordVisibleNew] = useState(false); // State for password visibility
 
-  // useEffect(() => {
-  //   loadUserProfile();
-  // }, []);
-
   const handleDateChange = (event, selectedDate) => {
     const currentDate = selectedDate || birthday;
     setShowDatePicker(false);
@@ -67,45 +55,36 @@ const MyProfile = () => {
 
   const handleAvatarPress = async () => {
     try {
-      const permissionsGranted = await requestPermissions();
-      if (permissionsGranted) {
-        const result = await openImagePicker();
-        if (!result.didCancel && result.assets.length > 0) {
-          const rs = await FileSystem.readAsStringAsync(result.assets[0].uri, {
-            encoding: FileSystem.EncodingType.Base64,
-          });
-          try {
-            const res = await api.updateInfo(idUser, {
-              ...user,
-              urlavatar: `data:image/jpeg;base64,${rs}`,
-              type: result.assets[0].type,
-            });
-            setAvatarImage(res.data.data.urlavatar);
-            dispatch(setUser({ ...user, urlavatar: res.data.data.urlavatar }));
-            Alert.alert("Thông báo", "Cập nhật ảnh đại diện thành công");
-          } catch (error) {
-            Alert.alert("Thông báo", "Cập nhật ảnh đại diện thất bại");
-          }
-        }
+      let result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        quality: 1,
+        allowsMultipleSelection: false,
+        base64: true,
+      });
+
+      if (!result.canceled) {
+        const formData = new FormData();
+        formData.append("image", {
+          uri: result.assets[0].uri,
+          type: "image/jpeg",
+          name: "avatar.jpg",
+        });
+
+        const res = await http.post(`auth/update-info/${user.ID}`, formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        });
+
+        setAvatarImage(res.data.data.urlavatar);
+        dispatch(setUser({ ...user, urlavatar: res.data.data.urlavatar }));
       } else {
-        console.log("Người dùng từ chối cấp quyền truy cập thư viện ảnh");
+        console.log("Image selection cancelled");
       }
     } catch (error) {
-      console.log("Đã xảy ra lỗi khi xử lý ảnh:", error);
+      console.error("Error picking image:", error);
+      alert("Error picking image");
     }
-  };
-
-  const openImagePicker = () => {
-    return new Promise((resolve, reject) => {
-      const options = {
-        mediaType: "photo",
-        cameraType: "back",
-      };
-      launchImageLibrary(options, (response) => {
-        console.log("Response = ", response);
-        resolve(response);
-      });
-    });
   };
 
   const handleUpdatePress = () => {
@@ -133,35 +112,9 @@ const MyProfile = () => {
     if (!user) return navigation.navigate("Login");
     setFullName(user.fullname);
     setGender(user.ismale);
-    const formattedBirthday = new Date(user.birthday);
-    setBirthday(formattedBirthday);
-    setBirthday(new Date(user.birthday));
+    user.birthday && setBirthday(new Date(user.birthday));
     setAvatarImage(user.urlavatar);
-    setIdUser(user.ID);
   }, [user]);
-
-  // Load user profile info from server when the screen is loaded for the first time (useEffect) or when the user presses the "Refresh" button
-  // Không cần bấm button gì
-
-  // const loadUserProfile = async () => {
-  //   try {
-  //     const res = await api.getUserByPhone(phone);
-  //     console.log(res);
-
-  //     if (res?.data) {
-  //       setFullName(res.data.fullname);
-  //       setGender(res.data.ismale);
-  //       const formattedBirthday = new Date(res.data.birthday);
-  //       setBirthday(formattedBirthday);
-  //       setBirthday(new Date(res.data.birthday));
-  //       setAvatarImage(res.data.urlavatar);
-  //       setIdUser(res.data.ID);
-  //     }
-  //   } catch (error) {
-  //     Alert.alert("Lỗi", "Không thể tải thông tin cá nhân");
-
-  //   }
-  // };
 
   // Biểu thức chính quy cho yêu cầu mật khẩu mới
   const passwordRegex =
@@ -172,65 +125,27 @@ const MyProfile = () => {
     return passwordRegex.test(password);
   };
 
-  const handleRegisterPress = async () => {
+  const handleUpdateProfile = async () => {
     if (!editingProfileInfo) {
       // Nếu đang ở chế độ xem thông tin, chuyển sang chế độ chỉnh sửa thông tin cá nhân
       setEditingProfileInfo(true);
       setEditingProfile(true); // Cập nhật trạng thái chỉnh sửa thông tin cá nhân
     } else {
-      // Nếu đang ở chế độ chỉnh sửa thông tin
-
       try {
-        await api.updateInfo(idUser, {
+        await api.updateInfo(user.ID, {
           fullname: fullname,
-          ismale: gender ? 1 : 0,
-          birthday: birthday.format("yyyy-MM-dd"),
-          urlavatar: avatarImage,
+          ismale: gender ? true : false,
+          birthday: format(birthday, "yyyy-MM-dd"),
         });
-      } catch (error) {}
-      if (editingPassword) {
-        // Nếu đang chỉnh sửa mật khẩu
-        // Kiểm tra mật khẩu mới có trùng với mật khẩu cũ không
-        if (oldPassword === newPassword) {
-          Alert.alert(
-            "Thông báo",
-            "Mật khẩu mới không được trùng với mật khẩu cũ"
-          );
-          return;
-        }
-
-        if (!validatePassword(newPassword)) {
-          Alert.alert(
-            "Thông báo",
-            "Mật khẩu mới không đáp ứng yêu cầu. Mật khẩu cần có ít nhất một ký tự viết hoa, một ký tự viết thường, một số, một ký tự đặc biệt và có ít nhất 8 ký tự."
-          );
-          return;
-        }
-
-        // Kiểm tra xem ngày sinh đã đủ điều kiện chưa
-        const currentYear = new Date().getFullYear();
-        const selectedYear = birthday.getFullYear();
-        const age = currentYear - selectedYear;
-        if (age < 16) {
-          Alert.alert("Thông báo", "Tuổi của bạn phải từ 16 năm trở lên");
-          return; // Không thực hiện các bước cập nhật khi tuổi không đủ điều kiện
-        }
-
-        // Code xử lý cập nhật mật khẩu ở đây
-        setShowPasswordFields(false);
-        setEditingPassword(false);
-        Alert.alert("Thông báo", "Cập nhật mật khẩu thành công");
+        // Hiển thị thông báo cập nhật thành công
+        Alert.alert("Thông báo", "Cập nhật thông tin cá nhân thành công");
+        setEditingProfileInfo(false);
+        setEditingProfile(false); // Chuyển về trạng thái xem thông tin cá nhân
+      } catch (error) {
+        console.log(error);
+        Alert.alert("Thông báo", "Cập nhật thông tin cá nhân thất bại");
       }
-
-      // Code lưu thông tin cá nhân ở đây
-      setEditingProfileInfo(false);
-      setEditingProfile(false); // Chuyển về trạng thái xem thông tin cá nhân
-
-      // Hiển thị thông báo cập nhật thành công
-      Alert.alert("Thông báo", "Cập nhật thông tin cá nhân thành công");
     }
-
-    // Hiển thị thông báo cập nhật thành công
   };
 
   const handleLogoutPress = () => {
@@ -246,6 +161,7 @@ const MyProfile = () => {
         onPress: async () => {
           await removeData("user-phone").then(() => {
             dispatch(logout());
+            dispatch(setConversation(null));
             navigation.navigate("DashBoard");
           });
         },
@@ -334,7 +250,11 @@ const MyProfile = () => {
         </View>
       </View>
 
-      <ScrollView style={{ paddingBottom: 0 }}>
+      <ScrollView
+        style={{
+          paddingBottom: 0,
+        }}
+      >
         <View style={styles.containerBody}>
           {!showPasswordFields && (
             <>
@@ -562,7 +482,7 @@ const MyProfile = () => {
           {!showPasswordFields && (
             <View style={styles.containerBottom2}>
               <TouchableOpacity
-                onPress={handleRegisterPress}
+                onPress={handleUpdateProfile}
                 style={{ margin: 15, marginTop: 25 }}
               >
                 <Text

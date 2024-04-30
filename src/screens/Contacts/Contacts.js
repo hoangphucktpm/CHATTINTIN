@@ -1,6 +1,5 @@
-import React from "react";
+import React, { useMemo } from "react";
 import {
-  StyleSheet,
   Text,
   View,
   TextInput,
@@ -21,22 +20,28 @@ import { FlatList } from "react-native";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import socket from "../../services/socket";
 import { useEffect } from "react";
-import { set } from "date-fns";
-import { useRoute } from "@react-navigation/native";
 import { api } from "../../apis/api";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Octicons } from "@expo/vector-icons";
+import { setForward, setPopup, setReply } from "../../redux/chatSlice";
+import { setGroupDetails } from "../../redux/groupSlice";
+import { setConversation } from "../../redux/conversationSlice";
 
 function Contacts() {
   const navigation = useNavigation();
+  const dispatch = useDispatch();
+
   const { user } = useSelector((state) => state.auth);
+  const { conversation } = useSelector((state) => state.conversation);
 
   const [selectedButton, setSelectedButton] = useState(null);
   const [receiverId, setReceiverId] = useState(null);
   const [listFriends, setListFriends] = useState([]);
-  const [groupLists, setGroupLists] = useState([]);
 
   const phone = user?.phone;
+  const groupLists = useMemo(() => {
+    return conversation?.map((convers) => convers);
+  }, [conversation]);
 
   // Thêm một state mới để lưu trữ danh sách lời mời kết bạn
   const [friendRequests, setFriendRequests] = useState([]);
@@ -47,51 +52,46 @@ function Contacts() {
         api.getAllFriendRequests(user.ID),
         api.getAllFriends(user.ID),
       ]);
-      console.log(allFriends.data.length);
       setFriendRequests(allFriendRequests.data);
       setListFriends(allFriends.data);
     };
     getFriendRequests();
   }, [user, receiverId]);
 
-  useEffect(() => {
-    // Listen for a 'friend request received' event from the server
-    socket.on("friend request received", (response) => {
-      if (response.receiverId === receiverId) {
-        Alert.alert("Thông báo", "Bạn đã nhận được lời mời kết bạn");
-
-        // Cập nhật danh sách lời mời kết bạn
-        setFriendRequests((prevRequests) => [response, ...prevRequests]);
-        setReceiverId(null);
-      }
-    });
-
-    // Clean up the effect
-    return () => socket.off("friend request received");
-  }, [receiverId]);
-
-  const hanldPress = () => {
-    navigation.navigate("ScannerQR");
-  };
-  const hanldPressCreateGroup = () => {
-    navigation.navigate("CreateGroup");
-  };
-
   const sreach = () => {
     // mở thanh tìm kiếm
   };
 
-  const handleAccept = (id) => {
+  const handleAccept = (item) => {
     api
-      .handleFriendRequest({ id, type: "ACCEPTED" })
+      .handleFriendRequest({ id: item.id, type: "ACCEPTED" })
       .then((res) => {
         Alert.alert(res.data.message);
-        setReceiverId(id);
+        setReceiverId(item.id);
+
+        if (res.data.code === 1) {
+          socket.emit("load_conversations", { IDUser: user.ID });
+          socket.emit("load_conversations", {
+            IDUser: res.data.senderID,
+          });
+        }
       })
       .catch((err) => {
         Alert.alert("Error handle friend requests");
       });
   };
+
+  // reload conversation
+
+  useEffect(() => {
+    const handleLoadConversationsServer = (data) => {
+      if (data) {
+        dispatch(setConversation(data));
+      }
+    };
+
+    socket.on("load_conversations_server", handleLoadConversationsServer);
+  }, []);
 
   const handleReject = (id) => {
     // xóa cái item đó
@@ -117,7 +117,7 @@ function Contacts() {
         return (
           <FlatList
             data={listFriends}
-            renderItem={renderItem}
+            renderItem={renderFriendItem}
             keyExtractor={(item, i) => {
               return `${item.ID} ${i.toString()}`;
             }}
@@ -127,8 +127,10 @@ function Contacts() {
         return (
           <FlatList
             data={groupLists}
-            renderItem={renderItem1}
-            keyExtractor={(item) => item.ID}
+            renderItem={renderGroup}
+            keyExtractor={(item, i) => {
+              return `${item.ID} ${i.toString()}`;
+            }}
           />
         );
       case "loimoi":
@@ -136,16 +138,20 @@ function Contacts() {
         return (
           <FlatList
             data={friendRequests}
-            renderItem={renderItem2}
-            keyExtractor={(item) => item.ID}
+            renderItem={renderFriendRequest}
+            keyExtractor={(item, i) => {
+              return `${item.ID} ${i.toString()}`;
+            }}
           />
         );
       default:
         return (
           <FlatList
             data={listFriends}
-            renderItem={renderItem}
-            keyExtractor={(item) => item.ID}
+            renderItem={renderFriendItem}
+            keyExtractor={(item, i) => {
+              return `${item.ID} ${i.toString()}`;
+            }}
           />
         );
     }
@@ -155,7 +161,43 @@ function Contacts() {
     setSelectedButton(buttonName);
   };
 
-  const renderItem = ({ item }) => {
+  const renderGroup = ({ item }) => {
+    if (!item.isGroup) return;
+    const { Receiver } = item;
+    var imageItem =
+      Receiver.urlavatar ??
+      "https://hinhgaixinh.com/wp-content/uploads/2021/12/bo-anh-girl-xinh-cap-2.jpg";
+    return (
+      <TouchableHighlight
+        underlayColor={"#E6E6FA"}
+        style={styles.touchHightLight}
+        onPress={() => {
+          dispatch(setReply({ show: false, data: null }));
+          dispatch(setGroupDetails(item));
+          dispatch(setForward({ show: false, data: null }));
+          dispatch(setPopup({ show: false, data: null }));
+          navigation.navigate("Chat", item);
+        }}
+      >
+        <View style={styles.containerItem}>
+          <View style={styles.itemFriend_info}>
+            <View style={styles.itemFriend_avatar}>
+              <Image
+                style={styles.itemFriend_avatar_avatar}
+                source={{ uri: `${imageItem}` }}
+              />
+            </View>
+          </View>
+          <View style={styles.itemFriend_right}>
+            <Text style={{ fontSize: 20 }}>{Receiver.fullname}</Text>
+          </View>
+        </View>
+      </TouchableHighlight>
+    );
+  };
+
+  const renderFriendItem = ({ item }) => {
+    const dataItem = groupLists.find((data) => data.IDReceiver === item.ID);
     var imageItem =
       item.urlavatar ??
       "https://hinhgaixinh.com/wp-content/uploads/2021/12/bo-anh-girl-xinh-cap-2.jpg";
@@ -164,7 +206,11 @@ function Contacts() {
         underlayColor={"#E6E6FA"}
         style={styles.touchHightLight}
         onPress={() => {
-          navigation.navigate("Chat", item);
+          dispatch(setReply({ show: false, data: null }));
+          dispatch(setGroupDetails(dataItem));
+          dispatch(setForward({ show: false, data: null }));
+          dispatch(setPopup({ show: false, data: null }));
+          navigation.navigate("Chat", dataItem);
         }}
       >
         <View style={styles.containerItem}>
@@ -184,7 +230,9 @@ function Contacts() {
     );
   };
 
-  const renderItem2 = ({ item }) => {
+  const renderFriendRequest = ({ item }) => {
+    // console.log(item);
+
     var imageItem =
       item.sender.urlavatar ??
       "https://hinhgaixinh.com/wp-content/uploads/2021/12/bo-anh-girl-xinh-cap-2.jpg";
@@ -194,9 +242,6 @@ function Contacts() {
         underlayColor={"#E6E6FA"}
         style={styles.touchHightLight}
         onPress={() => {
-          const id = item.id;
-          // dispatch(roomAPI.getListChat()({ accessToken, id }));
-          // dispatch(roomAPI.saveRoomId()(id))
           navigation.navigate("Chat", {
             id: item.id,
             name: item.name,
@@ -224,7 +269,7 @@ function Contacts() {
           <View style={styles.itemFriend_actions}>
             <TouchableOpacity
               style={styles.acceptButton}
-              onPress={() => handleAccept(item.id)}
+              onPress={() => handleAccept(item)}
             >
               <FontAwesome name="check" size={24} color="green" />
             </TouchableOpacity>
@@ -234,45 +279,6 @@ function Contacts() {
             >
               <FontAwesome name="times" size={20} color="red" />
             </TouchableOpacity>
-          </View>
-        </View>
-      </TouchableHighlight>
-    );
-  };
-
-  const renderItem1 = ({ item }) => {
-    var imageItem =
-      item.image == undefined
-        ? "https://hinhgaixinh.com/wp-content/uploads/2021/12/bo-anh-girl-xinh-cap-2.jpg"
-        : item.image;
-    return (
-      <TouchableHighlight
-        underlayColor={"#E6E6FA"}
-        style={styles.touchHightLight}
-        onPress={() => {
-          const id = item.id;
-          // dispatch(roomAPI.getListChat()({ accessToken, id }));
-          // dispatch(roomAPI.saveRoomId()(id))
-          navigation.navigate("Chat", {
-            id: item.id,
-            name: item.name,
-            image: imageItem,
-            lastMessage: item.lastMessage,
-            time: item.time,
-          });
-        }}
-      >
-        <View style={styles.containerItem}>
-          <View style={styles.itemFriend_info}>
-            <View style={styles.itemFriend_avatar}>
-              <Image
-                style={styles.itemFriend_avatar_avatar}
-                source={{ uri: `${imageItem}` }}
-              />
-            </View>
-          </View>
-          <View style={styles.itemFriend_right}>
-            <Text style={{ fontSize: 20 }}>{item.name}</Text>
           </View>
         </View>
       </TouchableHighlight>
