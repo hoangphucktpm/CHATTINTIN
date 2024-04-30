@@ -45,6 +45,7 @@ function DrawerChat({ navigation, route }) {
   }, [conversation]);
 
   useFocusEffect(
+    
     useCallback(() => {
       const imgs = messages
         .filter((msg) => msg.type === "image" && !msg.isRecall)
