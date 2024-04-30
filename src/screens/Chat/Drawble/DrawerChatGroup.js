@@ -259,25 +259,29 @@ function DrawerChatGroup({ navigation }) {
                       style={{ fontSize: 30 }}
                     />
                   )}
-                  <TouchableOpacity
-                    style={{
-                      position: "absolute",
-                      backgroundColor: "#ddd",
-                      borderRadius: 100,
-                      padding: 5,
-                      right: -30,
-                    }}
-                    onPress={() => {
-                      if (isEditNameGroup) {
-                        handleEditNameGroup();
-                      } else {
-                        seTisEditNameGroup(true);
-                        setNewNameGroup(groupDetails.groupName);
-                      }
-                    }}
-                  >
-                    <MaterialIcons name={isEditNameGroup ? "check" : "edit"} />
-                  </TouchableOpacity>
+                  {groupDetails.rules.listIDCoOwner.includes(user.ID) && (
+                    <TouchableOpacity
+                      style={{
+                        position: "absolute",
+                        backgroundColor: "#ddd",
+                        borderRadius: 100,
+                        padding: 5,
+                        right: -30,
+                      }}
+                      onPress={() => {
+                        if (isEditNameGroup) {
+                          handleEditNameGroup();
+                        } else {
+                          seTisEditNameGroup(true);
+                          setNewNameGroup(groupDetails.groupName);
+                        }
+                      }}
+                    >
+                      <MaterialIcons
+                        name={isEditNameGroup ? "check" : "edit"}
+                      />
+                    </TouchableOpacity>
+                  )}
                 </View>
                 <View style={styles.containerBody_Top_Icon}>
                   <TouchableOpacity style={styles.containerBody_Top_Icon_Icon}>
