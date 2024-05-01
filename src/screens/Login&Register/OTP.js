@@ -5,6 +5,8 @@ import styles from "./StyleOTP";
 import { useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 
+
+
 // Import FireBase
 const OTP = (props) => {
   const [phone, setPhone] = useState("");
@@ -17,6 +19,7 @@ const OTP = (props) => {
   };
 
   // Connect FireBase
+  
 
   const regexOTP = /^\d{6}$/; // Biểu thức chính quy kiểm tra 6 số
   const hanldPressRegister = () => {

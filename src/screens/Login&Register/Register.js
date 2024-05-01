@@ -39,6 +39,7 @@ const Register = () => {
     }
   };
 
+
   const onRegister = async () => {
     if (!phone) {
       Alert.alert("Vui lòng nhập số điện thoại");
