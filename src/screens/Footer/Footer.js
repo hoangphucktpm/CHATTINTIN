@@ -1,89 +1,97 @@
-import React, { useState } from "react";
+import React from "react";
 import { View, TouchableOpacity, Text } from "react-native";
 import { AntDesign, FontAwesome5, FontAwesome } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import styles from "./StyleFooter";
+import { useDispatch, useSelector } from "react-redux";
+import { setCurrentScreen } from "../../redux/appSlice";
+import { Badge } from "react-native-paper";
 
 function Footer(props) {
   const navigation = useNavigation();
-  const [activeIcon, setActiveIcon] = useState(null);
 
-  const handlePress = () => {
-    setActiveIcon("message1");
-    navigation.navigate("Home", { phone: props?.phone });
-  };
+  const icons = [
+    { name: "message1", route: "Home" },
+    { name: "user-friends", route: "Contacts" },
+    { name: "clockcircleo", route: "Story" },
+    { name: "user", route: "MyProfile" },
+  ];
 
-  const handleContactsPress = () => {
-    setActiveIcon("user-friends");
-    navigation.navigate("Contacts", { phone: props?.phone });
-  };
+  const dispatch = useDispatch();
+  const { currentScreen, badge } = useSelector((state) => state.app);
 
-  const handleClockPress = () => {
-    setActiveIcon("clockcircleo");
-    navigation.navigate("Story", { phone: props?.phone });
-  };
-
-  const handleProfilePress = () => {
-    setActiveIcon("user");
-    navigation.navigate("MyProfile", { phone: props?.phone });
+  const handlePress = (route) => {
+    dispatch(setCurrentScreen(route));
+    navigation.navigate(route, { phone: props?.phone });
   };
 
   return (
     <View>
       <View style={styles.container}>
-        <TouchableOpacity onPress={handlePress} style={styles.containerIcon}>
-          <View style={{ flexDirection: "column", alignItems: "center" }}>
-            <AntDesign
-              name="message1"
-              size={20}
-              color={activeIcon === "message1" ? "blue" : "grey"}
-            />
-            <Text style={[styles.textIcon, { marginLeft: 5 }]}>Tin nhắn</Text>
-          </View>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          onPress={handleContactsPress}
-          style={[
-            styles.containerIcon,
-            { flexDirection: "column", alignItems: "center" },
-          ]}
-        >
-          <FontAwesome5
-            name="user-friends"
-            size={20}
-            color={activeIcon === "user-friends" ? "blue" : "grey"}
-          />
-          <Text style={styles.textIcon}>Danh bạ</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={handleClockPress}
-          style={[
-            styles.containerIcon,
-            { flexDirection: "column", alignItems: "center" },
-          ]}
-        >
-          <AntDesign
-            name="clockcircleo"
-            size={20}
-            color={activeIcon === "clockcircleo" ? "blue" : "grey"}
-          />
-          <Text style={styles.textIcon}>Nhật ký</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={handleProfilePress}
-          style={[
-            styles.containerIcon,
-            { flexDirection: "column", alignItems: "center" },
-          ]}
-        >
-          <FontAwesome
-            name="user"
-            size={20}
-            color={activeIcon === "user" ? "blue" : "grey"}
-          />
-          <Text style={styles.textIcon}>Cá nhân</Text>
-        </TouchableOpacity>
+        {icons.map((icon, index) => (
+          <TouchableOpacity
+            key={index}
+            onPress={() => handlePress(icon.route)}
+            style={[
+              styles.containerIcon,
+              { flexDirection: "column", alignItems: "center" },
+            ]}
+          >
+            <View>
+              {icon.name === "message1" && (
+                <AntDesign
+                  name={icon.name}
+                  size={20}
+                  color={currentScreen === icon.route ? "blue" : "grey"}
+                />
+              )}
+              {icon.name === "user-friends" && (
+                <View style={{ position: "relative" }}>
+                  {badge ? (
+                    <Badge
+                      style={{
+                        position: "absolute",
+                        top: -10,
+                        right: -10,
+                        zIndex: 2,
+                      }}
+                    >
+                      {badge}
+                    </Badge>
+                  ) : null}
+                  <FontAwesome5
+                    name={icon.name}
+                    size={20}
+                    color={currentScreen === icon.route ? "blue" : "grey"}
+                  />
+                </View>
+              )}
+              {icon.name === "clockcircleo" && (
+                <AntDesign
+                  name={icon.name}
+                  size={20}
+                  color={currentScreen === icon.route ? "blue" : "grey"}
+                />
+              )}
+              {icon.name === "user" && (
+                <FontAwesome
+                  name={icon.name}
+                  size={20}
+                  color={currentScreen === icon.route ? "blue" : "grey"}
+                />
+              )}
+            </View>
+            <Text style={styles.textIcon}>
+              {icon.name === "message1"
+                ? "Tin nhắn"
+                : icon.name === "user-friends"
+                ? "Danh bạ"
+                : icon.name === "clockcircleo"
+                ? "Nhật ký"
+                : "Cá nhân"}
+            </Text>
+          </TouchableOpacity>
+        ))}
       </View>
     </View>
   );

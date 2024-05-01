@@ -11,6 +11,7 @@ import Search from "../Search/Search";
 import ListFriend from "../ListFriend/ListFriend";
 import Footer from "../Footer/Footer";
 import styles from "./App_Style";
+import { setBadge } from "../../redux/appSlice";
 
 const Home = (props) => {
   const dispatch = useDispatch();
@@ -18,25 +19,25 @@ const Home = (props) => {
   const [phone, setPhone] = useState(null);
   const [conversations, setConversations] = useState([]);
 
-  const getPhone = async () => {
-    const phoneUser = await getData("user-phone");
-    setPhone(phoneUser);
-  };
+  useEffect(() => {
+    const getPhone = async () => {
+      let phoneUser;
+      if (!user) {
+        phoneUser = await getData("user-phone");
+      } else {
+        phoneUser = user.phone;
+      }
+      setPhone(phoneUser);
+    };
+    getPhone();
+  }, []);
 
   useFocusEffect(
     useCallback(() => {
-      const fetchUserAndConversations = async () => {
-        if (!phone) {
-          getPhone();
-        } else {
-          socket.emit("load_conversations", { IDUser: phone });
-          const res = await api.getUserByPhone(phone);
-          dispatch(setUser(res.data));
-        }
-      };
-
-      fetchUserAndConversations();
-    }, [phone, dispatch])
+      if (phone) {
+        socket.emit("load_conversations", { IDUser: phone });
+      }
+    }, [phone])
   );
 
   useEffect(() => {
@@ -49,23 +50,23 @@ const Home = (props) => {
       socket.emit("load_conversations", { IDUser: phone });
     };
 
-    const handleNewFriendRequest = (data) => {
+    const handleNewFriendRequest = async (data) => {
+      console.log(data);
       if (data.code === 1) {
+        const allFriendRequests = await api.getAllFriendRequests(phone);
+        dispatch(setBadge(allFriendRequests.data.length));
         Alert.alert("New friend request");
-        handleLoadConversation();
       }
     };
 
     socket.on("load_conversations_server", handleLoadConversationsServer);
     socket.on("new_group_conversation", handleLoadConversation);
     socket.on("load_member_of_group_server", handleLoadConversation);
-    socket.on("new_friend_request_server", handleNewFriendRequest);
+    socket.on("new friend request server", handleNewFriendRequest);
 
     return () => {
-      socket.off("load_conversations_server", handleLoadConversationsServer);
       socket.off("new_group_conversation", handleLoadConversation);
       socket.off("load_member_of_group_server", handleLoadConversation);
-      socket.off("new_friend_request_server", handleNewFriendRequest);
     };
   }, [phone, dispatch]);
 

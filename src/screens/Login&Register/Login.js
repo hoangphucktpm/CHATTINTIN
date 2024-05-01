@@ -46,7 +46,7 @@ function Login() {
       await storeData("user-phone", phone);
       // Chỉ hiện thông báo lên thôi
       Alert.alert("Đăng nhập thành công");
-      navigation.navigate("Home", { phone: res.data.data });
+      navigation.navigate("DashBoard", { phone: res.data.data });
     } catch (error) {
       console.log(error.message);
       Alert.alert("Mật khẩu hoặc tài khoản không đúng");

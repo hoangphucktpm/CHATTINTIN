@@ -1,7 +1,7 @@
 import axios from "axios";
 
 // export const myIP = "192.168.1.15";
-export const myIP = "192.168.1.10";
+export const myIP = "192.168.1.4";
 
 export const http = axios.create({
   // timeout: 30000,
