@@ -8,6 +8,8 @@ export const http = axios.create({
   baseURL: `http://${myIP}:8080`,
 });
 
+// 
+
 export const api = {
   login: async (params) => {
     return http.post(`/auth/sign-in`, params);
