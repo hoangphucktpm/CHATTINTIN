@@ -33,6 +33,8 @@ const MyProfile = () => {
   const { user } = useSelector((state) => state.auth);
   const phone = user?.phone;
 
+  console.log(user);
+
   const [fullname, setFullName] = useState("");
   const [gender, setGender] = useState("");
   const [birthday, setBirthday] = useState(new Date());
@@ -132,10 +134,11 @@ const MyProfile = () => {
       setEditingProfileInfo(true);
       setEditingProfile(true); // Cập nhật trạng thái chỉnh sửa thông tin cá nhân
     } else {
+      console.log(gender);
       try {
         await api.updateInfo(user.ID, {
           fullname: fullname,
-          ismale: gender ? true : false,
+          ismale: gender,
           birthday: format(birthday, "yyyy-MM-dd"),
         });
         // Hiển thị thông báo cập nhật thành công

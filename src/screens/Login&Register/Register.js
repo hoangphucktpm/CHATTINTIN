@@ -9,11 +9,12 @@ import {
 import { Feather, FontAwesome5 } from "@expo/vector-icons";
 import { Ionicons } from "@expo/vector-icons";
 import styles from "./StyleRegister";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { StatusBar } from "expo-status-bar";
 import { useNavigation } from "@react-navigation/native";
 import { api } from "../../apis/api";
 import auth from "@react-native-firebase/auth";
+// import * as firebase from "expo-firebase-app";
 
 const Register = () => {
   const [phone, setPhone] = useState("+84");
@@ -27,11 +28,23 @@ const Register = () => {
   };
   const [loading, setLoading] = useState(false);
 
+  // useEffect(() => {
+  //   firebase.initializeApp({
+  //     apiKey: "AIzaSyC7FA8yKIkJwQEETOQLXVXHkdxOyFmdGdE",
+  //     authDomain: "galvin-store.firebaseapp.com",
+  //     projectId: "galvin-store",
+  //     storageBucket: "galvin-store.appspot.com",
+  //     messagingSenderId: "486065082388",
+  //     appId: "1:486065082388:web:97d081a1ec75fef9339701",
+  //     measurementId: "G-NFNHM5W5YV",
+  //   });
+  // }, []);
+
   const getOtp = async () => {
     setShowOtp(true);
     setLoading(true);
     try {
-      const confirmation = await auth().signInWithPhoneNumber(phone);
+      const confirmation = await auth().signInWithPhoneNumber("0987651053");
       setConfirm(confirmation);
       setLoading(false);
     } catch (error) {
