@@ -25,6 +25,7 @@ import Footer from "../Footer/Footer";
 import socket from "../../services/socket";
 import { api } from "../../apis/api";
 import AvatarCustomer from "../../components/AvatarCustomer";
+import { setBadge } from "../../redux/appSlice";
 
 function Contacts() {
   const navigation = useNavigation();
@@ -45,15 +46,15 @@ function Contacts() {
   // Thêm một state mới để lưu trữ danh sách lời mời kết bạn
   const [friendRequests, setFriendRequests] = useState([]);
 
+  const getFriendRequests = async () => {
+    const allFriendRequests = await api.getAllFriendRequests(user.ID);
+    setFriendRequests(allFriendRequests.data);
+    dispatch(setBadge(allFriendRequests.data.length));
+  };
   useEffect(() => {
     socket.on("new friend request server", (data) => {
-      console.log("new friend request server");
       if (data.code === 1) {
-        const getFriendRequests = async () => {
-          const allFriendRequests = await api.getAllFriendRequests(user.ID);
-          setFriendRequests(allFriendRequests.data);
-          Alert.alert("new friend request");
-        };
+        Alert.alert("new friend request");
         getFriendRequests();
       }
     });
@@ -87,6 +88,7 @@ function Contacts() {
           socket.emit("load_conversations", {
             IDUser: res.data.senderID,
           });
+          getFriendRequests();
         }
       })
       .catch((err) => {
@@ -95,16 +97,6 @@ function Contacts() {
   };
 
   // reload conversation
-
-  useEffect(() => {
-    const handleLoadConversationsServer = (data) => {
-      if (data) {
-        dispatch(setConversation(data));
-      }
-    };
-
-    socket.on("load_conversations_server", handleLoadConversationsServer);
-  }, []);
 
   const AddFriend = () => {
     navigation.navigate("AddFriends", { phone: phone });
@@ -195,7 +187,9 @@ function Contacts() {
   };
 
   const renderFriendItem = ({ item }) => {
-    const dataItem = groupLists.find((data) => data.IDReceiver === item.ID);
+    const dataItem = !groupLists?.length
+      ? []
+      : groupLists.find((data) => data.IDReceiver === item.ID);
     if (!dataItem) return;
     return (
       <TouchableHighlight

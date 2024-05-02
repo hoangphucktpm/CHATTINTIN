@@ -25,6 +25,7 @@ import Footer from "../Footer/Footer";
 import * as ImagePicker from "expo-image-picker";
 import { setConversation } from "../../redux/conversationSlice";
 import AvatarCustomer from "../../components/AvatarCustomer";
+import { setBadge } from "../../redux/appSlice";
 
 const MyProfile = () => {
   const navigation = useNavigation();
@@ -32,8 +33,6 @@ const MyProfile = () => {
 
   const { user } = useSelector((state) => state.auth);
   const phone = user?.phone;
-
-  console.log(user);
 
   const [fullname, setFullName] = useState("");
   const [gender, setGender] = useState("");
@@ -166,6 +165,7 @@ const MyProfile = () => {
           await removeData("user-phone").then(() => {
             dispatch(logout());
             dispatch(setConversation(null));
+            dispatch(setBadge(0));
             navigation.navigate("DashBoard");
           });
         },

@@ -60,6 +60,8 @@ function DrawerChatGroup({ navigation }) {
   const dispatch = useDispatch();
 
   const isOwner = groupDetails?.rules?.IDOwner === user.ID;
+  const allowUpdateInfoGroup =
+    isOwner || groupDetails.rules.listIDCoOwner.includes(user.ID);
 
   useFocusEffect(
     useCallback(() => {
@@ -119,12 +121,12 @@ function DrawerChatGroup({ navigation }) {
       const formData = new FormData();
       formData.append("IDConversation", groupDetails.IDConversation);
       formData.append("groupName", newNameGroup);
-      // formData.append("groupAvatar", {
-      //   uri: groupDetails.groupAvatar,
-      //   type: "image/jpeg",
-      //   name: "avatar.jpg",
-      // });
-      formData.append("groupAvatar", undefined);
+      formData.append("groupAvatar", {
+        uri: groupDetails.groupAvatar,
+        type: "image/jpeg",
+        name: "avatar.jpg",
+      });
+      // formData.append("groupAvatar", undefined);
 
       await updateGroupInfo(formData, "Đổi tên nhóm thành công");
       dispatch(setGroupDetails({ ...groupDetails, groupName: newNameGroup }));
@@ -259,7 +261,7 @@ function DrawerChatGroup({ navigation }) {
                       style={{ fontSize: 30 }}
                     />
                   )}
-                  {groupDetails.rules.listIDCoOwner.includes(user.ID) && (
+                  {allowUpdateInfoGroup && (
                     <TouchableOpacity
                       style={{
                         position: "absolute",
@@ -307,7 +309,7 @@ function DrawerChatGroup({ navigation }) {
                       </Text>
                     </View>
                   </TouchableOpacity>
-                  {isOwner && (
+                  {allowUpdateInfoGroup && (
                     <TouchableOpacity
                       onPress={pickImage}
                       style={styles.containerBody_Top_Icon_Icon}

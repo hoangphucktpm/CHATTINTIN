@@ -34,19 +34,19 @@ const ItemFriend = React.memo(({ navigation }) => {
             <View style={styles.itemFriend_avatar}>
               <AvatarCustomer
                 style={styles.itemFriend_avatar_avatar}
-                source={{ uri: item.Receiver.urlavatar }}
-                alt={item.groupName || item.Receiver.fullname}
+                source={{ uri: item.Receiver?.urlavatar }}
+                alt={item.groupName || item.Receiver?.fullname}
               />
             </View>
           </View>
           <View style={styles.itemFriend_right}>
             <View style={styles.itemFriend_message}>
               <Text style={styles.itemFriend_name}>
-                {item.Receiver.fullname}
+                {item.Receiver?.fullname}
               </Text>
-              <Text style={styles.itemFriend_content}>
-                {item.Receiver.lastMessage}
-              </Text>
+              {/* <Text style={styles.itemFriend_content}>
+                {item.Receiver?.lastMessage}
+              </Text> */}
             </View>
           </View>
         </View>

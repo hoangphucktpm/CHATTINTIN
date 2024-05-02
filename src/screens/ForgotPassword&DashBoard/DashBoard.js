@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from "react";
+import React, { useCallback } from "react";
 import {
   Image,
   SafeAreaView,
@@ -14,31 +14,38 @@ import { api } from "../../apis/api";
 import { useDispatch } from "react-redux";
 import { setUser } from "../../redux/authSclice";
 import socket from "../../services/socket";
+import { setBadge, setCurrentScreen } from "../../redux/appSlice";
 
 function DashBoard() {
   const navigation = useNavigation();
   const dispatch = useDispatch();
 
-  const checkUserLogined = async () => {
+  const checkUserLogined = useCallback(async () => {
     const phone = await getData("user-phone");
     if (phone) {
       try {
         const res = await api.getUserByPhone(phone);
-        socket.emit("new user connect", {
-          phone,
-        });
+        const allFriendRequests = await api.getAllFriendRequests(phone);
+
+        socket.emit("new user connect", { phone });
+        socket.emit("load_conversations", { IDUser: phone });
+
+        dispatch(setBadge(allFriendRequests.data.length));
         dispatch(setUser(res.data));
-        return navigation.navigate("Home");
+        dispatch(setCurrentScreen("Home"));
+        console.log("vao");
+        navigation.navigate("Home");
       } catch (error) {
         console.log(error);
       }
+    } else {
+      navigation.navigate("Login");
     }
-  };
-  useFocusEffect(
-    useCallback(() => {
-      checkUserLogined();
-    }, [])
-  );
+  }, [dispatch, navigation]);
+
+  useFocusEffect(() => {
+    checkUserLogined();
+  });
 
   const hanldPressLogin = () => {
     navigation.navigate("Login");
