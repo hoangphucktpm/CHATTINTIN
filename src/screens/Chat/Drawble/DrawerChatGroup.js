@@ -108,10 +108,28 @@ function DrawerChatGroup({ navigation }) {
         name: "avatar.jpg",
       });
 
+      // log groupavatar form
+      console.log("GroupAvatar form:", formData.getAll());
+
       await updateGroupInfo(formData, "Đổi ảnh đại diện nhóm thành công");
       setImageSelected(`data:image/jpeg;base64,${result.assets[0].base64}`);
+      // dispatch(setGroupDetails({ ...groupDetails, groupAvatar: result.uri }));
     } catch (error) {
       console.error("Error picking image:", error);
+      console.error("Error:", error);
+      if (error.response) {
+        // The request was made and the server responded with a status code
+        // that falls out of the range of 2xx
+        console.error("Server Error:", error.response.data);
+        console.error("Status Code:", error.response.status);
+        console.error("Headers:", error.response.headers);
+      } else if (error.request) {
+        // The request was made but no response was received
+        console.error("No response from server:", error.request);
+      } else {
+        // Something happened in setting up the request that triggered an Error
+        console.error("Request setup error:", error.message);
+      }
       Alert.alert("Error picking image");
     }
   };
@@ -121,11 +139,11 @@ function DrawerChatGroup({ navigation }) {
       const formData = new FormData();
       formData.append("IDConversation", groupDetails.IDConversation);
       formData.append("groupName", newNameGroup);
-      formData.append("groupAvatar", {
-        uri: groupDetails.groupAvatar,
-        type: "image/jpeg",
-        name: "avatar.jpg",
-      });
+      // formData.append("groupAvatar", {
+      //   uri: groupDetails.groupAvatar,
+      //   type: "image/jpeg",
+      //   name: "avatar.jpg",
+      // });
       // formData.append("groupAvatar", undefined);
 
       await updateGroupInfo(formData, "Đổi tên nhóm thành công");
@@ -140,6 +158,7 @@ function DrawerChatGroup({ navigation }) {
   const updateGroupInfo = async (formData, successMessage) => {
     await http.post("conversation/update-info-group", formData, {
       headers: {
+        Accept: "application/json",
         "Content-Type": "multipart/form-data",
       },
     });

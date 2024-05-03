@@ -7,6 +7,7 @@ import {
   Image,
   Switch,
   TextInput,
+  Alert,
 } from "react-native";
 import { Button, Dialog, Portal, Provider } from "react-native-paper";
 import { Ionicons } from "@expo/vector-icons";
@@ -23,6 +24,8 @@ import { useFocusEffect } from "@react-navigation/native";
 import DrawerChatModal from "./DrawerChatModal";
 import { setDrawerModal } from "../../../redux/chatSlice";
 import AvatarCustomer from "../../../components/AvatarCustomer";
+import { api } from "../../../apis/api";
+import socket from "../../../services/socket";
 
 function DrawerChat({ navigation, route }) {
   const { fullname, phone, urlavatar } = route.params;
@@ -46,7 +49,6 @@ function DrawerChat({ navigation, route }) {
   }, [conversation]);
 
   useFocusEffect(
-    
     useCallback(() => {
       const imgs = messages
         .filter((msg) => msg.type === "image" && !msg.isRecall)
@@ -95,6 +97,38 @@ function DrawerChat({ navigation, route }) {
         data: generalGroup,
       })
     );
+  };
+
+  const handleUnfriend = async () => {
+    try {
+      // alert confirm
+      Alert.alert(
+        "Hủy kết bạn",
+        "Bạn có chắc chắn muốn hủy kết bạn với người này?",
+        [
+          {
+            text: "Hủy",
+            onPress: () => console.log("Cancel Pressed"),
+            style: "cancel",
+          },
+          {
+            text: "OK",
+            onPress: async () => {
+              const res = await api.unfriend({
+                senderId: user.ID,
+                receiverId: phone,
+              });
+              Alert.alert("Thông báo", res.data?.message);
+              socket.emit("load_conversations", { IDUser: phone });
+              socket.emit("load_conversations", { IDUser: user.ID });
+              navigation.navigate("Home");
+            },
+          },
+        ]
+      );
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
@@ -492,6 +526,22 @@ function DrawerChat({ navigation, route }) {
                 <View style={styles.containerBody_Mid_ChangeName_Item_Text}>
                   <Text style={{ fontSize: 20, color: "black" }}>
                     Chặn tin nhắn
+                  </Text>
+                </View>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={handleUnfriend}
+                style={styles.containerBody_Mid_ChangeName_Item}
+              >
+                <Entypo
+                  name="block"
+                  size={24}
+                  color="#828282"
+                  style={{ width: "15%", height: "100%" }}
+                />
+                <View style={styles.containerBody_Mid_ChangeName_Item_Text}>
+                  <Text style={{ fontSize: 20, color: "black" }}>
+                    Huy ket ban
                   </Text>
                 </View>
               </TouchableOpacity>

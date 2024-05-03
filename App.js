@@ -30,6 +30,9 @@ import ChangePassForgot from "./src/screens/ForgotPassword&DashBoard/ChangePassF
 import DrawerChatGroup from "./src/screens/Chat/Drawble/DrawerChatGroup";
 import OTPPassForgot from "./src/screens/ForgotPassword&DashBoard/OTPPassForgot";
 import Story from "./src/screens/Story/Story";
+import VideoCall from "./src/screens/Chat/Call/VideoCall";
+import VideoCallCome from "./src/screens/Chat/Call/VideoCallCome";
+
 
 import { Provider } from "react-redux";
 import { store } from "./store";
@@ -66,6 +69,8 @@ const App = () => {
   const story = "Story";
   const sourcesMessages = "SourcesMessages";
   const addMemberGroups = "AddMemberGroups";
+  const videoCall = "VideoCall";
+  const videoCallCome = "VideoCallCome";
 
   return (
     <Provider store={store}>
@@ -94,9 +99,6 @@ const App = () => {
             <Stack.Screen name={drawbleChat} component={DrawerChat} />
             <Stack.Screen name={scannerQR} component={ScannerQR} />
             <Stack.Screen name={myProfile} component={MyProfile} />
-            {/* <Stack.Screen name={friendProfile} component={FriendProfile} />
-                {/* <Stack.Screen name={createGroup} component={CreateGroup} /> */}
-            {/* <Stack.Screen name={imageChat} component={ImageChat} /> */}
             <Stack.Screen name={showMemberGroup} component={ShowMemberGroup} />
             <Stack.Screen name={listFriend} component={ListFriend} />
             <Stack.Screen name={drawbleChatGroup} component={DrawerChatGroup} />
@@ -105,6 +107,8 @@ const App = () => {
             <Stack.Screen name={friendProfile} component={FriendProfile} />
             <Stack.Screen name={story} component={Story} />
             <Stack.Screen name={sourcesMessages} component={SourcesMessage} />
+            <Stack.Screen name={videoCall} component={VideoCall} />
+            <Stack.Screen name={videoCallCome} component={VideoCallCome} />
           </Stack.Navigator>
         </NavigationContainer>
       </ApplicationProvider>

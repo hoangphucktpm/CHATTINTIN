@@ -1,6 +1,6 @@
 import axios from "axios";
 
-export const myIP = "192.168.1.17";
+export const myIP = "192.168.1.15";
 // export const myIP = "192.168.1.7";
 
 export const http = axios.create({
@@ -8,7 +8,7 @@ export const http = axios.create({
   baseURL: `http://${myIP}:8080`,
 });
 
-// 
+//
 
 export const api = {
   login: async (params) => {
@@ -71,4 +71,6 @@ export const api = {
   leaveGroup: (data) => http.post("conversation/leave-group", data),
 
   updateGroup: (data) => http.post("conversation/update-info-group", data),
+
+  unfriend: (data) => http.post("user/unfriend", data),
 };
