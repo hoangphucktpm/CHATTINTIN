@@ -1,14 +1,12 @@
 import axios from "axios";
 
-export const myIP = "192.168.1.15";
+export const myIP = "172.20.10.5";
 // export const myIP = "192.168.1.7";
 
 export const http = axios.create({
   // timeout: 30000,
   baseURL: `http://${myIP}:8080`,
 });
-
-//
 
 export const api = {
   login: async (params) => {

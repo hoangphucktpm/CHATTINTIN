@@ -75,6 +75,8 @@ const styles = StyleSheet.create({
     borderColor: "grey",
     justifyContent: "space-between",
     alignItems: "center",
+    // căn giữa
+    paddingBottom: 10,
   },
   containerBody_Mid: {
     marginTop: 10,

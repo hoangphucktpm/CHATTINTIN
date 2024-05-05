@@ -21,6 +21,7 @@ export const stylesBody = StyleSheet.create({
     padding: 10,
     marginBottom: 10,
     paddingRight: 20,
+    
   },
   messageText: {
     fontSize: 16,

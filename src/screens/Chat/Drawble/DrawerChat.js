@@ -182,6 +182,28 @@ function DrawerChat({ navigation, route }) {
 
                 <TouchableOpacity style={styles.containerBody_Top_Icon_Icon}>
                   <View style={styles.containerBody_Top_Icon_IconItem}>
+                    <AntDesign name="user" size={20} color="black" />
+                  </View>
+                  <View style={styles.containerBody_Top_Icon_IconText}>
+                    <Text style={{ color: "#4F4F4F", textAlign: "center" }}>
+                      Trang {"\n"} cá nhân
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+
+                <TouchableOpacity style={styles.containerBody_Top_Icon_Icon}>
+                  <View style={styles.containerBody_Top_Icon_IconItem}>
+                    <AntDesign name="picture" size={20} color="black" />
+                  </View>
+                  <View style={styles.containerBody_Top_Icon_IconText}>
+                    <Text style={{ color: "#4F4F4F", textAlign: "center" }}>
+                      Đổi {"\n"} hình nền
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+
+                <TouchableOpacity style={styles.containerBody_Top_Icon_Icon}>
+                  <View style={styles.containerBody_Top_Icon_IconItem}>
                     <AntDesign name="bells" size={20} color="black" />
                   </View>
                   <View style={styles.containerBody_Top_Icon_IconText}>
@@ -281,16 +303,24 @@ function DrawerChat({ navigation, route }) {
               <View style={styles.containerBody_Mid_File_Item}>
                 <View style={{ width: "15%", height: "100%" }} />
                 <View style={styles.containerBody_Mid_File_Item_Img}>
-                  {images.slice(0, 4).map((img, index) => (
-                    <TouchableOpacity key={index}>
-                      <Image
-                        style={styles.fileImg}
-                        source={{
-                          uri: img,
-                        }}
-                      />
-                    </TouchableOpacity>
-                  ))}
+                  {images.length > 0 ? (
+                    images.slice(0, 4).map((img, index) => (
+                      <TouchableOpacity key={index}>
+                        <Image
+                          style={styles.fileImg}
+                          source={{
+                            uri: img,
+                          }}
+                        />
+                      </TouchableOpacity>
+                    ))
+                  ) : (
+                    <Text>
+                      {" "}
+                      Hình mới nhất của cuộc {"\n"} trò chuyện sẽ xuất hiện ở
+                      đây
+                    </Text>
+                  )}
                   <TouchableOpacity
                     onPress={() =>
                       navigation.navigate("SourcesMessages", messages)
@@ -338,7 +368,7 @@ function DrawerChat({ navigation, route }) {
                 />
                 <View style={styles.containerBody_Mid_ChangeName_Item_Text}>
                   <Text style={{ fontSize: 20, color: "black" }}>
-                    Thêm vào nhóm
+                    Thêm {fullname} vào nhóm
                   </Text>
                   <AntDesign
                     name="right"
@@ -524,9 +554,7 @@ function DrawerChat({ navigation, route }) {
                   style={{ width: "15%", height: "100%" }}
                 />
                 <View style={styles.containerBody_Mid_ChangeName_Item_Text}>
-                  <Text style={{ fontSize: 20, color: "black" }}>
-                    Chặn tin nhắn
-                  </Text>
+                  <Text style={{ fontSize: 20, color: "black" }}>Chặn</Text>
                 </View>
               </TouchableOpacity>
               <TouchableOpacity
@@ -534,14 +562,14 @@ function DrawerChat({ navigation, route }) {
                 style={styles.containerBody_Mid_ChangeName_Item}
               >
                 <Entypo
-                  name="block"
+                  name="circle-with-minus"
                   size={24}
                   color="#828282"
                   style={{ width: "15%", height: "100%" }}
                 />
                 <View style={styles.containerBody_Mid_ChangeName_Item_Text}>
                   <Text style={{ fontSize: 20, color: "black" }}>
-                    Huy ket ban
+                    Hủy kết bạn
                   </Text>
                 </View>
               </TouchableOpacity>

@@ -338,7 +338,7 @@ function DrawerChatGroup({ navigation }) {
                       </View>
                       <View style={styles.containerBody_Top_Icon_IconText}>
                         <Text style={{ color: "#4F4F4F", textAlign: "center" }}>
-                          Đổi {"\n"} hình nền
+                          Đổi {"\n"} avatar
                         </Text>
                       </View>
                     </TouchableOpacity>

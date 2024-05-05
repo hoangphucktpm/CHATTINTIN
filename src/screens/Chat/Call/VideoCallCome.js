@@ -50,13 +50,6 @@ const VideoCallCome = () => {
     // Code for accepting the call
   };
 
-  const flipCamera = () => {
-    // Code for flipping the camera
-  };
-
-  const goBack = () => {
-    navigation.goBack();
-  };
 
   return (
     <View style={styles.container}>
@@ -73,15 +66,7 @@ const VideoCallCome = () => {
       )}
 
       <View style={styles.container}>
-        <View style={styles.header}>
-          <TouchableOpacity style={styles.buttonheader} onPress={goBack}>
-            <MaterialIcons name="keyboard-arrow-left" size={30} color="black" />
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.buttonheader} onPress={flipCamera}>
-            <MaterialIcons name="flip-camera-android" size={30} color="black" />
-          </TouchableOpacity>
-        </View>
+      
 
       {/* Thêm avatar và tên của người được gọi dưới header */}
       <View style={styles.callerInfo}>
@@ -135,7 +120,7 @@ const styles = StyleSheet.create({
   callerInfo: {
     flexDirection: 'column', // Change this line
     alignItems: 'center',
-    padding: 10,
+    padding: 50,
     justifyContent: 'center',
   },
   avatar: {
