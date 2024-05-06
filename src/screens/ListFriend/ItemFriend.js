@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { Text, View, Image, TouchableHighlight, FlatList } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -9,10 +9,18 @@ import AvatarCustomer from "../../components/AvatarCustomer";
 
 const ItemFriend = React.memo(({ navigation }) => {
   const { conversation } = useSelector((state) => state.conversation);
+
+  const [data, setdata] = useState([]);
+
+  useEffect(() => {
+    setdata(conversation);
+  }, [conversation]);
+
   const dispatch = useDispatch();
 
   const handleChat = useCallback(
     (item) => {
+      // console.log(item);
       dispatch(setReply({ show: false, data: null }));
       dispatch(setGroupDetails(item));
       dispatch(setForward({ show: false, data: null }));
@@ -55,7 +63,7 @@ const ItemFriend = React.memo(({ navigation }) => {
     [handleChat]
   );
 
-  if (!conversation?.length) {
+  if (!data) {
     return (
       <View>
         <Text style={{ textAlign: "center" }}>Chưa có tin nhắn</Text>
@@ -65,7 +73,7 @@ const ItemFriend = React.memo(({ navigation }) => {
 
   return (
     <FlatList
-      data={conversation}
+      data={data}
       renderItem={renderItem}
       keyExtractor={(item, index) => index.toString()}
     />

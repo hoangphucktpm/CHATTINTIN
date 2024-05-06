@@ -37,6 +37,10 @@ const Home = (props) => {
       if (phone) {
         socket.emit("load_conversations", { IDUser: phone });
       }
+      socket.emit("load_conversations_server", (data) => {
+        setConversations(data);
+        dispatch(setConversation(data));
+      });
     }, [phone])
   );
 
@@ -53,12 +57,22 @@ const Home = (props) => {
     const handleNewFriendRequest = async (data) => {
       if (data.code === 1) {
         const allFriendRequests = await api.getAllFriendRequests(phone);
-        console.log('count friend request', allFriendRequests.data.length)
+        console.log("count friend request", allFriendRequests.data.length);
         dispatch(setBadge(allFriendRequests.data.length));
         Alert.alert("New friend request");
       }
     };
 
+    const handlePhoneCome = async (data) => {
+      if (data.IDCallee === phone) {
+        const res = await api.getUserByPhone(data.IDCaller);
+        res.data &&
+          props.navigation.navigate("VideoCallCome", { ...res.data, data });
+      }
+    };
+
+    socket.on("webRTC-signaling", (data) => console.log("data123", data));
+    socket.on("pre-offer-single", handlePhoneCome);
     socket.on("load_conversations_server", handleLoadConversationsServer);
     socket.on("new_group_conversation", handleLoadConversation);
     socket.on("load_member_of_group_server", handleLoadConversation);
@@ -67,6 +81,7 @@ const Home = (props) => {
     return () => {
       socket.off("new_group_conversation", handleLoadConversation);
       socket.off("load_member_of_group_server", handleLoadConversation);
+      socket.off("pre-offer-single", handlePhoneCome);
     };
   }, [phone, dispatch]);
 

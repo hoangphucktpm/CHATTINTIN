@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
   View,
   Text,
@@ -6,6 +6,8 @@ import {
   TouchableOpacity,
   Dimensions,
   Alert,
+  PermissionsAndroid,
+  Platform,
 } from "react-native";
 import {
   FontAwesome,
@@ -15,7 +17,8 @@ import {
 } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { Image } from "react-native";
-
+import { RNCamera } from "react-native-camera";
+import { Camera } from "expo-camera";
 
 const VideoCall = () => {
   const [localStream, setLocalStream] = useState(null);
@@ -26,7 +29,55 @@ const VideoCall = () => {
   const navigation = useNavigation();
 
   const localVideoRef = useRef(null); // Placeholder for local video view
+  let cameraRef = useRef(null);
+  useEffect(() => {
+    // check camera permission
+    const getCameraPermission = async () => {
+      if (Platform.OS === "android") {
+        try {
+          const granted = await PermissionsAndroid.request(
+            PermissionsAndroid.PERMISSIONS.CAMERA,
+            {
+              title: "Camera Permission",
+              message: "This app needs access to your camera.",
+              buttonPositive: "OK",
+            }
+          );
+          if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+            console.log("Camera permission granted");
+            await takePicture();
+          } else {
+            console.log("Camera permission denied");
+            return navigation.goBack();
+          }
+        } catch (err) {
+          console.warn(err);
+        }
+      } else {
+        console.log("Platform not supported for permission request");
+        return navigation.goBack();
+      }
+    };
+    getCameraPermission();
+  }, []);
 
+  const takePicture = async () => {
+    if (cameraRef.current) {
+      // Check if cameraRef is not null
+      try {
+        const options = {
+          quality: 0.5,
+          base64: true,
+          width: 1000, // Set a valid width
+          height: 1000, // Set a valid height
+        };
+        const data = await cameraRef.current.takePictureAsync(options); // Use current property to access ref
+        console.log(data.uri);
+      } catch (error) {
+        console.error("Error taking picture:", error);
+      }
+    }
+  };
   const startCall = async () => {
     // Code for starting the call
   };
@@ -84,17 +135,22 @@ const VideoCall = () => {
           </TouchableOpacity>
         </View>
 
-      {/* Thêm avatar và tên của người được gọi dưới header */}
-      <View style={styles.callerInfo}>
-        <Image
-          style={styles.avatar}
-          source={{ uri: "https://i.pravatar.cc/100" }}
-        />
-        <Text style={styles.callerName}>Caller Name</Text>
-        <Text style={styles.callerName}>Đang đổ chuông...</Text>
-      </View>
+        {/* Thêm avatar và tên của người được gọi dưới header */}
+        <View style={styles.callerInfo}>
+          <Image
+            style={styles.avatar}
+            source={{ uri: "https://i.pravatar.cc/100" }}
+          />
+          <Text style={styles.callerName}>Caller Name</Text>
+          <Text style={styles.callerName}>Đang đổ chuông...</Text>
+        </View>
       </View>
 
+      <Camera
+        ref={cameraRef}
+        style={styles.preview}
+        type={Camera.Constants.Type.front} // Specify front camera
+      />
 
       <View style={styles.buttons}>
         <View style={styles.buttonContainer}>
@@ -155,10 +211,10 @@ const styles = StyleSheet.create({
   },
 
   callerInfo: {
-    flexDirection: 'column', // Change this line
-    alignItems: 'center',
+    flexDirection: "column", // Change this line
+    alignItems: "center",
     padding: 10,
-    justifyContent: 'center',
+    justifyContent: "center",
   },
   avatar: {
     width: 70,
@@ -168,7 +224,7 @@ const styles = StyleSheet.create({
   },
   callerName: {
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
 
   iconLabel: {

@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
   View,
   Text,
@@ -6,6 +6,8 @@ import {
   TouchableOpacity,
   Dimensions,
   Alert,
+  PermissionsAndroid,
+  Platform,
 } from "react-native";
 import {
   FontAwesome,
@@ -15,9 +17,10 @@ import {
 } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { Image } from "react-native";
+import socket from "../../../services/socket";
+import { useSelector } from "react-redux";
 
-
-const VideoCallCome = () => {
+const VideoCallCome = ({ route }) => {
   const [localStream, setLocalStream] = useState(null);
   const [remoteStream, setRemoteStream] = useState(null);
   const [isCalling, setIsCalling] = useState(false);
@@ -27,14 +30,87 @@ const VideoCallCome = () => {
 
   const localVideoRef = useRef(null); // Placeholder for local video view
 
+  const user = useSelector((state) => state.auth.user);
+
+  useEffect(() => {
+    // check permission microphone
+    const getMicrophonePermission = async () => {
+      if (Platform.OS === "android") {
+        try {
+          const isGranted = await PermissionsAndroid.check(
+            PermissionsAndroid.PERMISSIONS.RECORD_AUDIO
+          );
+          if (isGranted) return startCall();
+          const granted = await PermissionsAndroid.request(
+            PermissionsAndroid.PERMISSIONS.RECORD_AUDIO,
+            {
+              title: "Microphone Permission",
+              message: "This app needs access to your microphone.",
+              buttonPositive: "OK",
+            }
+          );
+          if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+            console.log("Microphone permission granted");
+            startCall();
+          } else {
+            console.log("Microphone permission denied");
+          }
+        } catch (err) {
+          console.warn(err);
+        }
+      } else {
+        console.log("Platform not supported for permission request");
+      }
+    };
+    getMicrophonePermission();
+  }, []);
+
+  useEffect(() => {
+    socket.on("webRTC-signaling", (data) => console.log("data2", data));
+
+    socket.on("pre-offer-single-answer", (data) => {
+      if (data.preOfferAnswer === "CALL_REJECTED") navigation.navigate("Home");
+    });
+    socket.on("pre-offer-single", (data) => {
+      signalingFunc(data.IDCaller, "OFFER");
+    });
+    return () => {
+      socket.off("pre-offer-single-answer");
+    };
+  }, []);
+
+  const signalingFunc = (connectedUserSocketId, signaling) => {
+    const data = {
+      signaling,
+      connectedUserSocketId,
+    };
+    socket.emit("webRTC-signaling", data);
+  };
+
   const startCall = async () => {
     // Code for starting the call
+
+    const data = {
+      IDCaller: user.phone,
+      IDCallee: route.params?.id,
+      callType: "SOUND_PERSONAL_CODE",
+    };
+
+    socket.emit("pre-offer-single", data);
+    signalingFunc(route.params?.id, "OFFER");
   };
 
   const refuse = () => {
-    navigation.goBack();
-    Alert.alert("Thông báo", "Cuộc gọi đã từ chối");
     // Code for ending the call
+
+    if (route.params?.data) {
+      socket.emit("pre-offer-single-answer", {
+        ...route.params.data,
+        preOfferAnswer: "CALL_REJECTED",
+      });
+      Alert.alert("Thông báo", "Cuộc gọi đã từ chối");
+    }
+    navigation.navigate("Home");
   };
 
   add = () => {
@@ -48,8 +124,19 @@ const VideoCallCome = () => {
 
   const accept = () => {
     // Code for accepting the call
-  };
 
+    socket.emit("pre-offer-single-answer", {
+      ...route.params.data,
+      preOfferAnswer: "CALL_ACCEPTED",
+    });
+
+    const data = {
+      signaling: "ANSWER",
+      connectedUserSocketId: route.params.data.socketIDCallee,
+    };
+
+    socket.emit("webRTC-signaling", data);
+  };
 
   return (
     <View style={styles.container}>
@@ -66,19 +153,26 @@ const VideoCallCome = () => {
       )}
 
       <View style={styles.container}>
-      
-
-      {/* Thêm avatar và tên của người được gọi dưới header */}
-      <View style={styles.callerInfo}>
-        <Image
-          style={styles.avatar}
-          source={{ uri: "https://i.pravatar.cc/100" }}
-        />
-        <Text style={styles.callerName}>Caller Name</Text>
-        <Text style={styles.callerName}>Đang gọi đến...</Text>
+        {/* Thêm avatar và tên của người được gọi dưới header */}
+        <View style={styles.callerInfo}>
+          <Image
+            style={styles.avatar}
+            source={{
+              uri: route.params?.callOut
+                ? route.params?.image
+                : route.params?.urlavatar || "https://i.pravatar.cc/100",
+            }}
+          />
+          <Text style={styles.callerName}>Caller Name</Text>
+          {!route.params?.callOut ? (
+            <Text style={styles.callerName}>{route.params?.fullname}</Text>
+          ) : (
+            <Text style={styles.callerName}>
+              Đang gọi đến {route.params?.fullname || "..."}
+            </Text>
+          )}
+        </View>
       </View>
-      </View>
-
 
       <View style={styles.buttons}>
         <View style={styles.buttonContainer}>
@@ -89,15 +183,19 @@ const VideoCallCome = () => {
               color="white"
             />
           </TouchableOpacity>
-          <Text style={styles.iconLabel}>Từ chối</Text>
+          <Text style={styles.iconLabel}>
+            {route.params?.callOut ? "Kết thúc" : "Từ chối"}
+          </Text>
         </View>
 
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.button} onPress={accept}>
-            <Entypo name="phone" size={30} color="black" />
-          </TouchableOpacity>
-          <Text style={styles.iconLabel}>Chấp nhận</Text>
-        </View>
+        {!route.params?.callOut && (
+          <View style={styles.buttonContainer}>
+            <TouchableOpacity style={styles.button} onPress={accept}>
+              <Entypo name="phone" size={30} color="black" />
+            </TouchableOpacity>
+            <Text style={styles.iconLabel}>Chấp nhận</Text>
+          </View>
+        )}
       </View>
     </View>
   );
@@ -118,10 +216,10 @@ const styles = StyleSheet.create({
   },
 
   callerInfo: {
-    flexDirection: 'column', // Change this line
-    alignItems: 'center',
+    flexDirection: "column", // Change this line
+    alignItems: "center",
     padding: 50,
-    justifyContent: 'center',
+    justifyContent: "center",
   },
   avatar: {
     width: 70,
@@ -131,7 +229,7 @@ const styles = StyleSheet.create({
   },
   callerName: {
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
 
   iconLabel: {

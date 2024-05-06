@@ -14,7 +14,8 @@ import { ViewImageFullScreen } from "../../components/ImageFullView";
 
 const Chat = memo(({ route }) => {
   const { IDConversation, isGroup } = route.params;
-  const { ID, fullname, urlavatar } = route.params.Receiver ?? route.params;
+  const { ID, fullname, urlavatar, IDSender } =
+    route.params.Receiver ?? route.params;
 
   const dispatch = useDispatch();
 
@@ -89,7 +90,12 @@ const Chat = memo(({ route }) => {
   return (
     <View style={styles.container}>
       <StatusBar />
-      <Header fullname={fullname} id={ID} image={urlavatar} isGroup={isGroup} />
+      <Header
+        fullname={fullname}
+        id={ID ?? route.params.IDSender}
+        image={urlavatar}
+        isGroup={isGroup}
+      />
       <Body
         id={IDConversation}
         dataSender={route.params.Receiver}

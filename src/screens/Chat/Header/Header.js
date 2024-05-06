@@ -73,10 +73,27 @@ function Header({ fullname, id, image, isGroup }) {
           />
         </View>
         <View style={styles.container_right_icon}>
-          <Feather name="phone" size={23} color="white" onPress={() => navigation.navigate("VideoCallCome")} />
+          <Feather
+            name="phone"
+            size={23}
+            color="white"
+            onPress={() =>
+              navigation.navigate("VideoCallCome", {
+                fullname,
+                id,
+                image,
+                callOut: true,
+              })
+            }
+          />
         </View>
         <View style={styles.container_right_icon}>
-          <Feather name="video" size={26} color="white" onPress={() => navigation.navigate("VideoCall")} />
+          <Feather
+            name="video"
+            size={26}
+            color="white"
+            onPress={() => navigation.navigate("VideoCall")}
+          />
         </View>
         <TouchableOpacity
           style={styles.container_right_icon}

@@ -59,6 +59,7 @@
     "react-native": "^0.73.6",
     "react-native-audio-record": "^0.2.2",
     "react-native-calendars": "^1.1304.1",
+    "react-native-camera": "^4.2.1",
     "react-native-dotenv": "^3.4.11",
     "react-native-emoji-selector": "^0.2.0",
     "react-native-fs": "^2.20.0",

@@ -10,7 +10,15 @@
       "@react-native-firebase/app",
       "@react-native-firebase/auth",
       "expo-document-picker",
-      "expo-av"
+      "expo-av",
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Allow $(AppTinTin) to access your camera",
+          "microphonePermission": "Allow $(AppTinTin) to access your microphone",
+          "recordAudioAndroid": true
+        }
+      ]
     ],
     "splash": {
       "image": "./assets/icon.png",
@@ -38,6 +46,4 @@
       }
     }
   }
-
-  
 }
