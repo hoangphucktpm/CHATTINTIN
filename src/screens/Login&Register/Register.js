@@ -1,3 +1,4 @@
+import React, { useState, useRef } from "react";
 import {
   View,
   Text,
@@ -9,42 +10,30 @@ import {
 import { Feather, FontAwesome5 } from "@expo/vector-icons";
 import { Ionicons } from "@expo/vector-icons";
 import styles from "./StyleRegister";
-import React, { useEffect, useState } from "react";
 import { StatusBar } from "expo-status-bar";
 import { useNavigation } from "@react-navigation/native";
 import { api } from "../../apis/api";
 import auth from "@react-native-firebase/auth";
-// import * as firebase from "expo-firebase-app";
 
 const Register = () => {
   const [phone, setPhone] = useState("+84");
   const [confirm, setConfirm] = useState(null);
   const [showOtp, setShowOtp] = useState(false);
-  const [code, setCode] = useState("");
+  const [otp, setOtp] = useState(Array(6).fill(""));
   const regexPhone = /^\+84\d{9}$/;
   const navigation = useNavigation();
+  const [loading, setLoading] = useState(false);
+  const otpInputs = useRef([]);
+
   const hanldPressDashBoard = () => {
     navigation.navigate("DashBoard");
   };
-  const [loading, setLoading] = useState(false);
-
-  // useEffect(() => {
-  //   firebase.initializeApp({
-  //     apiKey: "AIzaSyC7FA8yKIkJwQEETOQLXVXHkdxOyFmdGdE",
-  //     authDomain: "galvin-store.firebaseapp.com",
-  //     projectId: "galvin-store",
-  //     storageBucket: "galvin-store.appspot.com",
-  //     messagingSenderId: "486065082388",
-  //     appId: "1:486065082388:web:97d081a1ec75fef9339701",
-  //     measurementId: "G-NFNHM5W5YV",
-  //   });
-  // }, []);
 
   const getOtp = async () => {
     setShowOtp(true);
     setLoading(true);
     try {
-      const confirmation = await auth().signInWithPhoneNumber("0987651053");
+      const confirmation = await auth().signInWithPhoneNumber(phone);
       setConfirm(confirmation);
       setLoading(false);
     } catch (error) {
@@ -52,6 +41,15 @@ const Register = () => {
     }
   };
 
+  const handleOTPChange = (value, index) => {
+    const updatedOTP = [...otp];
+    updatedOTP[index] = value;
+    setOtp(updatedOTP);
+    if (value && index < otp.length - 1) {
+      // Focus the next input
+      otpInputs.current[index + 1].focus();
+    }
+  };
 
   const onRegister = async () => {
     if (!phone) {
@@ -80,15 +78,16 @@ const Register = () => {
   };
 
   const onConfirm = async () => {
-    if (code === "") {
-      Alert.alert("Thông báo", "Mã OTP không được rỗng");
+    const code = otp.join("");
+    if (!code) {
+      Alert.alert("Mã OTP không được rỗng");
       return;
     }
     try {
-      const res = await confirm?.confirm(code);
-      navigation.navigate("InputPass", { phoneNumber: res?.user?.phoneNumber });
+      await confirm.confirm(code);
+      navigation.navigate("InputPass", { phoneNumber: phone });
     } catch (error) {
-      Alert.alert("Thông báo", "Mã OTP không hợp lệ");
+      Alert.alert("Mã OTP không hợp lệ");
     }
   };
 
@@ -118,7 +117,7 @@ const Register = () => {
         <>
           <View style={styles.containerText}>
             <Text style={{ fontSize: 18, textAlign: "center" }}>
-              Vui lòng nhập mã OTP để xác thực số điện thoại
+              Vui lòng nhập mã OTP để xác thực số điện
             </Text>
           </View>
           <View style={styles.containerInput}>
@@ -127,8 +126,9 @@ const Register = () => {
                 display: "flex",
                 flexDirection: "row",
                 borderWidth: 1,
-                marginRight: 10,
                 marginLeft: 10,
+                marginRight: 10,
+                marginTop: 10,
                 borderRadius: 20,
                 backgroundColor: "#DCDCDC",
                 alignItems: "center",
@@ -152,31 +152,36 @@ const Register = () => {
               />
             </View>
 
-            <View
-              style={{
-                display: "flex",
-                flexDirection: "row",
-                borderWidth: 1,
-                marginLeft: 10,
-                marginRight: 10,
-                marginTop: 10,
-                borderRadius: 20,
-                backgroundColor: "#DCDCDC",
-                alignItems: "center",
-              }}
-            >
-              <View style={{ flex: 0.15, alignItems: "center" }}>
-                <FontAwesome5 name="keyboard" size={24} color="black" />
-              </View>
-              <TextInput
-                onChangeText={(x) => setCode(x)}
-                value={code}
-                placeholder="Vui lòng nhập mã OTP"
-                style={{ height: 50, fontSize: 22, flex: 0.7 }}
-                keyboardType="numeric"
-                maxLength={6}
-              />
+            <View style={{ flexDirection: "row", justifyContent: "center", marginTop: 40 }}>
+              {[...Array(6)].map((_, index) => (
+                <View key={index} style={{ width: 40, marginHorizontal:  5}}>
+                  <View style={{ borderBottomWidth: 1, borderRadius: 0 }}>
+                    <TextInput
+                      onChangeText={(text) => handleOTPChange(text, index)}
+                      value={otp[index]}
+                      placeholder=""
+                      style={{
+                        height: 50,
+                        fontSize: 22,
+                        textAlign: "center",
+                      }}
+                      keyboardType="numeric"
+                      maxLength={1}
+                      ref={(ref) => (otpInputs.current[index] = ref)}
+                      returnKeyType="next"
+                      blurOnSubmit={false}
+                      onSubmitEditing={() => {
+                        // Focus the next input
+                        if (index < otp.length - 1) {
+                          otpInputs.current[index + 1].focus();
+                        }
+                      }}
+                    />
+                  </View>
+                </View>
+              ))}
             </View>
+
           </View>
         </>
       ) : (
@@ -258,6 +263,7 @@ const Register = () => {
       </View>
       {loading && <ActivityIndicator size="large" />}
     </View>
+
   );
 };
 
