@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState} from "react";
 import {
   ScrollView,
   View,
@@ -13,7 +13,7 @@ import styles from "./StyleMyProfile";
 import { Feather, Entypo } from "@expo/vector-icons";
 import { RadioButton } from "react-native-paper";
 import DateTimePicker from "@react-native-community/datetimepicker";
-import { format } from "date-fns";
+import { format, differenceInYears } from "date-fns"; // Import differenceInYears function
 import { useNavigation } from "@react-navigation/native";
 import { api, http } from "../../apis/api";
 import { useEffect } from "react";
@@ -35,7 +35,7 @@ const MyProfile = () => {
   const phone = user?.phone;
 
   const [fullname, setFullName] = useState("");
-  const [gender, setGender] = useState("");
+  const [gender, setGender] = useState(user ? user.ismale : false); 
   const [birthday, setBirthday] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showPasswordFields, setShowPasswordFields] = useState(false);
@@ -46,8 +46,8 @@ const MyProfile = () => {
   const [editingPassword, setEditingPassword] = useState(false);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [editingProfileInfo, setEditingProfileInfo] = useState(false);
-  const [isPasswordVisibleOld, setPasswordVisibleOld] = useState(false); // State for password visibility
-  const [isPasswordVisibleNew, setPasswordVisibleNew] = useState(false); // State for password visibility
+  const [isPasswordVisibleOld, setPasswordVisibleOld] = useState(false);
+  const [isPasswordVisibleNew, setPasswordVisibleNew] = useState(false);
 
   const handleDateChange = (event, selectedDate) => {
     const currentDate = selectedDate || birthday;
@@ -92,7 +92,6 @@ const MyProfile = () => {
   const handleUpdatePress = () => {
     setEditingPassword(true);
     setShowPasswordFields(true);
-    // setEditingProfile(true); // Cho phép chỉnh sửa thông tin cá nhân
   };
 
   const handleCancelPress = () => {
@@ -118,41 +117,41 @@ const MyProfile = () => {
     setAvatarImage(user.urlavatar);
   }, [user]);
 
-  // Biểu thức chính quy cho yêu cầu mật khẩu mới
   const passwordRegex =
     /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/;
 
-  // Kiểm tra mật khẩu mới với biểu thức chính quy
   const validatePassword = (password) => {
     return passwordRegex.test(password);
   };
 
   const handleUpdateProfile = async () => {
     if (!editingProfileInfo) {
-      // Nếu đang ở chế độ xem thông tin, chuyển sang chế độ chỉnh sửa thông tin cá nhân
       setEditingProfileInfo(true);
-      setEditingProfile(true); // Cập nhật trạng thái chỉnh sửa thông tin cá nhân
+      setEditingProfile(true);
     } else {
-      console.log(gender);
       try {
+        const age = differenceInYears(new Date(), birthday); // Calculate age
+        if (age < 16) {
+          Alert.alert("Thông báo", "Tuổi của bạn không được nhỏ hơn 16");
+          return;
+        }
         await api.updateInfo(user.ID, {
           fullname: fullname,
-          ismale: gender,
+          ismale: gender, // Include gender in the update request
           birthday: format(birthday, "yyyy-MM-dd"),
         });
-        // Hiển thị thông báo cập nhật thành công
         Alert.alert("Thông báo", "Cập nhật thông tin cá nhân thành công");
         setEditingProfileInfo(false);
-        setEditingProfile(false); // Chuyển về trạng thái xem thông tin cá nhân
+        setEditingProfile(false);
       } catch (error) {
         console.log(error);
         Alert.alert("Thông báo", "Cập nhật thông tin cá nhân thất bại");
       }
     }
   };
+  
 
   const handleLogoutPress = () => {
-    // Ask if you want to log out
     Alert.alert("Đăng xuất", "Bạn có chắc chắn muốn đăng xuất?", [
       {
         text: "Hủy",
@@ -175,11 +174,11 @@ const MyProfile = () => {
   };
 
   const togglePasswordVisibilityOld = () => {
-    setPasswordVisibleOld(!isPasswordVisibleOld); // Toggle password visibility state
+    setPasswordVisibleOld(!isPasswordVisibleOld);
   };
 
   const togglePasswordVisibilityNew = () => {
-    setPasswordVisibleNew(!isPasswordVisibleNew); // Toggle password visibility state
+    setPasswordVisibleNew(!isPasswordVisibleNew);
   };
 
   const onUpdatePass = async () => {
@@ -209,7 +208,6 @@ const MyProfile = () => {
         newpassword: newPassword,
       });
 
-      // Kiểm tra phản hồi từ server
       if (res?.data?.message === "Old password is incorrect") {
         Alert.alert("Mật khẩu cũ không đúng");
         return;
@@ -403,7 +401,7 @@ const MyProfile = () => {
                       fontSize: 22,
                       flex: 0.85,
                     }}
-                    secureTextEntry={!isPasswordVisibleOld} // Toggle secureTextEntry based on isPasswordVisible state
+                    secureTextEntry={!isPasswordVisibleOld}
                   />
                   <TouchableOpacity onPress={togglePasswordVisibilityOld}>
                     {isPasswordVisibleOld ? (
@@ -445,7 +443,7 @@ const MyProfile = () => {
                       fontSize: 22,
                       flex: 0.85,
                     }}
-                    secureTextEntry={!isPasswordVisibleNew} // Toggle secureTextEntry based on isPasswordVisible state
+                    secureTextEntry={!isPasswordVisibleNew}
                   />
                   <TouchableOpacity onPress={togglePasswordVisibilityNew}>
                     {isPasswordVisibleNew ? (

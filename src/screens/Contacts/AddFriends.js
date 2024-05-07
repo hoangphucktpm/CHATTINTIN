@@ -111,13 +111,29 @@ const AddFriends = (props) => {
     };
   }, []);
 
-  const hanldPressAdd = () => {
+  const hanldPressAdd = async () => {
+    if (phoneNumber === phone) {
+      Alert.alert("Thông báo", "Bạn không thể tự kết bạn với chính mình");
+      return; // Ngăn việc gửi yêu cầu kết bạn nếu số điện thoại là của chính mình
+    }
+  
+    try {
+      const res = await api.checkRequestExists(phone, phoneNumber);
+      if (res.data.code === 0 || res.data.code === 2) {
+        Alert.alert("Thông báo", "Đã là bạn bè không thể gữi lời mời kết bạn");
+        return;
+      }
+    } catch (error) {
+      console.error('API error:', error); // Log the error
+      Alert.alert("Thông báo", "Có lỗi xảy ra khi kiểm tra tình trạng bạn bè");
+      return;
+    }
+  
     // Emit a 'new friend request client' event to the server with the senderId and receiverId
     socket.emit("new friend request client", {
       senderId: phone,
       receiverId: phoneNumber,
     });
-    // Alert.alert("Thông báo", "Bạn đã gửi lời mời kết bạn thành công");
   };
 
   return (
