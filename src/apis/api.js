@@ -1,6 +1,6 @@
 import axios from "axios";
 
-export const myIP = "192.168.1.12";
+export const myIP = "192.168.1.5";
 // export const myIP = "192.168.1.7";
 
 export const http = axios.create({
@@ -42,6 +42,10 @@ export const api = {
     http.post(`conversation/get-list-friend`, { username }),
   checkRequest: ({ senderId, receiverId }) =>
     http.post(`friend-request/check-request-exists`, { senderId, receiverId }),
+  
+  checkRequestExists: async (senderId, receiverId) => {
+    return http.post(`/friend-request/check-request-exists`, { senderId, receiverId });
+  },
 
   getMessageByConversationId: ({ IDConversation, IDNextBucket }) =>
     http.post("conversation/getMessageDetail", {
