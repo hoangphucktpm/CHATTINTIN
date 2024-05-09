@@ -71,7 +71,7 @@ const Register = () => {
       if (error.response && error.response.status === 404) {
         return await getOtp();
       }
-      Alert.alert(error.message);
+      Alert.alert("Lỗi", "Không thể thực hiện yêu cầu");
       setShowOtp(false);
       setLoading(false);
     }
@@ -152,9 +152,15 @@ const Register = () => {
               />
             </View>
 
-            <View style={{ flexDirection: "row", justifyContent: "center", marginTop: 40 }}>
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "center",
+                marginTop: 40,
+              }}
+            >
               {[...Array(6)].map((_, index) => (
-                <View key={index} style={{ width: 40, marginHorizontal:  5}}>
+                <View key={index} style={{ width: 40, marginHorizontal: 5 }}>
                   <View style={{ borderBottomWidth: 1, borderRadius: 0 }}>
                     <TextInput
                       onChangeText={(text) => handleOTPChange(text, index)}
@@ -181,7 +187,6 @@ const Register = () => {
                 </View>
               ))}
             </View>
-
           </View>
         </>
       ) : (
@@ -263,7 +268,6 @@ const Register = () => {
       </View>
       {loading && <ActivityIndicator size="large" />}
     </View>
-
   );
 };
 

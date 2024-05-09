@@ -143,7 +143,7 @@ function CreateGroup({ route }) {
       }
     } catch (error) {
       console.error("Error picking image:", error);
-      alert("Error picking image");
+      alert("Không thể chọn ảnh");
     }
   };
 
@@ -154,6 +154,10 @@ function CreateGroup({ route }) {
     }
     if (!name) {
       Alert.alert("Nhắc nhỡ", "Nhập tên nhóm");
+      return;
+    }
+    if (!groupAvatar) {
+      Alert.alert("Nhắc nhỡ", "Chọn ảnh nhóm");
       return;
     }
     const data = {

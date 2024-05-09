@@ -21,7 +21,6 @@ import { PermissionsAndroid, Platform } from "react-native";
 import { differenceInYears } from "date-fns";
 import * as FileSystem from "expo-file-system";
 
-
 import { api } from "../../apis/api";
 import { storeData } from "../../utils/localStorageConfig";
 
@@ -52,7 +51,7 @@ const InputProfile = (props) => {
         if (!result.didCancel) {
           const rs = await FileSystem.readAsStringAsync(result.assets[0].uri, {
             encoding: FileSystem.EncodingType.Base64,
-          })
+          });
           setAvatarImage(result.assets[0].uri);
         }
       } else {
@@ -132,8 +131,6 @@ const InputProfile = (props) => {
       return;
     }
 
- 
-
     try {
       const res = await api.updateInfo(idNewUser, {
         fullname: name,
@@ -145,7 +142,7 @@ const InputProfile = (props) => {
       await storeData("user-phone", idNewUser);
       navigation.navigate("Home", { phone: idNewUser });
     } catch (error) {
-      Alert.alert(error.message);
+      Alert.alert("Lỗi", "Không thể thực hiện yêu cầu");
     }
   };
 

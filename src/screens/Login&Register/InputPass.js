@@ -76,7 +76,7 @@ function InputPass(props) {
           navigation.navigate("InputProfile", { idNewUser: res?.data?.ID });
         }
       } catch (error) {
-        Alert.alert(error.message);
+        Alert.alert("Lỗi", "Không thể thực hiện yêu cầu");
       }
     }
   };

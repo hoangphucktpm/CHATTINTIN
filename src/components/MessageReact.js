@@ -1,9 +1,14 @@
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import React, { useState } from "react";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  TouchableWithoutFeedback,
+} from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useDispatch } from "react-redux";
 import { setPopup } from "../redux/chatSlice";
-import { api } from "../apis/api";
 
 const icons = ["❤️", "👍", "😀", "😂", "😍", "😡"];
 
@@ -12,9 +17,7 @@ const MessageReact = ({ children, item, isSelf, setDataModal }) => {
   const [reactSelected, setReactSelected] = useState(null);
 
   const user = "example";
-  const dataTemo = [
-
-  ];
+  const dataTemo = [];
 
   const handleReaction = (emoji) => {
     const data = { user, icon: emoji };
@@ -26,6 +29,13 @@ const MessageReact = ({ children, item, isSelf, setDataModal }) => {
   const handleLongPress = () => {
     dispatch(setPopup({ show: true, data: item }));
   };
+
+  const hideReactions = () => {
+    setShowReactions(false);
+  };
+
+  const ScreenHeight = 9999;
+  const ScreenWidth = 999;
 
   return (
     <TouchableOpacity
@@ -44,9 +54,12 @@ const MessageReact = ({ children, item, isSelf, setDataModal }) => {
         onPress={() => {
           setReactSelected("❤️");
           handleReaction("❤️");
-        
         }}
-        style={{ backgroundColor: "white", padding: 2, borderRadius: 50 }}
+        style={{
+          backgroundColor: "white",
+          padding: 2,
+          borderRadius: 50,
+        }}
       >
         {reactSelected ? (
           <Text>{reactSelected}</Text>
@@ -86,6 +99,18 @@ const MessageReact = ({ children, item, isSelf, setDataModal }) => {
           </View>
         ))}
       </TouchableOpacity>
+
+      {showReactions && (
+        <TouchableWithoutFeedback onPress={hideReactions}>
+          <View
+            style={{
+              ...styles.overlay,
+              width: ScreenWidth,
+              height: ScreenHeight,
+            }}
+          />
+        </TouchableWithoutFeedback>
+      )}
     </TouchableOpacity>
   );
 };
@@ -113,5 +138,14 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     alignItems: "center",
     marginRight: 2,
+  },
+  overlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: "transparent",
+    // backgroundColor: "red",
+    opacity: 0.5,
+    zIndex: 9,
+    position: "absolute",
+    top: -999,
   },
 });

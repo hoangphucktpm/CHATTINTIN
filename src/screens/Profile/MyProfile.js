@@ -1,4 +1,4 @@
-import React, { useState} from "react";
+import React, { useState } from "react";
 import {
   ScrollView,
   View,
@@ -35,7 +35,7 @@ const MyProfile = () => {
   const phone = user?.phone;
 
   const [fullname, setFullName] = useState("");
-  const [gender, setGender] = useState(user ? user.ismale : false); 
+  const [gender, setGender] = useState(user ? user.ismale : false);
   const [birthday, setBirthday] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showPasswordFields, setShowPasswordFields] = useState(false);
@@ -71,6 +71,8 @@ const MyProfile = () => {
           type: "image/jpeg",
           name: "avatar.jpg",
         });
+        // full name
+        formData.append("fullname", user.fullname);
 
         const res = await http.post(`auth/update-info/${user.ID}`, formData, {
           headers: {
@@ -135,12 +137,21 @@ const MyProfile = () => {
           Alert.alert("Thông báo", "Tuổi của bạn không được nhỏ hơn 16");
           return;
         }
-        await api.updateInfo(user.ID, {
+        const data = {
           fullname: fullname,
-          ismale: gender, // Include gender in the update request
+          sex: gender ? "male" : "female",
           birthday: format(birthday, "yyyy-MM-dd"),
-        });
+        };
+        // console.log(data);
+        await api.updateInfo(user.ID, data);
         Alert.alert("Thông báo", "Cập nhật thông tin cá nhân thành công");
+        dispatch(
+          setUser({
+            ...user,
+            ...data,
+            ismale: gender,
+          })
+        );
         setEditingProfileInfo(false);
         setEditingProfile(false);
       } catch (error) {
@@ -149,7 +160,6 @@ const MyProfile = () => {
       }
     }
   };
-  
 
   const handleLogoutPress = () => {
     Alert.alert("Đăng xuất", "Bạn có chắc chắn muốn đăng xuất?", [

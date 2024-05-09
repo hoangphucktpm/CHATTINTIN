@@ -1,35 +1,40 @@
 import React, { useState, useEffect } from "react";
-import {
-  StyleSheet,
-  Text,
-  View,
-  TextInput,
-  TouchableOpacity,
-} from "react-native";
-import styles from "./StyleSearch";
+import { StyleSheet, TextInput, TouchableOpacity, View } from "react-native";
+import { EvilIcons } from "@expo/vector-icons";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { Ionicons } from "@expo/vector-icons";
-import { EvilIcons } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useNavigation } from "@react-navigation/native";
+import { useDispatch, useSelector } from "react-redux";
+import { setConversation } from "../../redux/conversationSlice";
+import styles from "./StyleSearch";
 
 function Search() {
   const navigation = useNavigation();
   const [searchTerm, setSearchTerm] = useState("");
-  const [listFriends, setListFriends] = useState([]);
-
-  const [searchResults, setSearchResults] = useState([]);
+  const { conversation } = useSelector((state) => state.conversation);
+  const dispatch = useDispatch();
+  const [originalConversation, setOriginalConversation] = useState([]);
 
   useEffect(() => {
-    if (searchTerm) {
-      const results = listFriends.filter((friend) =>
-        friend.fullname.toLowerCase().includes(searchTerm.toLowerCase())
+    setOriginalConversation(conversation);
+  }, []);
+
+  const handleSearch = (searchTerm) => {
+    if (searchTerm !== "") {
+      const results = conversation.filter(
+        (item) =>
+          item?.IDSender?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          item?.groupName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          item?.Receiver?.fullname
+            ?.toLowerCase()
+            .includes(searchTerm.toLowerCase())
       );
-      setSearchResults(results);
+      dispatch(setConversation(results));
     } else {
-      setSearchResults([]);
+      dispatch(setConversation(originalConversation));
     }
-  }, [searchTerm, listFriends]);
+  };
 
   const handlePress = () => {
     navigation.navigate("ScannerQR");
@@ -50,7 +55,10 @@ function Search() {
           style={styles.input}
           type="text"
           placeholder="Tìm kiếm"
-          onChangeText={(text) => setSearchTerm(text)}
+          onChangeText={(text) => {
+            setSearchTerm(text);
+            handleSearch(text);
+          }}
           value={searchTerm}
         />
       </View>
@@ -64,11 +72,6 @@ function Search() {
         >
           <Ionicons name="add-outline" size={30} color="white" />
         </TouchableOpacity>
-      </View>
-      <View>
-        {searchResults.map((result, index) => (
-          <Text key={index}>{result.fullname}</Text>
-        ))}
       </View>
     </SafeAreaView>
   );

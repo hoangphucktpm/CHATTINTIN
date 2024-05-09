@@ -53,7 +53,7 @@ function ForgotPassword() {
         return;
       }
     } catch (error) {
-      Alert.alert(error.message);
+      Alert.alert("Lỗi", "Không thể thực hiện yêu cầu");
       setShowOtp(false);
       setLoading(false);
     }

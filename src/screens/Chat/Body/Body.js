@@ -3,7 +3,7 @@ import { FlatList, Text, TouchableOpacity, View } from "react-native";
 import { useSelector } from "react-redux";
 import MessageItem from "../../../components/MessageItem";
 import MessageReact from "../../../components/MessageReact";
-import { Avatar, Card, Modal } from "@ui-kitten/components";
+import { Card, Modal } from "@ui-kitten/components";
 import InfoSender from "../../../components/InfoSender";
 import ReplyMessage from "../../../components/ReplyMessage";
 import AvatarCustomer from "../../../components/AvatarCustomer";
@@ -17,7 +17,7 @@ function Body({ messageData, dataSender, isGroup }) {
   });
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{ flex: 1, position: "relative" }}>
       <FlatList
         data={messageData}
         keyExtractor={(item, index) => index.toString()}

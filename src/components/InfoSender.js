@@ -1,14 +1,14 @@
-import { View, Text } from "react-native";
+import { View, Text, TouchableOpacity } from "react-native";
 import React, { memo, useEffect, useState } from "react";
 import { api } from "../apis/api";
-import { Avatar } from "@ui-kitten/components";
-import { max } from "date-fns";
 import AvatarCustomer from "./AvatarCustomer";
+import { useNavigation } from "@react-navigation/native";
 
 const InfoSender = memo(
   ({ IDSender, dataSender, isSelf, children, isGroup = false }) => {
     if (!IDSender || isSelf) return children;
     const [sender, setSender] = useState(null);
+    const navigation = useNavigation();
 
     useEffect(() => {
       const fetchDataSender = async () => {
@@ -25,6 +25,9 @@ const InfoSender = memo(
     }, [IDSender]);
 
     if (!sender) return children;
+
+    const haneleViewProfile = () =>
+      navigation.navigate("FriendProfile", sender);
 
     return (
       <View
@@ -43,11 +46,13 @@ const InfoSender = memo(
             gap: 5,
           }}
         >
-          <AvatarCustomer
-            source={{ uri: sender?.urlavatar }}
-            style={{ width: 30, height: 30, objectFit: "cover" }}
-            alt={sender?.fullname}
-          />
+          <TouchableOpacity onPress={haneleViewProfile}>
+            <AvatarCustomer
+              source={{ uri: sender?.urlavatar }}
+              style={{ width: 30, height: 30, objectFit: "cover" }}
+              alt={sender?.fullname}
+            />
+          </TouchableOpacity>
           <Text style={{ fontSize: 16, fontWeight: 600 }}>
             {sender?.fullname}
           </Text>

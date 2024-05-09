@@ -99,6 +99,10 @@ function DrawerChat({ navigation, route }) {
     );
   };
 
+  const handleViewProfile = () => {
+    navigation.navigate("FriendProfile", route.params);
+  };
+
   const handleUnfriend = async () => {
     try {
       // alert confirm
@@ -118,7 +122,7 @@ function DrawerChat({ navigation, route }) {
                 senderId: user.ID,
                 receiverId: phone,
               });
-              Alert.alert("Thông báo", res.data?.message);
+              Alert.alert("Thông báo", "Hủy kết bạn thành công");
               socket.emit("load_conversations", { IDUser: phone });
               socket.emit("load_conversations", { IDUser: user.ID });
               navigation.navigate("Home");
@@ -180,7 +184,10 @@ function DrawerChat({ navigation, route }) {
                   </View>
                 </TouchableOpacity>
 
-                <TouchableOpacity style={styles.containerBody_Top_Icon_Icon}>
+                <TouchableOpacity
+                  style={styles.containerBody_Top_Icon_Icon}
+                  onPress={handleViewProfile}
+                >
                   <View style={styles.containerBody_Top_Icon_IconItem}>
                     <AntDesign name="user" size={20} color="black" />
                   </View>

@@ -100,7 +100,7 @@ function FooterChat({ IDConversation }) {
       }
     } catch (error) {
       console.error("Error picking image:", error);
-      alert("Error picking image");
+      alert("Không thể chọn ảnh");
     }
   };
 
@@ -137,7 +137,7 @@ function FooterChat({ IDConversation }) {
       socket.emit("send_message", data);
     } catch (error) {
       console.error("Error picking Video:", error);
-      alert("Error picking Video");
+      alert("Không thể chọn video");
     }
   };
 
@@ -182,7 +182,7 @@ function FooterChat({ IDConversation }) {
       socket.emit("send_message", data);
     } catch (error) {
       console.error("Error picking document:", error);
-      alert("Error picking document");
+      alert("Không thể chọn tệp này");
     }
   };
 

@@ -45,15 +45,12 @@ const Chat = memo(({ route }) => {
     fetchMessages();
   }, [fetchMessages]);
 
-  const handleReceiveMessage = useCallback(
-    (data) => {
-      if (!data.isPass) {
-        setMessageData((prev) => [data, ...prev]);
-        dispatch(setLoadingUpload(false));
-      }
-    },
-    [dispatch]
-  );
+  const handleReceiveMessage = (data) => {
+    if (!data.isPass) {
+      setMessageData((prev) => [data, ...prev]);
+      dispatch(setLoadingUpload(false));
+    }
+  };
 
   useEffect(() => {
     socket.on("new_group_conversation", () => {

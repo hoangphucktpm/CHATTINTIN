@@ -54,7 +54,7 @@ function Contacts() {
   useEffect(() => {
     socket.on("new friend request server", (data) => {
       if (data.code === 1) {
-        Alert.alert("new friend request");
+        Alert.alert("Có một lời mời kết bạn mới");
         getFriendRequests();
       }
     });
@@ -80,7 +80,7 @@ function Contacts() {
     api
       .handleFriendRequest({ id, type })
       .then((res) => {
-        Alert.alert(res.data.message);
+        // Alert.alert(res.data.message);
         setReceiverId(id);
 
         if (res.data.code === 1) {
@@ -92,7 +92,7 @@ function Contacts() {
         }
       })
       .catch((err) => {
-        Alert.alert("Error handle friend requests");
+        Alert.alert("Lỗi", "Không thể thực hiện yêu cầu");
       });
   };
 

@@ -130,7 +130,7 @@ function DrawerChatGroup({ navigation }) {
         // Something happened in setting up the request that triggered an Error
         console.error("Request setup error:", error.message);
       }
-      Alert.alert("Error picking image");
+      Alert.alert("Không thể chọn ảnh");
     }
   };
 
@@ -162,7 +162,7 @@ function DrawerChatGroup({ navigation }) {
         "Content-Type": "multipart/form-data",
       },
     });
-    Alert.alert("Thành công", successMessage);
+    Alert.alert("Thành công", "Cập nhật thành công");
     socket.emit("load_member_of_group", {
       IDConversation: groupDetails.IDConversation,
     });

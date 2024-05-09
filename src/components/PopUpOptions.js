@@ -6,6 +6,7 @@ import {
   Alert,
   Pressable,
   TouchableOpacity,
+  PermissionsAndroid,
 } from "react-native";
 import React from "react";
 import { useSelector, useDispatch } from "react-redux";
@@ -19,6 +20,9 @@ import {
 import { FontAwesome } from "@expo/vector-icons";
 import { api } from "../apis/api";
 import socket from "../services/socket";
+import * as FileSystem from "expo-file-system";
+import { Permissions } from "expo";
+import * as MediaLibrary from "expo-media-library";
 
 const PopUpOptions = ({ setMessageData }) => {
   const popupOptions = useSelector((state) => state.chat.popup);
@@ -26,6 +30,9 @@ const PopUpOptions = ({ setMessageData }) => {
   const messages = useSelector((state) => state.chat.messages);
 
   const dispatch = useDispatch();
+
+  const allowDown =
+    popupOptions.data?.type === "image" || popupOptions.data?.type === "video";
 
   if (!popupOptions.show) return null;
 
@@ -101,6 +108,54 @@ const PopUpOptions = ({ setMessageData }) => {
     );
   };
 
+  const handleDown = async () => {
+    try {
+      const granted = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE
+      );
+
+      if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+        const fileUri =
+          FileSystem.documentDirectory + `${new Date().getTime()}.jpg`;
+        const { uri } = await FileSystem.downloadAsync(
+          popupOptions.data.content,
+          fileUri
+        );
+        await saveFile(uri);
+        Alert.alert("Download", "Tải xuống thành công");
+        handleClose();
+      } else {
+        console.log("Permission denied");
+      }
+    } catch (err) {
+      console.log("Download Error: ", err);
+    }
+  };
+
+  const saveFile = async (fileUri) => {
+    try {
+      // Ensure MEDIA_LIBRARY permission is granted
+      const mediaLibraryPermission =
+        await MediaLibrary.requestPermissionsAsync();
+      if (!mediaLibraryPermission.granted) {
+        console.log("Permission to access media library denied");
+        return;
+      }
+
+      const asset = await MediaLibrary.createAssetAsync(fileUri);
+      const album = await MediaLibrary.getAlbumAsync("Download");
+
+      if (album === null) {
+        await MediaLibrary.createAlbumAsync("Download", asset, false);
+      } else {
+        await MediaLibrary.addAssetsToAlbumAsync([asset], album, false);
+      }
+      console.log("File saved successfully.");
+    } catch (err) {
+      console.log("Save Error: ", err);
+    }
+  };
+
   return (
     <Modal
       animationType="slide"
@@ -168,6 +223,20 @@ const PopUpOptions = ({ setMessageData }) => {
             >
               <Text style={styles.modalText}>Thu hồi</Text>
               <FontAwesome name="repeat" size={20} color="orange" />
+            </TouchableOpacity>
+          )}
+          {allowDown && (
+            <TouchableOpacity
+              onPress={handleDown}
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
+                gap: 5,
+              }}
+            >
+              <Text style={styles.modalText}>Tải xuống</Text>
+              <FontAwesome name="download" size={20} color="orange" />
             </TouchableOpacity>
           )}
 

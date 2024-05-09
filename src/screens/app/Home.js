@@ -59,7 +59,7 @@ const Home = (props) => {
         const allFriendRequests = await api.getAllFriendRequests(phone);
         console.log("count friend request", allFriendRequests.data.length);
         dispatch(setBadge(allFriendRequests.data.length));
-        Alert.alert("New friend request");
+        Alert.alert("Có lời mời kết bạn mới");
       }
     };
 

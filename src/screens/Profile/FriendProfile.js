@@ -24,34 +24,39 @@ function FriendProfile({ route }) {
   const [isAdd, setIsAdd] = useState(false);
   const [add, setAdd] = useState("Kết bạn");
   const [isRequest, setIsRequest] = useState(false);
-
   useEffect(() => {
     if (!user) return navigation.navigate("Login");
-    const getFriendRequests = async () => {
-      const [allFriendsRequest, checkRequestFromSelf, checkRequestFromFriend] =
-        await Promise.all([
-          api.getAllFriendRequests(user.ID),
-          api.checkRequest({
-            senderId: user.ID,
-            receiverId: ID,
-          }),
-          api.checkRequest({
-            senderId: ID,
-            receiverId: user.ID,
-          }),
-        ]);
-      if (allFriendsRequest.data?.find((rq) => rq.ID === ID))
-        setIsRequest(true);
-      if (
-        (checkRequestFromSelf.data && checkRequestFromSelf.data.code == 2) ||
-        (checkRequestFromFriend.data && checkRequestFromFriend.data.code == 2)
-      )
-        setIsAdd(true);
+    const fetchData = async () => {
+      try {
+        const allFriendsRequest = await api.getAllFriendRequests(user.ID);
 
-      if (!checkRequestFromFriend.data.code) setAdd("Hủy lời mời");
+        if (allFriendsRequest.data?.find((rq) => rq.ID === ID))
+          setIsRequest(true);
+        const checkRequestFromSelf = await api.checkRequest({
+          senderId: user.ID,
+          receiverId: phone,
+        });
+        const checkRequestFromFriend = await api.checkRequest({
+          senderId: phone,
+          receiverId: user.ID,
+        });
+
+        if (
+          (checkRequestFromSelf.data && checkRequestFromSelf.data.code === 2) ||
+          (checkRequestFromFriend.data &&
+            checkRequestFromFriend.data.code === 2)
+        ) {
+          setIsAdd(true);
+        }
+
+        if (!checkRequestFromFriend.data.code) setAdd("Hủy lời mời");
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
     };
-    getFriendRequests();
-  }, [user, isAdd, route.params.ID]);
+
+    fetchData();
+  }, []);
 
   useEffect(() => {
     socket.on("send friend request server", (data) => {
@@ -92,11 +97,11 @@ function FriendProfile({ route }) {
     api
       .handleFriendRequest({ id: ID, type })
       .then((res) => {
-        Alert.alert(res.data.message);
+        // Alert.alert(res.data.message);
         setReceiverId(ID);
       })
       .catch((err) => {
-        Alert.alert("Error handle friend requests");
+        Alert.alert("Lỗi", "Không thể thực hiện yêu cầu");
       });
   };
   return (
