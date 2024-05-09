@@ -128,6 +128,7 @@ function FooterChat({ IDConversation }) {
         }
       } else {
         console.log("Video selection cancelled");
+        dispatch(setLoadingUpload(false));
       }
       const data = {
         IDSender: user.ID,
@@ -138,6 +139,7 @@ function FooterChat({ IDConversation }) {
     } catch (error) {
       console.error("Error picking Video:", error);
       alert("Không thể chọn video");
+      dispatch(setLoadingUpload(true));
     }
   };
 

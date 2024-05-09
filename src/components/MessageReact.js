@@ -69,7 +69,7 @@ const MessageReact = ({ children, item, isSelf, setDataModal }) => {
       </TouchableOpacity>
 
       {showReactions && (
-        <View style={styles.reactionContainer}>
+        <View style={{ ...styles.reactionContainer, right: isSelf ? 90 : -90 }}>
           {icons.map((emoji, index) => (
             <TouchableOpacity key={index} onPress={() => handleReaction(emoji)}>
               <Text style={{ fontSize: 20 }}>{emoji}</Text>
@@ -122,13 +122,12 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     position: "absolute",
-    bottom: 0,
     backgroundColor: "white",
     borderRadius: 10,
     paddingHorizontal: 5,
     paddingVertical: 2,
-    zIndex: 10,
-    right: -90,
+    zIndex: 1000,
+    bottom: "10%",
   },
   reactionItem: {
     flexDirection: "row",

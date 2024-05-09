@@ -149,7 +149,7 @@ const VideoCall = () => {
       <Camera
         ref={cameraRef}
         style={styles.preview}
-        type={Camera.Constants.Type.front} // Specify front camera
+        type={Camera?.Constants?.Type?.front} // Specify front camera
       />
 
       <View style={styles.buttons}>

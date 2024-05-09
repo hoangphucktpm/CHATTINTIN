@@ -16,6 +16,7 @@ import { setBadge } from "../../redux/appSlice";
 const Home = (props) => {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.auth.user);
+  const conversation = useSelector((state) => state.conversation.conversation);
   const [phone, setPhone] = useState(null);
   const [conversations, setConversations] = useState([]);
 
@@ -32,6 +33,14 @@ const Home = (props) => {
     getPhone();
   }, []);
 
+  useEffect(() => {
+    if (!conversation || !conversation?.length) {
+      user && socket.emit("load_conversations", { IDUser: user.ID });
+    }
+  }, [conversation]);
+
+  console.log(conversation);
+
   useFocusEffect(
     useCallback(() => {
       if (phone) {
@@ -46,6 +55,7 @@ const Home = (props) => {
 
   useEffect(() => {
     const handleLoadConversationsServer = (data) => {
+      console.log("get cdata");
       setConversations(data);
       dispatch(setConversation(data));
     };

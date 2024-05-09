@@ -72,6 +72,7 @@ const VideoCallCome = ({ route }) => {
       if (data.preOfferAnswer === "CALL_REJECTED") navigation.navigate("Home");
     });
     socket.on("pre-offer-single", (data) => {
+      console.log("pre-offer-single", data);
       signalingFunc(data.IDCaller, "OFFER");
     });
     return () => {

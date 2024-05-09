@@ -6,11 +6,21 @@ import { setGroupDetails } from "../../redux/groupSlice";
 import { setForward, setPopup, setReply } from "../../redux/chatSlice";
 import styles from "./StyleItemFriend";
 import AvatarCustomer from "../../components/AvatarCustomer";
+import socket from "../../services/socket";
 
 const ItemFriend = React.memo(({ navigation }) => {
   const { conversation } = useSelector((state) => state.conversation);
 
   const [data, setdata] = useState([]);
+  const user = useSelector((state) => state.auth.user);
+
+  useEffect(() => {
+    if (!conversation || !conversation?.length) {
+      user && socket.emit("load_conversations", { IDUser: user.ID });
+    }
+  }, [conversation]);
+
+  console.log(conversation);
 
   useEffect(() => {
     setdata(conversation);
@@ -73,7 +83,7 @@ const ItemFriend = React.memo(({ navigation }) => {
 
   return (
     <FlatList
-      data={data}
+      data={data || conversation}
       renderItem={renderItem}
       keyExtractor={(item, index) => index.toString()}
     />
