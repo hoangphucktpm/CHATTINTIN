@@ -8,12 +8,10 @@ import {
   Alert,
   Image,
 } from "react-native";
-import { BarCodeScanner } from "expo-barcode-scanner";
 import { AntDesign } from "@expo/vector-icons";
 import { Entypo } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import * as WebBrowser from "expo-web-browser";
-import { Camera } from "expo-camera";
 function ImageChat({ route }) {
   const { avatar, name, image, message } = route.params; // add 'message' here
   const navigation = useNavigation();

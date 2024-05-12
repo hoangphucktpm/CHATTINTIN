@@ -11,6 +11,7 @@
       "@react-native-firebase/auth",
       "expo-document-picker",
       "expo-av",
+      "@config-plugins/react-native-webrtc",
       [
         "expo-camera",
         {

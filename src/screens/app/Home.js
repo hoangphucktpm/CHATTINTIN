@@ -39,7 +39,6 @@ const Home = (props) => {
     }
   }, [conversation]);
 
-  console.log(conversation);
 
   useFocusEffect(
     useCallback(() => {
@@ -55,7 +54,6 @@ const Home = (props) => {
 
   useEffect(() => {
     const handleLoadConversationsServer = (data) => {
-      console.log("get cdata");
       setConversations(data);
       dispatch(setConversation(data));
     };
