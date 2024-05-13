@@ -7,9 +7,14 @@
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "plugins": [
-      "@react-native-firebase/app",
-      "@react-native-firebase/auth",
       "expo-document-picker",
+      [
+        "expo-image-picker",
+        {
+          "cameraPermission": "Allow $(AppTinTin) to open the camera",
+          "microphonePermission": false
+        }
+      ],
       "expo-av",
       [
         "expo-camera",
