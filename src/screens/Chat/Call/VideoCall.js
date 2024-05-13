@@ -6,7 +6,7 @@ import {
   StyleSheet,
 } from 'react-native';
 
-import { RTCView, mediaDevices } from 'react-native-webrtc';
+// import { RTCView, mediaDevices } from 'react-native-webrtc';
 
 const styles = StyleSheet.create({
   rtcView: {
@@ -17,21 +17,21 @@ const styles = StyleSheet.create({
 });
 
 const VideoCall = () => {
-  const [stream, setStream] = useState(null);
-  const start = async () => {
-    if (!stream) {
-      let s;
-      try {
-        s = await mediaDevices.getUserMedia({ video: true });
-        console.log('stream started');
-        setStream(s);
-      } catch(e) {
-        console.error(e);
-      }
-    } else {
-      console.log('not start stream');
-    }
-  };
+  // const [stream, setStream] = useState(null);
+  // const start = async () => {
+  //   if (!stream) {
+  //     let s;
+  //     try {
+  //       s = await mediaDevices.getUserMedia({ video: true });
+  //       console.log('stream started');
+  //       setStream(s);
+  //     } catch(e) {
+  //       console.error(e);
+  //     }
+  //   } else {
+  //     console.log('not start stream');
+  //   }
+  // };
   return (
     <>
       <SafeAreaView>

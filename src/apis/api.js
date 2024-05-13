@@ -1,6 +1,6 @@
 import axios from "axios";
 
-export const myIP = "172.20.10.5";
+export const myIP = "192.168.1.12";
 // export const myIP = "192.168.1.7";
 
 export const http = axios.create({
@@ -78,4 +78,8 @@ export const api = {
   updateGroup: (data) => http.post("conversation/update-info-group", data),
 
   unfriend: (data) => http.post("user/unfriend", data),
+
+  updateLocation: (data) => http.post("map/update-location", data),
+
+  getAllLocation: () => http.get("map/get-all-location"),
 };
