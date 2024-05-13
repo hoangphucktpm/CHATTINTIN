@@ -13,6 +13,7 @@ function Footer(props) {
   const icons = [
     { name: "message1", route: "Home" },
     { name: "user-friends", route: "Contacts" },
+    { name: "map", route: "Map"}, 
     { name: "clockcircleo", route: "Story" },
     { name: "user", route: "MyProfile" },
   ];
@@ -66,8 +67,16 @@ function Footer(props) {
                   />
                 </View>
               )}
+              
               {icon.name === "clockcircleo" && (
                 <AntDesign
+                  name={icon.name}
+                  size={20}
+                  color={currentScreen === icon.route ? "blue" : "grey"}
+                />
+              )}
+              {icon.name === "map" && (
+                <FontAwesome
                   name={icon.name}
                   size={20}
                   color={currentScreen === icon.route ? "blue" : "grey"}
@@ -77,7 +86,7 @@ function Footer(props) {
                 <FontAwesome
                   name={icon.name}
                   size={20}
-                  color={currentScreen === icon.route ? "blue" : "grey"}
+color={currentScreen === icon.route ? "blue" : "grey"}
                 />
               )}
             </View>
@@ -88,6 +97,8 @@ function Footer(props) {
                 ? "Danh bạ"
                 : icon.name === "clockcircleo"
                 ? "Nhật ký"
+                : icon.name === "map"
+                ? "Bản đồ"
                 : "Cá nhân"}
             </Text>
           </TouchableOpacity>

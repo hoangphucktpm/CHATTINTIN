@@ -32,6 +32,8 @@ import OTPPassForgot from "./src/screens/ForgotPassword&DashBoard/OTPPassForgot"
 import Story from "./src/screens/Story/Story";
 import VideoCall from "./src/screens/Chat/Call/VideoCall";
 import VideoCallCome from "./src/screens/Chat/Call/VideoCallCome";
+import Map from "./src/screens/Map/Map";
+
 
 
 import { Provider } from "react-redux";
@@ -71,6 +73,7 @@ const App = () => {
   const addMemberGroups = "AddMemberGroups";
   const videoCall = "VideoCall";
   const videoCallCome = "VideoCallCome";
+  const map = "Map";
 
   return (
     <Provider store={store}>
@@ -109,6 +112,7 @@ const App = () => {
             <Stack.Screen name={sourcesMessages} component={SourcesMessage} />
             <Stack.Screen name={videoCall} component={VideoCall} />
             <Stack.Screen name={videoCallCome} component={VideoCallCome} />
+            <Stack.Screen name={map} component={Map} />
           </Stack.Navigator>
         </NavigationContainer>
       </ApplicationProvider>
