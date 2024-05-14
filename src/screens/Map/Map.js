@@ -7,6 +7,8 @@ import {
   Text,
   TouchableWithoutFeedback,
   Image,
+  FlatList,
+  TouchableOpacity,
 } from "react-native";
 import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
 import { EvilIcons } from "@expo/vector-icons";
@@ -18,12 +20,7 @@ import Footer from "../Footer/Footer";
 import { Avatar, Button, Card, Modal } from "@ui-kitten/components";
 import socket from "../../services/socket";
 import { useNavigation } from "@react-navigation/native";
-import Geocoder from "react-native-geocoding";
-import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
-
-Geocoder.init(
-  "pk.eyJ1IjoidHJhbmxvYzJrMyIsImEiOiJjbHZxYnR2bDYwYmppMmpwNnRnemlhaHA5In0.Fn9lSoYFUZ96simIJs9s4g"
-);
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const ScreenHeight = 9999;
 const ScreenWidth = 999;
@@ -38,7 +35,11 @@ const Map = () => {
   const user = useSelector((state) => state.auth.user);
   const phone = user.phone;
   const [isFriendRequestSent, setIsFriendRequestSent] = useState(false);
-  const [originalLocations, setOriginalLocations] = useState([]); // Thêm state mới để lưu trữ danh sách locations gốc
+  const [originalLocations, setOriginalLocations] = useState([]);
+  const [searchResult, setSearchResult] = useState(null);
+  const [showMap, setShowMap] = useState(true);
+  const [selectedPlace, setSelectedPlace] = useState(null);
+  const [mapRegion, setMapRegion] = useState(null);
 
   useEffect(() => {
     const fetchLocation = async () => {
@@ -130,55 +131,59 @@ const Map = () => {
     setIsFriendRequestSent(true);
   };
 
-  const handleSearch = async (text) => {
-    setSearchTerm(text);
-
-    if (text === "") {
-      // Nếu ô tìm kiếm trống, hiển thị tất cả các địa điểm
-      getLocations();
-      return;
-    }
-  
+  const handleSearch = async (term) => {
     try {
-      const res = await api.searchLocation(text);
-      setLocations(res.data);
-      console.log("đia điểm", res.data);
+      const response = await fetch(
+        `https://api.mapbox.com/geocoding/v5/mapbox.places/${term}.json?country=VN&access_token=pk.eyJ1IjoidHJhbmxvYzJrMyIsImEiOiJjbHZxYnR2bDYwYmppMmpwNnRnemlhaHA5In0.Fn9lSoYFUZ96simIJs9s4g`
+      );
+      const data = await response.json();
+      setSearchResult(data.features);
+      setShowMap(false);
     } catch (error) {
-      console.log(error);
+      console.error("Error searching location:", error);
     }
   };
-  
+
+  const handleSelectPlace = (place) => {
+    setSelectedPlace(place);
+    setShowMap(true);
+    setSearchTerm(place.place_name);
+    setMapRegion({
+      latitude: place.center[1],
+      longitude: place.center[0],
+      latitudeDelta: 0.0922,
+      longitudeDelta: 0.0421,
+    });
+  };
+
+  const handleChangeText = (text) => {
+    setSearchTerm(text);
+    if (text === "") {
+      setSearchResult(null);
+      setShowMap(true);
+    } else {
+      handleSearch(text);
+    }
+  };
+
   return (
-    <View style={styles.container}>
-      <View style={styles.page}>
-        <View style={styles.containerTabBar}>
-          <View style={styles.containerIcon}>
-            <EvilIcons name="search" size={30} color="white" />
-          </View>
-          <View style={styles.containerInput}>
-            <TextInput
-              placeholderTextColor="#fff"
-              style={styles.input}
-              type="text"
-              placeholder="Tìm kiếm"
-              onPress={(data, details = null) => {
-                // `data` chứa thông tin vị trí được chọn
-                console.log(data);
-                // Gọi hàm handleSearch với từ khóa tìm kiếm
-                handleSearch(data.description);
-              }}
-              query={{
-                key: "YOUR_GOOGLE_PLACES_API_KEY",
-                language: "vi", // Ngôn ngữ hiển thị
-              }}
-              styles={{
-                textInput: styles.input,
-                container: styles.autocompleteContainer,
-                listView: styles.autocompleteListView,
-              }}
-            />
-          </View>
+    <SafeAreaView style={styles.container}>
+    <View style={styles.page}>
+      <View style={styles.containerTabBar}>
+        <TouchableOpacity style={styles.containerIcon} onPress={() => handleSearch(searchTerm)}>
+          <EvilIcons name="search" size={30} color="white" />
+        </TouchableOpacity>
+        <View style={styles.containerInput}>
+          <TextInput
+            placeholderTextColor="#fff"
+            style={styles.input}
+            type="text"
+            placeholder="Tìm kiếm"
+            onChangeText={handleChangeText}
+            value={searchTerm} 
+          />
         </View>
+      </View>
         <View style={styles.container}>
           {location ? (
             <MapView
@@ -199,49 +204,70 @@ const Map = () => {
                 latitudeDelta: 0.0922,
                 longitudeDelta: 0.0421,
               }}
+              region={mapRegion}
             >
-              {locations.map(async (userLocation, index) => {
-                let userdata = await getUserByPhone(
-                  userLocation.properties.IDUser
-                );
+              {locations.map((userLocation, index) => {
+                const getUser = async () => {
+                  let userdata = await getUserByPhone(userLocation.properties.IDUser);
 
-                if (
-                  userLocation.geometry.coordinates[1] ===
-                  location.coords.latitude
-                )
-                  return null;
+                  if (
+                    userLocation.geometry.coordinates[1] === location.coords.latitude
+                  ) return null;
 
-                return (
-                  <Marker
-                    key={index}
-                    coordinate={{
-                      latitude: userLocation.geometry.coordinates[1], // Latitude of the user
-                      longitude: userLocation.geometry.coordinates[0], // Longitude of the user
-                    }}
-                    title={userdata ? userdata.fullname : "123"}
-                    onPress={() =>
-                      setPointSelected(userdata?.ID ? userdata : null)
-                    }
-                  >
-                    <Image
-                      source={{
-                        uri: userdata?.icon
-                          ? userdata.icon
-                          : "https://cdn-icons-png.flaticon.com/512/9204/9204285.png",
+                  return (
+                    <Marker
+                      key={index}
+                      coordinate={{
+                        latitude: userLocation.geometry.coordinates[1], // Latitude of the user
+                        longitude: userLocation.geometry.coordinates[0], // Longitude of the user
                       }}
-                      style={{ width: 40, height: 40 }} // Set the size as you need
-                    />
-                  </Marker>
-                );
+                      title={userdata ? userdata.fullname : "123"}
+                      onPress={() =>
+                        setPointSelected(userdata?.ID ? userdata : null)
+                      }
+                    >
+                      <Image
+                        source={{
+                          uri: userdata?.icon
+                            ? userdata.icon
+                            : "https://cdn-icons-png.flaticon.com/512/9204/9204285.png",
+                        }}
+                        style={{ width: 40, height: 40 }} // Set the size as you need
+                      />
+                    </Marker>
+                  );
+                };
+                return getUser();
               })}
+              {selectedPlace && (
+                <Marker
+                  coordinate={{
+                    latitude: selectedPlace.center[1],
+                    longitude: selectedPlace.center[0],
+                  }}
+                  title={selectedPlace.place_name}
+                />
+              )}
             </MapView>
           ) : (
             <ActivityIndicator />
           )}
         </View>
+        {!showMap && (
+          <View style={styles.resultsContainer}>
+            <FlatList
+              data={searchResult}
+              renderItem={({ item }) => (
+                <TouchableOpacity onPress={() => handleSelectPlace(item)}>
+                  <Text style={styles.placeItem}>{item.place_name}</Text>
+                </TouchableOpacity>
+              )}
+              keyExtractor={(item, index) => index.toString()}
+            />
+          </View>
+        )}
         <Footer />
       </View>
-
       {pointSelected && (
         <TouchableWithoutFeedback onPress={() => setPointSelected(null)}>
           <View
@@ -253,7 +279,6 @@ const Map = () => {
           />
         </TouchableWithoutFeedback>
       )}
-
       {pointSelected && (
         <Modal
           visible={pointSelected !== null}
@@ -304,7 +329,7 @@ const Map = () => {
           </Card>
         </Modal>
       )}
-    </View>
+    </SafeAreaView>
   );
 };
 

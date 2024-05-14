@@ -36,7 +36,9 @@
           "microphonePermission": "Allow $(AppTinTin) to access your microphone",
           "recordAudioAndroid": true
         }
-      ]
+      ],
+      "@react-native-firebase/app",
+      "@react-native-firebase/auth"
     ],
     "splash": {
       "image": "./assets/icon.png",
