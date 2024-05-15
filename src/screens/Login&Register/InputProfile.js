@@ -19,7 +19,7 @@ import { useNavigation } from "@react-navigation/native";
 import { launchImageLibrary } from "react-native-image-picker";
 import { PermissionsAndroid, Platform } from "react-native";
 import { differenceInYears } from "date-fns";
-import * as FileSystem from "expo-file-system";
+import * as ImagePicker from "expo-image-picker";
 
 import { api } from "../../apis/api";
 import { storeData } from "../../utils/localStorageConfig";
@@ -44,23 +44,30 @@ const InputProfile = (props) => {
   };
 
   const handleAvatarPress = async () => {
+    if (Platform.OS === "android") {
+      const hasPermission = await requestPermissions();
+      if (!hasPermission) {
+        Alert.alert("Quyền truy cập ảnh bị từ chối");
+        return;
+      }
+    }
+
     try {
-      const permissionsGranted = await requestPermissions();
-      if (permissionsGranted) {
-        const result = await openImagePicker();
-        if (!result.didCancel) {
-          const rs = await FileSystem.readAsStringAsync(result.assets[0].uri, {
-            encoding: FileSystem.EncodingType.Base64,
-          });
-          setAvatarImage(result.assets[0].uri);
-        }
+      let result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        quality: 1,
+        allowsMultipleSelection: false,
+        base64: true,
+      });
+
+      if (!result.canceled) {
+        setAvatarImage(result.assets[0].uri);
       } else {
-        console.log(
-          "Người dùng từ chối cấp quyền truy cập camera và thư viện ảnh"
-        );
+        console.log("Image selection cancelled");
       }
     } catch (error) {
-      console.log("Đã xảy ra lỗi khi xử lý ảnh:", error);
+      console.error("Error picking image:", error);
+      alert("Error picking image");
     }
   };
 

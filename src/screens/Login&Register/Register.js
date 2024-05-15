@@ -7,13 +7,22 @@ import {
   Alert,
   ActivityIndicator,
 } from "react-native";
-import { Feather, FontAwesome5 } from "@expo/vector-icons";
+import { Feather } from "@expo/vector-icons";
 import { Ionicons } from "@expo/vector-icons";
 import styles from "./StyleRegister";
 import { StatusBar } from "expo-status-bar";
 import { useNavigation } from "@react-navigation/native";
 import { api } from "../../apis/api";
-import auth from "@react-native-firebase/auth";
+import { FirebaseRecaptchaVerifierModal } from "expo-firebase-recaptcha";
+import firebase from "firebase/compat/app";
+import "firebase/compat/auth"; // Ensure that you import auth
+
+import { firebaseConfig } from "../../../config";
+
+// Initialize Firebase
+if (!firebase.apps.length) {
+  firebase.initializeApp(firebaseConfig);
+}
 
 const Register = () => {
   const [phone, setPhone] = useState("+84");
@@ -24,20 +33,45 @@ const Register = () => {
   const navigation = useNavigation();
   const [loading, setLoading] = useState(false);
   const otpInputs = useRef([]);
+  const recaptchaVerifier = useRef(null);
 
   const hanldPressDashBoard = () => {
     navigation.navigate("DashBoard");
   };
 
   const getOtp = async () => {
-    setShowOtp(true);
     setLoading(true);
     try {
-      const confirmation = await auth().signInWithPhoneNumber(phone);
-      setConfirm(confirmation);
-      setLoading(false);
+      const phoneProvider = new firebase.auth.PhoneAuthProvider();
+      const verificationId = await phoneProvider.verifyPhoneNumber(
+        phone,
+        recaptchaVerifier.current
+      );
+      setConfirm({ verificationId });
+      setShowOtp(true);
     } catch (error) {
+      console.error(error);
+      Alert.alert("Failed to send OTP. Please try again.");
+      setShowOtp(false);
+    } finally {
       setLoading(false);
+    }
+  };
+
+  const confirmCode = async () => {
+    try {
+      const credential = firebase.auth.PhoneAuthProvider.credential(
+        confirm.verificationId,
+        otp.join("")
+      );
+      const userCredential = await firebase
+        .auth()
+        .signInWithCredential(credential);
+      console.log(userCredential);
+      navigation.navigate("InputPass", { phoneNumber: phone });
+    } catch (error) {
+      console.log(error);
+      Alert.alert("Invalid OTP. Please try again.");
     }
   };
 
@@ -62,7 +96,7 @@ const Register = () => {
     }
     try {
       const res = await api.getUserByPhone(phone);
-      if (!res.data) {
+      if (!res.data || res.data.message === "User not found") {
         await getOtp();
       } else {
         Alert.alert("Số điện thoại đã tồn tại");
@@ -77,19 +111,6 @@ const Register = () => {
     }
   };
 
-  const onConfirm = async () => {
-    const code = otp.join("");
-    if (!code) {
-      Alert.alert("Mã OTP không được rỗng");
-      return;
-    }
-    try {
-      await confirm.confirm(code);
-      navigation.navigate("InputPass", { phoneNumber: phone });
-    } catch (error) {
-      Alert.alert("Mã OTP không hợp lệ");
-    }
-  };
 
   return (
     <View style={styles.container}>
@@ -113,6 +134,10 @@ const Register = () => {
           <Text style={{ fontSize: 22, color: "white" }}>Đăng Ký</Text>
         </View>
       </View>
+      <FirebaseRecaptchaVerifierModal
+        ref={recaptchaVerifier}
+        firebaseConfig={firebaseConfig}
+      />
       {showOtp ? (
         <>
           <View style={styles.containerText}>
@@ -258,7 +283,7 @@ const Register = () => {
 
       <View style={styles.containerBottom}>
         <TouchableOpacity
-          onPress={showOtp ? onConfirm : onRegister}
+          onPress={showOtp ? confirmCode : onRegister}
           style={styles.bottom}
         >
           <Text style={{ fontSize: 22, color: "#fff", fontWeight: "bold" }}>

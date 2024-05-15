@@ -9,6 +9,19 @@
     "plugins": [
       "expo-document-picker",
       [
+        "@rnmapbox/maps",
+        {
+          "RNMapboxMapsDownloadToken": "pk.eyJ1IjoidHJhbmxvYzJrMyIsImEiOiJjbHZxYnR2bDYwYmppMmpwNnRnemlhaHA5In0.Fn9lSoYFUZ96simIJs9s4g"
+        }
+      ],
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Allow $(AppTinTin) to use your location.",
+          "locationWhenInUsePermission": "Show current location on map."
+        }
+      ],
+      [
         "expo-image-picker",
         {
           "cameraPermission": "Allow $(AppTinTin) to open the camera",
@@ -23,7 +36,9 @@
           "microphonePermission": "Allow $(AppTinTin) to access your microphone",
           "recordAudioAndroid": true
         }
-      ]
+      ],
+      "@react-native-firebase/app",
+      "@react-native-firebase/auth"
     ],
     "splash": {
       "image": "./assets/icon.png",

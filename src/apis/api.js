@@ -28,7 +28,7 @@ export const api = {
     return http.patch(`auth/update-password`, params);
   },
   resetPassword: async (params) => {
-    return http.post(`auth/reset-password`, params);
+    return http.patch(`auth/reset-password`, params);
   },
   getAllFriendRequests: (id) =>
     http.get(`user/get-all-friend-requests/${id}`, { id }),
@@ -78,4 +78,8 @@ export const api = {
   updateGroup: (data) => http.post("conversation/update-info-group", data),
 
   unfriend: (data) => http.post("user/unfriend", data),
+
+  updateLocation: (data) => http.post("map/update-location", data),
+
+  getAllLocation: () => http.get("map/get-all-location"),
 };

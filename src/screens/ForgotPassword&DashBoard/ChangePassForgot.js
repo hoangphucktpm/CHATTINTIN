@@ -1,5 +1,12 @@
 import React, { useState } from "react";
-import { View, Text, TouchableOpacity, TextInput, Alert } from "react-native";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  TextInput,
+  Alert,
+  StatusBar,
+} from "react-native";
 import { Entypo, FontAwesome5 } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { api } from "../../apis/api";
@@ -14,6 +21,8 @@ function ChangePassForgot(props) {
 
   const navigation = useNavigation();
   const { phoneNumber } = props?.route?.params;
+
+  console.log(phoneNumber);
 
   const handlePressDashboard = () => {
     navigation.goBack();
@@ -70,6 +79,7 @@ function ChangePassForgot(props) {
           navigation.navigate("Login");
         }
       } catch (error) {
+        console.log(error);
         Alert.alert("Lỗi", "Không thể thực hiện yêu cầu");
       }
     }
@@ -77,6 +87,11 @@ function ChangePassForgot(props) {
 
   return (
     <View style={styles.container}>
+      <StatusBar
+        barStyle={"default"}
+        translucent
+        backgroundColor={"transparent "}
+      />
       <View style={styles.containerTabBar}>
         <TouchableOpacity
           onPress={handlePressDashboard}
