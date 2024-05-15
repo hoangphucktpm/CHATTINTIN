@@ -13,7 +13,8 @@ import styles from "./StyleRegister";
 import { StatusBar } from "expo-status-bar";
 import { useNavigation } from "@react-navigation/native";
 import { api } from "../../apis/api";
-import { FirebaseRecaptchaVerifierModal } from "expo-firebase-recaptcha";
+// import { FirebaseRecaptchaVerifierModal } from "expo-firebase-recaptcha";
+import auth from '@react-native-firebase/auth';
 import firebase from "firebase/compat/app";
 import "firebase/compat/auth"; // Ensure that you import auth
 
@@ -42,12 +43,8 @@ const Register = () => {
   const getOtp = async () => {
     setLoading(true);
     try {
-      const phoneProvider = new firebase.auth.PhoneAuthProvider();
-      const verificationId = await phoneProvider.verifyPhoneNumber(
-        phone,
-        recaptchaVerifier.current
-      );
-      setConfirm({ verificationId });
+      const confirm = await auth().verifyPhoneNumber(phone);
+      setConfirm(confirm);
       setShowOtp(true);
     } catch (error) {
       console.error(error);
@@ -60,13 +57,8 @@ const Register = () => {
 
   const confirmCode = async () => {
     try {
-      const credential = firebase.auth.PhoneAuthProvider.credential(
-        confirm.verificationId,
-        otp.join("")
-      );
-      const userCredential = await firebase
-        .auth()
-        .signInWithCredential(credential);
+      const credential = auth.PhoneAuthProvider.credential(confirm.verificationId, code);
+      const userCredential =  await auth().currentUser.linkWithCredential(credential);
       console.log(userCredential);
       navigation.navigate("InputPass", { phoneNumber: phone });
     } catch (error) {
@@ -134,10 +126,10 @@ const Register = () => {
           <Text style={{ fontSize: 22, color: "white" }}>Đăng Ký</Text>
         </View>
       </View>
-      <FirebaseRecaptchaVerifierModal
+      {/* <FirebaseRecaptchaVerifierModal
         ref={recaptchaVerifier}
         firebaseConfig={firebaseConfig}
-      />
+      /> */}
       {showOtp ? (
         <>
           <View style={styles.containerText}>
