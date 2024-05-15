@@ -1,7 +1,11 @@
+import {
+  MaterialCommunityIcons
+} from "@expo/vector-icons";
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
-  Button,
-  StyleSheet,
+  Image,
+  Text,
+  TouchableOpacity,
   View
 } from 'react-native';
 
@@ -9,19 +13,16 @@ import { useNavigation } from '@react-navigation/native';
 import { MediaStream, RTCIceCandidate, RTCPeerConnection, RTCSessionDescription, RTCView, mediaDevices } from 'react-native-webrtc';
 import { useSelector } from 'react-redux';
 import socket from '../../../services/socket';
-
-const styles = StyleSheet.create({
-  rtcView: {
-    width: '100%', //dimensions.width,
-    height: '50%', //dimensions.height / 2,
-    backgroundColor: 'gray',
-  },
-});
+import styles from './StyleVideoCall';
 
 const SIGNALING_CHANNEL = 'webRTC-signaling';
 
+const CALL_RINGING_STATE = "RINGING";
+const CALL_CONNECTED = "CONNECTED";
+
+
 const VideoCall = ({ route }) => {
-  const { fullname, id, image, callOut, socketIDCaller, socketIDCallee } = route.params;
+  const { fullname, id, image, callOut, socketIDCaller, socketIDCallee, callType } = route.params;
   console.log('params: ', route.params);
   const navigation = useNavigation();
 
@@ -32,6 +33,11 @@ const VideoCall = ({ route }) => {
   const socketIdCalleeRef = useRef(socketIDCallee);
   const [localStream, setLocalStream] = useState(null);
   const [remoteStream, setRemoteStream] = useState(new MediaStream());
+  const [state, setState] = useState(CALL_RINGING_STATE);
+  const [countTime, setCountTime] = useState(0);
+
+  const localStreamRef = useRef(null);
+
   const pcRef = useRef(new RTCPeerConnection({
     iceServers: [
       {
@@ -39,6 +45,25 @@ const VideoCall = ({ route }) => {
       },
     ],
   }));
+
+  useEffect(() => {
+    let interval ;
+    if (state === CALL_CONNECTED) {
+      let interval = setInterval(() => setCountTime(c => c+1), 1000);
+    } else {
+      return;
+    }
+
+    return () => {
+      clearInterval(interval);
+    }
+  }, [state])
+
+  useEffect(() => {
+    setTimeout(() => {
+      startVideoCall();
+    }, 3000);
+  }, []);
 
   //  Establishing a webRTC call
   const user = useSelector((state) => state.auth.user);
@@ -59,7 +84,7 @@ const VideoCall = ({ route }) => {
     const data = {
       IDCaller: user.phone,
       IDCallee: id,
-      callType: "VIDEO_PERSONAL",
+      callType: callType,
     };
 
     socket.emit("pre-offer-single", data);
@@ -69,18 +94,19 @@ const VideoCall = ({ route }) => {
   const startLocalStream = async () => {
     const stream = await mediaDevices.getUserMedia({ 
       audio: true,
-      video: {
+      video: callType === "VIDEO_PERSONAL" ? {
         facingMode: isFront ? 'user' : 'environment',
-      },
+      } : false,
     });
     setLocalStream(stream);
+    localStreamRef.current = stream;
     stream.getTracks().forEach(track => {
       pcRef.current.addTrack(track, stream);
     });
   };
 
   const initiateCall = async () => {
-    const offer = await pcRef.current.createOffer({ offerToReceiveAudio: true, offerToReceiveVideo: true});
+    const offer = await pcRef.current.createOffer({ offerToReceiveAudio: true, offerToReceiveVideo: callType === "VIDEO_PERSONAL" });
     console.log('initited call with offer', offer);
     await pcRef.current.setLocalDescription(offer);
     signalingFunc('offer', { offer });
@@ -103,12 +129,28 @@ const VideoCall = ({ route }) => {
 
   useEffect(() => {
     socket.on("pre-offer-single-answer", (data) => {
-      if (data.preOfferAnswer === "CALL_REJECTED") navigation.navigate("Home");
+      if (data.preOfferAnswer === "CALL_REJECTED") {
+        if (state !== CALL_CONNECTED) {
+          navigation.navigate("Home");
+        }
+      }
 
       if (data.preOfferAnswer === "CALL_ACCEPTED") {
         socketIdCalleeRef.current = data.socketIDCallee;
         socketIdCallerRef.current = data.socketIDCaller;
         initiateCall();
+      }
+
+      if (data.preOfferAnswer === "CALLEE_NOT_FOUND") {
+        // Alert.alert("Thông báo", "Người nhận không trực tuyến");
+        // endCall();
+        // setTimeout(() => {
+        //   if (navigation.canGoBack()) {
+        //     navigation.goBack();
+        //   } else {
+        //     navigation.navigate("HOME");
+        //   }
+        // }, 1000);
       }
     });
 
@@ -118,7 +160,7 @@ const VideoCall = ({ route }) => {
 
     return () => {
       socket.off("pre-offer-single-answer");
-      socket.off("pre-offer-single");
+      // socket.off("pre-offer-single");
     };
   }, []);
 
@@ -137,6 +179,8 @@ const VideoCall = ({ route }) => {
       if (event.streams && event.streams[0]) {
         setRemoteStream(event.streams[0]);
         console.log("Set remote stream");
+        
+        setState(CALL_CONNECTED);
       }
     };
 
@@ -172,11 +216,11 @@ const VideoCall = ({ route }) => {
       
       if (message.type === 'ice-candidate') {
         try {
-          console.log('got ice-candidate', user.phone, message.candidate);
+          console.log('got ice-candidate', user.phone);
           const candidate = new RTCIceCandidate(message.candidate);
-          console.log('adding candidate', candidate);
+          console.log('adding candidate');
           await pcRef.current.addIceCandidate(candidate);
-          console.log('added candidate', candidate);
+          console.log('added candidate');
         } catch (e) {
           console.error(e);
         }
@@ -185,13 +229,54 @@ const VideoCall = ({ route }) => {
 
     // Clean up on component unmount
     return () => {
-      pcRef.current?.close();
-      socket.disconnect();
       socket.off("offer");
       socket.off("answer");
       socket.off("ice-candidate");
+      endCall();
     };
   }, []);
+
+  const hanldeEndCall = () => {
+    if (state === CALL_CONNECTED) {
+      socket.emit("pre-offer-single-answer", {
+        ...route.params.data,
+        preOfferAnswer: "CALL_REJECTED",
+      });
+
+      setTimeout(() => {
+        navigation.goBack();
+      }, 1000);
+    }
+    
+    setTimeout(() => {
+      navigation.navigate("Home");
+    }, 1000);
+    endCall();
+  }
+
+  const endCall = () => {
+    try {
+      // pcRef.current.close();
+      // Close peer connection
+      // Stop local stream tracks
+      // localStreamRef.current?.getTracks().forEach(track => track.stop());
+      // Clear local stream
+      setLocalStream(null);
+      // Clear remote stream
+      setRemoteStream(new MediaStream());
+  
+      mediaDevices.getUserMedia({ audio: true }) // Requesting only audio track
+          .then(stream => {
+              // Stream obtained successfully, stop all tracks
+              stream.getTracks()?.forEach(track => track.stop());
+          })
+          .catch(error => {
+              console.error('Error turning off camera and microphone:', error);
+          });
+    } catch (e) {
+      console.error('end call failed', e);
+    }
+  };
 
   useMemo(() => {
     if (!callOut && socketIDCallee && socketIDCaller) {
@@ -200,10 +285,42 @@ const VideoCall = ({ route }) => {
   }, []);
 
   return (
-    <View style={{ flex: 1 }}>
-      <Button title="Start Video Call" onPress={startVideoCall} />
-      {localStream && <RTCView objectFit='cover' streamURL={localStream.toURL()} style={styles.rtcView} />}
-      {remoteStream && <RTCView objectFit='cover' streamURL={remoteStream.toURL()} style={styles.rtcView} />}
+    <View style={{flex: 2}}>
+      <View style={{ flex: 1 }}>
+        {/* <Button title="Start Call" onPress={startVideoCall} /> */}
+        {localStream && <RTCView objectFit='cover' streamURL={localStream.toURL()} style={callType === "VIDEO_PERSONAL" ? styles.rtcView : styles.rtcViewCall} />}
+        {(callType !== "VIDEO_PERSONAL") &&    <View style={styles.container}>
+        <View style={styles.callerInfo}>
+          <Image
+            style={styles.avatar}
+            source={{uri:  callOut
+              ? route.params?.image
+              : route.params?.urlavatar || "https://i.pravatar.cc/100",}}
+          />
+          <Text style={styles.callerName}>{fullname}</Text>
+          <Text style={styles.countTime}>
+            {state === CALL_RINGING_STATE ? "Đang kết nối..." : "Đã kết nối"}
+          </Text>
+
+          <Text>{state === CALL_CONNECTED ? `${`0${Math.floor(countTime/60)}`.slice(-2)}:${`0${Math.floor(countTime%60)}`.slice(-2)}` : '...'}</Text>
+        </View>
+      </View>}
+        {remoteStream && <RTCView objectFit='cover' streamURL={remoteStream.toURL()} style={callType === "VIDEO_PERSONAL" ? styles.rtcView : styles.rtcViewCall} />}
+      </View>
+      <View style={styles.buttonContainer}>
+        <View style={styles.button}>
+          <TouchableOpacity style={styles.buttonend} onPress={hanldeEndCall}>
+            <MaterialCommunityIcons
+              name="phone-hangup"
+              size={30}
+              color="white"
+            />
+          </TouchableOpacity>
+          <Text style={styles.iconLabel}>
+            Kết thúc
+          </Text>
+        </View>
+      </View>
     </View>
   );
 };   

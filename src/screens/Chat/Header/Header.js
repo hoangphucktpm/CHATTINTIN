@@ -78,11 +78,12 @@ function Header({ fullname, id, image, isGroup }) {
             size={23}
             color="white"
             onPress={() =>
-              navigation.navigate("Call", {
+              navigation.navigate("VideoCall", {
                 fullname,
                 id,
                 image,
                 callOut: true,
+                callType: "SOUND_PERSONAL",
               })
             }
           />
@@ -97,6 +98,7 @@ function Header({ fullname, id, image, isGroup }) {
               id,
               image,
               callOut: true,
+              callType: "VIDEO_PERSONAL",
             })}
           />
         </View>
