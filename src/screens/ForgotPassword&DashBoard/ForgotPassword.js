@@ -10,10 +10,9 @@ import {
 } from "react-native";
 import { Ionicons, Feather, FontAwesome5, AntDesign } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
-import { FirebaseRecaptchaVerifierModal } from "expo-firebase-recaptcha";
+import auth from '@react-native-firebase/auth';
 import { api } from "../../apis/api";
-import { firebaseConfig } from "../../../config";
-import firebase from "firebase/compat/app";
+// import { firebaseConfig } from "../../../config";
 import "firebase/compat/auth";
 import styles from "./StyleForgotPassword";
 
@@ -35,12 +34,8 @@ const ForgotPassword = () => {
   const getOtp = async () => {
     setLoading(true);
     try {
-      const phoneProvider = new firebase.auth.PhoneAuthProvider();
-      const verificationId = await phoneProvider.verifyPhoneNumber(
-        phone,
-        recaptchaVerifier.current
-      );
-      setConfirm({ verificationId });
+      const confirm = await auth().verifyPhoneNumber(phone);
+      setConfirm(confirm);
       setShowOtp(true);
     } catch (error) {
       console.error(error);
@@ -84,13 +79,9 @@ const ForgotPassword = () => {
 
   const confirmCode = async () => {
     try {
-      const credential = firebase.auth.PhoneAuthProvider.credential(
-        confirm.verificationId,
-        code
-      );
-      const userCredential = await firebase
-        .auth()
-        .signInWithCredential(credential);
+      const credential = auth.PhoneAuthProvider.credential(confirm.verificationId, code);
+      const userCredential =  await auth().currentUser.linkWithCredential(credential);
+      console.log(userCredential);
       navigation.navigate("ChangePassForgot", {
         phoneNumber: phone,
       });
@@ -121,10 +112,10 @@ const ForgotPassword = () => {
             : "Vui lòng nhập số điện thoại để lấy lại mật khẩu"}
         </Text>
       </View>
-      <FirebaseRecaptchaVerifierModal
+      {/* <FirebaseRecaptchaVerifierModal
         ref={recaptchaVerifier}
         firebaseConfig={firebaseConfig}
-      />
+      /> */}
       {showOtp ? (
         <>
           <View style={styles.containerInput}>

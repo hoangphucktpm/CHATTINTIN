@@ -10,6 +10,16 @@ buildscript {
 
         ndkVersion = "26.1.10909125"
     }
+    subprojects { subproject ->
+        afterEvaluate{
+            if((subproject.plugins.hasPlugin('android') || subproject.plugins.hasPlugin('android-library'))) {
+                android {
+                    compileSdkVersion rootProject.ext.compileSdkVersion
+                    buildToolsVersion rootProject.ext.buildToolsVersion
+                }
+            }
+        }
+    }
     repositories {
         google()
         mavenCentral()
@@ -38,6 +48,20 @@ allprojects {
         google()
         mavenCentral()
         maven { url 'https://www.jitpack.io' }
+
+        maven {
+            url 'https://api.mapbox.com/downloads/v2/releases/maven'
+            authentication {
+                basic(BasicAuthentication)
+            }
+            credentials {
+                // Do not change the username below.
+                // This should always be `mapbox` (not your username). 
+                username = 'mapbox'
+                // Use the secret token you stored in gradle.properties as the password
+                password = "sk.eyJ1IjoiaG9hbmdwaHVjaG0xMSIsImEiOiJjbHc3dms0Y2Uxa3M4MnRyenNzbWx1a3d5In0.zhCPRm5KSooOJi5w4QaU7A"
+            }
+        }
 
         maven {
             url "$rootDir/../node_modules/@notifee/react-native/android/libs" 
