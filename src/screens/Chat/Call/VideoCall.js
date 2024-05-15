@@ -256,10 +256,10 @@ const VideoCall = ({ route }) => {
 
   const endCall = () => {
     try {
-      // pcRef.current.close();
+      pcRef.current.close();
       // Close peer connection
       // Stop local stream tracks
-      // localStreamRef.current?.getTracks().forEach(track => track.stop());
+      localStreamRef.current?.getTracks().forEach(track => track.stop());
       // Clear local stream
       setLocalStream(null);
       // Clear remote stream
