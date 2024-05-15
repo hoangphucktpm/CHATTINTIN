@@ -5,6 +5,7 @@ import {
   TextInput,
   Alert,
   Image,
+  SafeAreaView,
 } from "react-native";
 import { AntDesign, Entypo, Feather, FontAwesome5 } from "@expo/vector-icons";
 import { Ionicons } from "@expo/vector-icons";
@@ -53,9 +54,8 @@ function Login() {
     }
   };
 
-  const hanldPressRegister = () => {};
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <View style={styles.containerTabBar}>
         <TouchableOpacity
           onPress={hanldPressDashBoard}
@@ -91,10 +91,11 @@ function Login() {
             backgroundColor: "#DCDCDC",
             alignItems: "center",
             marginBottom: 10,
-            marginTop: -50,
+            // marginTop: -50,
+            paddingHorizontal: 10,
           }}
         >
-          <View style={{ flex: 0.15, alignItems: "center" }}>
+          <View style={{ alignItems: "center" }}>
             <Feather name="phone" size={32} color="black" />
           </View>
           <TextInput
@@ -152,18 +153,32 @@ function Login() {
           </Text>
         </TouchableOpacity>
       </View>
-      <View style={styles.containerBottom}>
-        <TouchableOpacity onPress={hanldPressLogin} style={styles.bottom}>
-          <Text style={{ fontSize: 22, color: "#fff", fontWeight: "bold" }}>
-            {" "}
-            Đăng nhập
-          </Text>
-        </TouchableOpacity>
-      </View>
+      <TouchableOpacity
+        onPress={hanldPressLogin}
+        style={{
+          height: "50px",
+          backgroundColor: "#1C86EE",
+          margin: "0 auto",
+          borderRadius: 30,
+          marginHorizontal: 10,
+          paddingVertical: 10,
+        }}
+      >
+        <Text
+          style={{
+            fontSize: 22,
+            color: "#fff",
+            fontWeight: "bold",
+            textAlign: "center",
+          }}
+        >
+          Đăng nhập
+        </Text>
+      </TouchableOpacity>
 
       <View
         style={{
-          flex: 0.15,
+          // flex: 0.15,
           justifyContent: "center",
           alignItems: "center",
           display: "flex",
@@ -181,9 +196,7 @@ function Login() {
           </Text>
         </TouchableOpacity>
       </View>
-      {/*
-       */}
-    </View>
+    </SafeAreaView>
   );
 }
 

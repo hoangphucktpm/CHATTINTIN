@@ -92,12 +92,13 @@ const Chat = memo(({ route }) => {
         id={ID ?? route.params.IDSender}
         image={urlavatar}
         isGroup={isGroup}
+        IDConversation={IDConversation}
+        isBlock={route.params?.isBlock}
       />
       <Body
         id={IDConversation}
         dataSender={route.params.Receiver}
         messageData={messageData}
-        isGroup={route.params.isGroup}
       />
       <ViewImageFullScreen />
       <Footer IDConversation={IDConversation} />

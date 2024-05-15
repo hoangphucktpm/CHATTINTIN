@@ -1,6 +1,6 @@
 import axios from "axios";
 
-export const myIP = "192.168.1.12";
+export const myIP = "192.168.1.15";
 // export const myIP = "192.168.1.7";
 
 export const http = axios.create({
@@ -30,8 +30,7 @@ export const api = {
   resetPassword: async (params) => {
     return http.patch(`auth/reset-password`, params);
   },
-  getAllFriendRequests: (id) =>
-    http.get(`user/get-all-friend-requests/${id}`, { id }),
+  getAllFriendRequests: (id) => http.get(`user/get-all-friend-requests/${id}`),
   handleFriendRequest: ({ id, type }) =>
     http.post("user/process-friend-request", { id, type }),
   handleSendFriendRequest: ({ senderId, receiverId }) =>

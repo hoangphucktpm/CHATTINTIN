@@ -174,6 +174,7 @@ const MyProfile = () => {
           await removeData("user-phone").then(() => {
             dispatch(logout());
             dispatch(setConversation(null));
+            dispatch(setUser(null));
             dispatch(setBadge(0));
             navigation.navigate("DashBoard");
           });

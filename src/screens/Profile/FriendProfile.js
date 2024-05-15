@@ -6,6 +6,7 @@ import {
   Image,
   ImageBackground,
   Alert,
+  ActivityIndicator,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import styles from "./StyleFriendProfile";
@@ -20,43 +21,48 @@ function FriendProfile({ route }) {
   const { phone, fullname, urlavatar, ID } = route.params;
   const navigation = useNavigation();
   const { user } = useSelector((state) => state.auth);
+  const { conversation } = useSelector((state) => state.conversation);
 
   const [isAdd, setIsAdd] = useState(false);
   const [add, setAdd] = useState("Kết bạn");
   const [isRequest, setIsRequest] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
   useEffect(() => {
-    if (!user) return navigation.navigate("Login");
     const fetchData = async () => {
       try {
         const allFriendsRequest = await api.getAllFriendRequests(user.ID);
+        const hasRequested = allFriendsRequest.data?.find(
+          (rq) => rq.ID === phone || ID
+        );
+        setIsRequest(!!hasRequested);
 
-        if (allFriendsRequest.data?.find((rq) => rq.ID === ID))
-          setIsRequest(true);
         const checkRequestFromSelf = await api.checkRequest({
           senderId: user.ID,
-          receiverId: phone,
+          receiverId: phone || ID,
         });
         const checkRequestFromFriend = await api.checkRequest({
-          senderId: phone,
+          senderId: phone || ID,
           receiverId: user.ID,
         });
 
-        if (
-          (checkRequestFromSelf.data && checkRequestFromSelf.data.code === 2) ||
-          (checkRequestFromFriend.data &&
-            checkRequestFromFriend.data.code === 2)
-        ) {
-          setIsAdd(true);
-        }
+        const isSelfRequested = checkRequestFromSelf.data?.code === 2;
+        const isFriendRequested = checkRequestFromFriend.data?.code === 2;
 
-        if (!checkRequestFromFriend.data.code) setAdd("Hủy lời mời");
+        setIsAdd(isSelfRequested || isFriendRequested);
+        setAdd(isFriendRequested ? "Hủy lời mời" : "");
       } catch (error) {
         console.error("Error fetching data:", error);
       }
+      setIsLoading(false);
     };
+    if (!user) {
+      navigation.navigate("Login");
+      return;
+    }
 
     fetchData();
-  }, []);
+  }, [user, navigation, ID, phone]);
 
   useEffect(() => {
     socket.on("send friend request server", (data) => {
@@ -104,7 +110,10 @@ function FriendProfile({ route }) {
         Alert.alert("Lỗi", "Không thể thực hiện yêu cầu");
       });
   };
-  return (
+
+  return isLoading ? (
+    <ActivityIndicator />
+  ) : (
     <View style={styles.container}>
       <View style={styles.containerTabBar}>
         <TouchableOpacity
@@ -230,8 +239,11 @@ function FriendProfile({ route }) {
                   onPress={() =>
                     navigation.navigate("Chat", {
                       id: phone,
-                      name: fullname,
+                      fullname: fullname,
                       image: urlavatar,
+                      IDConversation: conversation?.find(
+                        (con) => !con?.isGrounp && con?.Receiver?.ID === phone
+                      ).IDConversation,
                     })
                   }
                 >

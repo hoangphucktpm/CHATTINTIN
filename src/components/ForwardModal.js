@@ -1,4 +1,4 @@
-import { Text, FlatList, TouchableOpacity } from "react-native";
+import { Text, FlatList, TouchableOpacity, Button } from "react-native";
 import React, { useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Card, Modal } from "@ui-kitten/components";
@@ -20,6 +20,10 @@ const ForwardModal = () => {
 
   if (!forward.show) return null;
 
+  const handleClose = () => {
+    dispatch(setForward({ show: false, data: null }));
+  };
+
   const handleForward = (IDPassConversation) => {
     const data = {
       IDPassConversation,
@@ -28,7 +32,7 @@ const ForwardModal = () => {
     };
 
     socket.emit("pass_message", data);
-    dispatch(setForward({ show: false, data: null }));
+    handleClose();
   };
 
   return (
@@ -64,6 +68,20 @@ const ForwardModal = () => {
             </TouchableOpacity>
           )}
         />
+        <TouchableOpacity
+          style={{
+            width: "100%",
+            margin: "0 auto",
+            backgroundColor: "orange",
+            borderRadius: 10,
+            marginTop: 10,
+          }}
+          onPress={handleClose}
+        >
+          <Text style={{ textAlign: "center", color: "white", padding: 10 }}>
+            Hủy
+          </Text>
+        </TouchableOpacity>
       </Card>
     </Modal>
   );

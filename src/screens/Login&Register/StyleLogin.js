@@ -3,10 +3,11 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fff",
+    // marginTop: StatusBar.currentHeight,
   },
 
   containerTabBar: {
-    height: "8%",
+    // height: "8%",
     padding: 5,
     backgroundColor: "#1E90FF",
     display: "flex",
@@ -15,7 +16,7 @@ const styles = StyleSheet.create({
 
   containerInput: {
     marginTop: 20,
-    flex: 0.4,
+    // flex: 0.4,
     justifyContent: "center",
   },
   containerText: {
@@ -24,9 +25,9 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   containerBottom: {
-    flex: 0.1,
+    // flex: 0.1,
     display: "flex",
-    flexDirection: "row",
+    // flexDirection: "row",
     justifyContent: "center",
     paddingRight: 10,
   },

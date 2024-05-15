@@ -6,7 +6,7 @@ import { Feather } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { useEffect } from "react";
 
-function Header({ fullname, id, image, isGroup }) {
+function Header({ fullname, id, image, isGroup, IDConversation, isBlock }) {
   const navigation = useNavigation();
   const [isSearchVisible, setIsSearchVisible] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
@@ -92,12 +92,14 @@ function Header({ fullname, id, image, isGroup }) {
             name="video"
             size={26}
             color="white"
-            onPress={() => navigation.navigate("VideoCall", {
-              fullname,
-              id,
-              image,
-              callOut: true,
-            })}
+            onPress={() =>
+              navigation.navigate("VideoCall", {
+                fullname,
+                id,
+                image,
+                callOut: true,
+              })
+            }
           />
         </View>
         <TouchableOpacity
@@ -107,6 +109,8 @@ function Header({ fullname, id, image, isGroup }) {
               phone: id,
               fullname: fullname,
               urlavatar: image,
+              IDConversation,
+              isBlock: isBlock,
             })
           }
         >

@@ -1,5 +1,11 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { Text, View, Image, TouchableHighlight, FlatList } from "react-native";
+import {
+  Text,
+  View,
+  TouchableHighlight,
+  FlatList,
+  TouchableOpacity,
+} from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 
 import { setGroupDetails } from "../../redux/groupSlice";
@@ -7,6 +13,7 @@ import { setForward, setPopup, setReply } from "../../redux/chatSlice";
 import styles from "./StyleItemFriend";
 import AvatarCustomer from "../../components/AvatarCustomer";
 import socket from "../../services/socket";
+import { format, formatDistanceToNow } from "date-fns";
 
 const ItemFriend = React.memo(({ navigation }) => {
   const { conversation } = useSelector((state) => state.conversation);
@@ -20,8 +27,6 @@ const ItemFriend = React.memo(({ navigation }) => {
     }
   }, [conversation]);
 
-  console.log(conversation);
-
   useEffect(() => {
     setdata(conversation);
   }, [conversation]);
@@ -30,6 +35,7 @@ const ItemFriend = React.memo(({ navigation }) => {
 
   const handleChat = useCallback(
     (item) => {
+      if (item?.isBlock) return;
       // console.log(item);
       dispatch(setReply({ show: false, data: null }));
       dispatch(setGroupDetails(item));
@@ -40,36 +46,100 @@ const ItemFriend = React.memo(({ navigation }) => {
     [dispatch, navigation]
   );
 
+  const isSended = (id) => id === user.ID;
+
+  const handleUnBlock = (item) => {
+    const data = {
+      IDConversation1: item.IDConversation,
+      IDSender: user.ID,
+      IDReceiver: item?.Receiver?.ID,
+    };
+
+    socket.emit("un_block_friend", data);
+    navigation.navigate("Home");
+  };
+
   const renderItem = useCallback(
-    ({ item }) => (
-      <TouchableHighlight
-        onPress={() => handleChat(item)}
-        underlayColor="#E6E6FA"
-        style={styles.touchHightLight}
-      >
-        <View style={styles.container}>
-          <View style={styles.itemFriend_info}>
-            <View style={styles.itemFriend_avatar}>
-              <AvatarCustomer
-                style={styles.itemFriend_avatar_avatar}
-                source={{ uri: item.Receiver?.urlavatar }}
-                alt={item.groupName || item.Receiver?.fullname}
-              />
+    ({ item }) => {
+      // if (item?.isBlock) return;
+      return (
+        <TouchableHighlight
+          onPress={() => handleChat(item)}
+          underlayColor="#E6E6FA"
+          style={styles.touchHightLight}
+        >
+          <View style={styles.container}>
+            <View style={styles.itemFriend_info}>
+              <View style={styles.itemFriend_avatar}>
+                <AvatarCustomer
+                  style={styles.itemFriend_avatar_avatar}
+                  source={{ uri: item.Receiver?.urlavatar }}
+                  alt={item.groupName || item.Receiver?.fullname}
+                />
+              </View>
+            </View>
+            <View style={styles.itemFriend_right}>
+              <View style={styles.itemFriend_message}>
+                <View
+                  style={{
+                    display: "flex",
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    width: "100%",
+                  }}
+                >
+                  <Text style={styles.itemFriend_name}>
+                    {item.Receiver?.fullname}
+                  </Text>
+                  <Text>
+                    {formatDistanceToNow(
+                      new Date(item?.lastChange || item?.dateTime)
+                    )}{" "}
+                    ago
+                  </Text>
+                </View>
+                <Text style={styles.itemFriend_content}>
+                  {isSended(item?.MessageDetail?.IDSender) && "Bạn: "}{" "}
+                  {item?.MessageDetail?.type === "image"
+                    ? "Hình ảnh"
+                    : item?.MessageDetail?.type === "file"
+                    ? "Tệp đính kèm"
+                    : item?.MessageDetail?.type === "link"
+                    ? "Đường dẫn"
+                    : item?.MessageDetail?.type === "video"
+                    ? "Video"
+                    : item?.MessageDetail?.content}
+                </Text>
+
+                {item?.isBlock && (
+                  <TouchableOpacity
+                    onPress={() => handleUnBlock(item)}
+                    style={{
+                      paddingHorizontal: 5,
+                      borderRadius: 50,
+                      backgroundColor: "#ddd",
+                      opacity: 0.5,
+                      width: 100,
+                    }}
+                  >
+                    <Text
+                      style={{
+                        color: "red",
+                        textAlign: "center",
+                        fontWeight: 600,
+                      }}
+                    >
+                      Bỏ chặn
+                    </Text>
+                  </TouchableOpacity>
+                )}
+              </View>
             </View>
           </View>
-          <View style={styles.itemFriend_right}>
-            <View style={styles.itemFriend_message}>
-              <Text style={styles.itemFriend_name}>
-                {item.Receiver?.fullname}
-              </Text>
-              {/* <Text style={styles.itemFriend_content}>
-                {item.Receiver?.lastMessage}
-              </Text> */}
-            </View>
-          </View>
-        </View>
-      </TouchableHighlight>
-    ),
+        </TouchableHighlight>
+      );
+    },
     [handleChat]
   );
 

@@ -26,6 +26,7 @@ import socket from "../../services/socket";
 import { api } from "../../apis/api";
 import AvatarCustomer from "../../components/AvatarCustomer";
 import { setBadge } from "../../redux/appSlice";
+import { isBlock } from "typescript";
 
 function Contacts() {
   const navigation = useNavigation();
@@ -135,6 +136,23 @@ function Contacts() {
             }}
           />
         );
+      case "block":
+        // Lời mời kết bạn kèm theo chức năng chấp nhận hoặc từ chối, hiện icon chấp nhận và từ chối ra trong mỗi item
+        return (
+          <FlatList
+            data={
+              !conversation
+                ? []
+                : conversation
+                    .filter((con) => con?.isBlock)
+                    .flatMap((item) => item?.Receiver)
+            }
+            renderItem={renderFriendBlockedItem}
+            keyExtractor={(item, i) => {
+              return `${item.ID} ${i.toString()}`;
+            }}
+          />
+        );
       default:
         return (
           <FlatList
@@ -187,6 +205,10 @@ function Contacts() {
   };
 
   const renderFriendItem = ({ item }) => {
+    const isBlocked = conversation.find(
+      (con) => con?.Receiver?.ID === item?.ID
+    )?.isBlock;
+    if (isBlocked) return;
     const dataItem = !groupLists?.length
       ? []
       : groupLists.find((data) => data.IDReceiver === item.ID);
@@ -201,6 +223,40 @@ function Contacts() {
           dispatch(setForward({ show: false, data: null }));
           dispatch(setPopup({ show: false, data: null }));
           navigation.navigate("Chat", dataItem);
+        }}
+      >
+        <View style={styles.containerItem}>
+          <View style={styles.itemFriend_info}>
+            <View style={styles.itemFriend_avatar}>
+              <AvatarCustomer
+                style={styles.itemFriend_avatar_avatar}
+                source={{ uri: item.urlavatar }}
+                alt={item.fullname}
+              />
+            </View>
+          </View>
+          <View style={styles.itemFriend_right}>
+            <Text style={{ fontSize: 20 }}>{item.fullname}</Text>
+          </View>
+        </View>
+      </TouchableHighlight>
+    );
+  };
+  const renderFriendBlockedItem = ({ item }) => {
+    return (
+      <TouchableHighlight
+        underlayColor={"#E6E6FA"}
+        style={styles.touchHightLight}
+        onPress={() => {
+          dispatch(setReply({ show: false, data: null }));
+          dispatch(setGroupDetails(item));
+          dispatch(setForward({ show: false, data: null }));
+          dispatch(setPopup({ show: false, data: null }));
+          const data = {
+            ...item,
+            isBlock: "blocked",
+          };
+          navigation.navigate("Chat", data);
         }}
       >
         <View style={styles.containerItem}>
@@ -363,6 +419,21 @@ function Contacts() {
               </Text>
             </View>
           </TouchableOpacity>
+          {/* <TouchableOpacity
+            onPress={() => handleButtonPress("block")}
+            style={[
+              styles.containerBody_Row,
+              selectedButton === "block" && { backgroundColor: "#BFEFFF" }, // Sử dụng điều kiện để chỉ định màu cho mục đã chọn
+            ]}
+          >
+            <Ionicons name="lock-closed" size={42} color="blue" />
+            <View style={{ flexDirection: "row" }}>
+              <Text style={{ fontSize: 18, marginLeft: 20 }}>Đã chặn</Text>
+              <Text style={{ fontSize: 18, marginLeft: 5, color: "red" }}>
+                [{conversation.filter((con) => con?.isBlock).length}]
+              </Text>
+            </View>
+          </TouchableOpacity> */}
         </View>
 
         <View style={{ flex: 0.8, backgroundColor: "white" }}>

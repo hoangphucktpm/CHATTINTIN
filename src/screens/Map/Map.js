@@ -20,7 +20,6 @@ import Footer from "../Footer/Footer";
 import { Avatar, Button, Card, Modal } from "@ui-kitten/components";
 import socket from "../../services/socket";
 import { useNavigation } from "@react-navigation/native";
-import { SafeAreaView } from "react-native-safe-area-context";
 
 const ScreenHeight = 9999;
 const ScreenWidth = 999;
@@ -33,7 +32,7 @@ const Map = () => {
   const [locations, setLocations] = useState([]);
   const [pointSelected, setPointSelected] = useState(null);
   const user = useSelector((state) => state.auth.user);
-  const phone = user.phone;
+  const phone = user?.phone;
   const [isFriendRequestSent, setIsFriendRequestSent] = useState(false);
   const [originalLocations, setOriginalLocations] = useState([]);
   const [searchResult, setSearchResult] = useState(null);
@@ -167,23 +166,28 @@ const Map = () => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-    <View style={styles.page}>
-      <View style={styles.containerTabBar}>
-        <TouchableOpacity style={styles.containerIcon} onPress={() => handleSearch(searchTerm)}>
-          <EvilIcons name="search" size={30} color="white" />
-        </TouchableOpacity>
-        <View style={styles.containerInput}>
-          <TextInput
-            placeholderTextColor="#fff"
-            style={styles.input}
-            type="text"
-            placeholder="Tìm kiếm"
-            onChangeText={handleChangeText}
-            value={searchTerm} 
-          />
+    <View style={styles.container}>
+      <View style={styles.page}>
+        <View style={styles.containerTabBar}>
+          <View style={styles.containerIcon}>
+            <EvilIcons
+              name="search"
+              size={30}
+              color="white"
+              onPress={() => handleSearch(searchTerm)}
+            />
+          </View>
+          <View style={styles.containerInput}>
+            <TextInput
+              placeholderTextColor="#fff"
+              style={styles.input}
+              type="text"
+              placeholder="Tìm kiếm"
+              onChangeText={handleChangeText}
+              value={searchTerm} // Set the search term in the input field
+            />
+          </View>
         </View>
-      </View>
         <View style={styles.container}>
           {location ? (
             <MapView
@@ -208,11 +212,15 @@ const Map = () => {
             >
               {locations.map((userLocation, index) => {
                 const getUser = async () => {
-                  let userdata = await getUserByPhone(userLocation.properties.IDUser);
+                  let userdata = await getUserByPhone(
+                    userLocation.properties.IDUser
+                  );
 
                   if (
-                    userLocation.geometry.coordinates[1] === location.coords.latitude
-                  ) return null;
+                    userLocation.geometry.coordinates[1] ===
+                    location.coords.latitude
+                  )
+                    return null;
 
                   return (
                     <Marker
@@ -322,14 +330,14 @@ const Map = () => {
             ) : isFriendRequestSent ? (
               <Button onPress={handleCancel}>Hủy</Button>
             ) : (
-              <Button onPress={() => hanldPressAdd(pointSelected.phone)}>
+              <Button onPress={() => hanldPressAdd(pointSelected?.phone)}>
                 Thêm bạn
               </Button>
             )}
           </Card>
         </Modal>
       )}
-    </SafeAreaView>
+    </View>
   );
 };
 

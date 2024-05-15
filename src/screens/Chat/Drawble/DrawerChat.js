@@ -28,7 +28,7 @@ import { api } from "../../../apis/api";
 import socket from "../../../services/socket";
 
 function DrawerChat({ navigation, route }) {
-  const { fullname, phone, urlavatar } = route.params;
+  const { fullname, phone, urlavatar, IDConversation, isBlock } = route.params;
 
   const dispatch = useDispatch();
 
@@ -54,6 +54,8 @@ function DrawerChat({ navigation, route }) {
         .filter((msg) => msg.type === "image" && !msg.isRecall)
         .flatMap((msg) => msg.content);
       setImages(imgs);
+
+      // socket.emit("get_block_friend", { IDUser: user.ID, friendID: phone });
     }, [messages])
   );
 
@@ -134,6 +136,19 @@ function DrawerChat({ navigation, route }) {
       console.log(error);
     }
   };
+
+  const handleBlock = () => {
+    const data = {
+      IDConversation1: IDConversation,
+      IDSender: user.ID,
+      IDReceiver: phone,
+    };
+
+    socket.emit("block_friend", data);
+    navigation.navigate("Home");
+  };
+
+  console.log("isBlock", isBlock);
 
   return (
     <Provider>
@@ -553,6 +568,7 @@ function DrawerChat({ navigation, route }) {
               </TouchableOpacity>
               <TouchableOpacity
                 style={styles.containerBody_Mid_ChangeName_Item}
+                onPress={handleBlock}
               >
                 <Entypo
                   name="block"
@@ -561,7 +577,9 @@ function DrawerChat({ navigation, route }) {
                   style={{ width: "15%", height: "100%" }}
                 />
                 <View style={styles.containerBody_Mid_ChangeName_Item_Text}>
-                  <Text style={{ fontSize: 20, color: "black" }}>Chặn</Text>
+                  <Text style={{ fontSize: 20, color: "black" }}>
+                    {isBlock !== "blocled" ? " Chặn" : "Bỏ Chặn"}
+                  </Text>
                 </View>
               </TouchableOpacity>
               <TouchableOpacity

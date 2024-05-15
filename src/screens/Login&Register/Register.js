@@ -6,6 +6,7 @@ import {
   TextInput,
   Alert,
   ActivityIndicator,
+  SafeAreaView,
 } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import { Ionicons } from "@expo/vector-icons";
@@ -14,7 +15,7 @@ import { StatusBar } from "expo-status-bar";
 import { useNavigation } from "@react-navigation/native";
 import { api } from "../../apis/api";
 // import { FirebaseRecaptchaVerifierModal } from "expo-firebase-recaptcha";
-import auth from '@react-native-firebase/auth';
+import auth from "@react-native-firebase/auth";
 import firebase from "firebase/compat/app";
 import "firebase/compat/auth"; // Ensure that you import auth
 
@@ -57,8 +58,13 @@ const Register = () => {
 
   const confirmCode = async () => {
     try {
-      const credential = auth.PhoneAuthProvider.credential(confirm.verificationId, code);
-      const userCredential =  await auth().currentUser.linkWithCredential(credential);
+      const credential = auth.PhoneAuthProvider.credential(
+        confirm.verificationId,
+        code
+      );
+      const userCredential = await auth().currentUser.linkWithCredential(
+        credential
+      );
       console.log(userCredential);
       navigation.navigate("InputPass", { phoneNumber: phone });
     } catch (error) {
@@ -103,10 +109,9 @@ const Register = () => {
     }
   };
 
-
   return (
-    <View style={styles.container}>
-      <StatusBar translucent />
+    <SafeAreaView style={styles.container}>
+      <StatusBar translucent  />
       <View style={{ height: StatusBar.currentHeight }}></View>
       <View style={styles.containerTabBar}>
         <TouchableOpacity
@@ -284,7 +289,7 @@ const Register = () => {
         </TouchableOpacity>
       </View>
       {loading && <ActivityIndicator size="large" />}
-    </View>
+    </SafeAreaView>
   );
 };
 
