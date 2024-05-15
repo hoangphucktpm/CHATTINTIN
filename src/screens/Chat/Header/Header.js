@@ -78,7 +78,7 @@ function Header({ fullname, id, image, isGroup }) {
             size={23}
             color="white"
             onPress={() =>
-              navigation.navigate("VideoCallCome", {
+              navigation.navigate("Call", {
                 fullname,
                 id,
                 image,
@@ -92,7 +92,12 @@ function Header({ fullname, id, image, isGroup }) {
             name="video"
             size={26}
             color="white"
-            onPress={() => navigation.navigate("VideoCall")}
+            onPress={() => navigation.navigate("VideoCall", {
+              fullname,
+              id,
+              image,
+              callOut: true,
+            })}
           />
         </View>
         <TouchableOpacity

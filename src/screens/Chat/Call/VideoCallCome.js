@@ -1,109 +1,24 @@
-import React, { useState, useRef, useEffect } from "react";
 import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  Dimensions,
-  Alert,
-  PermissionsAndroid,
-  Platform,
-} from "react-native";
-import {
-  FontAwesome,
-  MaterialCommunityIcons,
   Entypo,
-  MaterialIcons,
+  MaterialCommunityIcons
 } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
-import { Image } from "react-native";
+import React from "react";
+import {
+  Alert,
+  Dimensions,
+  Image,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View
+} from "react-native";
 import socket from "../../../services/socket";
-import { useSelector } from "react-redux";
 
 const VideoCallCome = ({ route }) => {
-  const [localStream, setLocalStream] = useState(null);
-  const [remoteStream, setRemoteStream] = useState(null);
-  const [isCalling, setIsCalling] = useState(false);
-  const [isMicrophoneMuted, setIsMicrophoneMuted] = useState(false);
-  const [isCameraMuted, setIsCameraMuted] = useState(false);
   const navigation = useNavigation();
-
-  const localVideoRef = useRef(null); // Placeholder for local video view
-
-  const user = useSelector((state) => state.auth.user);
-
-  useEffect(() => {
-    // check permission microphone
-    const getMicrophonePermission = async () => {
-      if (Platform.OS === "android") {
-        try {
-          const isGranted = await PermissionsAndroid.check(
-            PermissionsAndroid.PERMISSIONS.RECORD_AUDIO
-          );
-          if (isGranted) return startCall();
-          const granted = await PermissionsAndroid.request(
-            PermissionsAndroid.PERMISSIONS.RECORD_AUDIO,
-            {
-              title: "Microphone Permission",
-              message: "This app needs access to your microphone.",
-              buttonPositive: "OK",
-            }
-          );
-          if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-            console.log("Microphone permission granted");
-            startCall();
-          } else {
-            console.log("Microphone permission denied");
-          }
-        } catch (err) {
-          console.warn(err);
-        }
-      } else {
-        console.log("Platform not supported for permission request");
-      }
-    };
-    getMicrophonePermission();
-  }, []);
-
-  useEffect(() => {
-    socket.on("webRTC-signaling", (data) => console.log("data2", data));
-
-    socket.on("pre-offer-single-answer", (data) => {
-      if (data.preOfferAnswer === "CALL_REJECTED") navigation.navigate("Home");
-    });
-    socket.on("pre-offer-single", (data) => {
-      console.log("pre-offer-single", data);
-      signalingFunc(data.IDCaller, "OFFER");
-    });
-    return () => {
-      socket.off("pre-offer-single-answer");
-    };
-  }, []);
-
-  const signalingFunc = (connectedUserSocketId, signaling) => {
-    const data = {
-      signaling,
-      connectedUserSocketId,
-    };
-    socket.emit("webRTC-signaling", data);
-  };
-
-  const startCall = async () => {
-    // Code for starting the call
-
-    const data = {
-      IDCaller: user.phone,
-      IDCallee: route.params?.id,
-      callType: "SOUND_PERSONAL_CODE",
-    };
-
-    socket.emit("pre-offer-single", data);
-    signalingFunc(route.params?.id, "OFFER");
-  };
-
   const refuse = () => {
     // Code for ending the call
-
     if (route.params?.data) {
       socket.emit("pre-offer-single-answer", {
         ...route.params.data,
@@ -114,45 +29,20 @@ const VideoCallCome = ({ route }) => {
     navigation.navigate("Home");
   };
 
-  add = () => {
-    Alert.alert("Thông báo", "Chức năng đang phát triển");
-  };
-
-  const toggleMicrophone = () => {
-    setIsMicrophoneMuted(!isMicrophoneMuted);
-    // Code for toggling microphone
-  };
-
   const accept = () => {
-    // Code for accepting the call
-
     socket.emit("pre-offer-single-answer", {
       ...route.params.data,
       preOfferAnswer: "CALL_ACCEPTED",
     });
 
-    const data = {
-      signaling: "ANSWER",
-      connectedUserSocketId: route.params.data.socketIDCallee,
-    };
 
-    socket.emit("webRTC-signaling", data);
+    navigation.navigate("VideoCall", {
+      ...route.params.data,
+    })
   };
 
   return (
     <View style={styles.container}>
-      {localStream && (
-        <View style={styles.localVideo} ref={localVideoRef}>
-          {/* Display the local video/image here (replace with appropriate component) */}
-        </View>
-      )}
-
-      {remoteStream && (
-        <View style={styles.remoteVideo}>
-          {/* Display the remote video/image here (replace with appropriate component) */}
-        </View>
-      )}
-
       <View style={styles.container}>
         {/* Thêm avatar và tên của người được gọi dưới header */}
         <View style={styles.callerInfo}>
