@@ -14,7 +14,7 @@ import styles from "./StyleRegister";
 import { StatusBar } from "expo-status-bar";
 import { useNavigation } from "@react-navigation/native";
 import { api } from "../../apis/api";
-import { FirebaseRecaptchaVerifierModal } from "expo-firebase-recaptcha";
+// import { FirebaseRecaptchaVerifierModal } from "expo-firebase-recaptcha";
 import auth from "@react-native-firebase/auth";
 import firebase from "firebase/compat/app";
 import "firebase/compat/auth"; // Ensure that you import auth
@@ -131,10 +131,10 @@ const Register = () => {
           <Text style={{ fontSize: 22, color: "white" }}>Đăng Ký</Text>
         </View>
       </View>
-      <FirebaseRecaptchaVerifierModal
+      {/* <FirebaseRecaptchaVerifierModal
         ref={recaptchaVerifier}
         firebaseConfig={firebaseConfig}
-      />
+      /> */}
       {showOtp ? (
         <>
           <View style={styles.containerText}>

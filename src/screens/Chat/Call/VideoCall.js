@@ -23,7 +23,7 @@ const CALL_CONNECTED = "CONNECTED";
 
 const VideoCall = ({ route }) => {
   const { fullname, id, image, callOut, socketIDCaller, socketIDCallee, callType } = route.params;
-  console.log('params: ', route.params);
+  // console.log('params: ', route.params);
   const navigation = useNavigation();
 
   // settings
@@ -76,7 +76,7 @@ const VideoCall = ({ route }) => {
       ...metadata,
     };
 
-    console.log('sent signaling data', data);
+    // console.log('sent signaling data', data);
     socket.emit(SIGNALING_CHANNEL, data);
   };
 
@@ -107,7 +107,7 @@ const VideoCall = ({ route }) => {
 
   const initiateCall = async () => {
     const offer = await pcRef.current.createOffer({ offerToReceiveAudio: true, offerToReceiveVideo: callType === "VIDEO_PERSONAL" });
-    console.log('initited call with offer', offer);
+    // console.log('initited call with offer', offer);
     await pcRef.current.setLocalDescription(offer);
     signalingFunc('offer', { offer });
   };
@@ -155,7 +155,7 @@ const VideoCall = ({ route }) => {
     });
 
     socket.on("pre-offer-single", (data) => {
-      console.log("pre-offer-single", data);
+      // console.log("pre-offer-single", data);
     });
 
     return () => {

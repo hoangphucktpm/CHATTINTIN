@@ -15,7 +15,7 @@ import { api } from "../../apis/api";
 import { firebaseConfig } from "../../../config";
 import "firebase/compat/auth";
 import styles from "./StyleForgotPassword";
-import { FirebaseRecaptchaVerifierModal } from "expo-firebase-recaptcha";
+// import { FirebaseRecaptchaVerifierModal } from "expo-firebase-recaptcha";
 
 const ForgotPassword = () => {
   const navigation = useNavigation();
