@@ -134,7 +134,9 @@ const VideoCall = ({ route }) => {
 
   const startVideoCall = () => {
     startLocalStream();
-    sendSignalVideoCall();
+    if (callOut) {
+      sendSignalVideoCall();
+    }
   };
 
   useMemo(() => {
@@ -150,9 +152,10 @@ const VideoCall = ({ route }) => {
   useEffect(() => {
     socket.on("pre-offer-single-answer", (data) => {
       if (data.preOfferAnswer === "CALL_REJECTED") {
-        if (state !== CALL_CONNECTED) {
+        Alert.alert("Thông báo", "Cuộc gọi đã kết thúc");
+        setTimeout(() => {
           navigation.navigate("Home");
-        }
+        }, 1000);
       }
 
       if (data.preOfferAnswer === "CALL_ACCEPTED") {
@@ -163,8 +166,10 @@ const VideoCall = ({ route }) => {
 
       if (data.preOfferAnswer === "CALLEE_NOT_FOUND") {
         if (state !== CALL_CONNECTED) {
-          // navigation.navigate("Home");
-          console.warn("callee not found");
+          Alert.alert("Thông báo", "Người nhận không online");
+          setTimeout(() => {
+            navigation.navigate("Home");
+          }, 1000);
         }
 
       }
