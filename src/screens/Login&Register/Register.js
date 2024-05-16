@@ -58,14 +58,13 @@ const Register = () => {
 
   const confirmCode = async () => {
     try {
+      console.log("otp", otp.join(""));
       const credential = auth.PhoneAuthProvider.credential(
         confirm.verificationId,
-        code
+        otp.join(""),
       );
-      const userCredential = await auth().currentUser.linkWithCredential(
-        credential
-      );
-      console.log(userCredential);
+
+      console.log(credential);
       navigation.navigate("InputPass", { phoneNumber: phone });
     } catch (error) {
       console.log(error);
@@ -100,6 +99,7 @@ const Register = () => {
         Alert.alert("Số điện thoại đã tồn tại");
       }
     } catch (error) {
+      console.error(error);
       if (error.response && error.response.status === 404) {
         return await getOtp();
       }
