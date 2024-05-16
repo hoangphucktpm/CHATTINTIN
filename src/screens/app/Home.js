@@ -76,7 +76,7 @@ const Home = (props) => {
       if (data.IDCallee === phone) {
         const res = await api.getUserByPhone(data.IDCaller);
         res.data &&
-          props.navigation.navigate("VideoCallCome", { ...res.data, data });
+          props.navigation.navigate("VideoCallCome", { ...res.data, data: {...data, image: res.data?.image, fullname: res.data?.fullname } });
       }
     };
 
