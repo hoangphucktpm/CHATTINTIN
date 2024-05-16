@@ -84,10 +84,7 @@ const ForgotPassword = () => {
         confirm.verificationId,
         code
       );
-      const userCredential = await auth().currentUser.linkWithCredential(
-        credential
-      );
-      console.log(userCredential);
+      console.log(credential);
       navigation.navigate("ChangePassForgot", {
         phoneNumber: phone,
       });
@@ -118,10 +115,10 @@ const ForgotPassword = () => {
             : "Vui lòng nhập số điện thoại để lấy lại mật khẩu"}
         </Text>
       </View>
-      <FirebaseRecaptchaVerifierModal
+      {/* <FirebaseRecaptchaVerifierModal
         ref={recaptchaVerifier}
         firebaseConfig={firebaseConfig}
-      />
+      /> */}
       {showOtp ? (
         <>
           <View style={styles.containerInput}>
