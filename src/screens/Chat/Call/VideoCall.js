@@ -161,12 +161,12 @@ const VideoCall = ({ route }) => {
         initiateCall();
       }
 
-      if (data.preOfferAnswer === "CALLEE_NOT_FOUND") {
-        if (state !== CALL_CONNECTED) {
-          navigation.navigate("Home");
-        }
+      // if (data.preOfferAnswer === "CALLEE_NOT_FOUND") {
+      //   if (state !== CALL_CONNECTED) {
+      //     navigation.navigate("Home");
+      //   }
 
-      }
+      // }
     });
 
     socket.on("pre-offer-single", (data) => {
