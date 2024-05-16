@@ -161,14 +161,14 @@ const VideoCall = ({ route }) => {
         initiateCall();
       }
 
-      // if (data.preOfferAnswer === "CALLEE_NOT_FOUND") {
-      //   if (state !== CALL_CONNECTED) {
-      //     navigation.navigate("Home");
-      //   }
-
-      // }
+      if (data.preOfferAnswer === "CALLEE_NOT_FOUND") {
+        if (state !== CALL_CONNECTED) {
+          // navigation.navigate("Home");
+          console.warn("callee not found");
+        }
+      }
     });
-
+    
     socket.on("pre-offer-single", (data) => {
       if (data.callType === "VIDEO_PERSONAL") {
         if (state === CALL_RINGING_STATE) {
@@ -214,7 +214,7 @@ const VideoCall = ({ route }) => {
           const remoteDesc = new RTCSessionDescription(message.offer);
           await pcRef.current?.setRemoteDescription(remoteDesc);
 
-          const answer = await pcRef.current.createAnswer();
+          const answer = await pcRef.current?.createAnswer();
           await pcRef.current?.setLocalDescription(answer);
           signalingFunc("answer", { answer });
         } catch (e) {
@@ -276,14 +276,14 @@ const VideoCall = ({ route }) => {
 
   const endCall = () => {
     try {
-      pcRef.current?.close();
-      pcRef.current = new RTCPeerConnection({
-        iceServers: [
-          {
-            urls: "stun:stun.l.google.com:19302",
-          },
-        ],
-      });
+      // pcRef.current?.close();
+      // pcRef.current = new RTCPeerConnection({
+      //   iceServers: [
+      //     {
+      //       urls: "stun:stun.l.google.com:19302",
+      //     },
+      //   ],
+      // });
 
       if (localStreamRef.current) {
         localStreamRef.current.getTracks().forEach((track) => track.stop());
