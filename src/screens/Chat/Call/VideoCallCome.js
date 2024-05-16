@@ -50,9 +50,7 @@ const VideoCallCome = ({ route }) => {
           <Image
             style={styles.avatar}
             source={{
-              uri: route.params?.callOut
-                ? route.params?.image
-                : route.params?.urlavatar || "https://i.pravatar.cc/100",
+              uri: route.params.data?.image || "https://i.pravatar.cc/100",
             }}
           />
           
