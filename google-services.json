@@ -1,51 +1,13 @@
 {
   "project_info": {
-    "project_number": "901523807134",
-    "project_id": "tintin-6479f",
-    "storage_bucket": "tintin-6479f.appspot.com"
+    "project_number": "104641576786",
+    "project_id": "chat-6bcfa",
+    "storage_bucket": "chat-6bcfa.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:901523807134:android:e31b7747904fa3491ad48f",
-        "android_client_info": {
-          "package_name": "com.app.tintin"
-        }
-      },
-      "oauth_client": [],
-      "api_key": [
-        {
-          "current_key": "AIzaSyAAT4VJI1LtvnCtBsWDewGIc8H90_fd0ic"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": []
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:901523807134:android:5ba76917792a15781ad48f",
-        "android_client_info": {
-          "package_name": "com.apptintin"
-        }
-      },
-      "oauth_client": [],
-      "api_key": [
-        {
-          "current_key": "AIzaSyAAT4VJI1LtvnCtBsWDewGIc8H90_fd0ic"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": []
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:901523807134:android:1bbdb7b32d7309a11ad48f",
+        "mobilesdk_app_id": "1:104641576786:android:63e3be73ce4bed9d43048b",
         "android_client_info": {
           "package_name": "com.hoangphucktpm.AppTinTin"
         }
@@ -53,7 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyAAT4VJI1LtvnCtBsWDewGIc8H90_fd0ic"
+          "current_key": "AIzaSyBTw5J9ksJI2vMAMPhEROTpfpU3S8wKLyk"
         }
       ],
       "services": {
