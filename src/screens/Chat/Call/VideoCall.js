@@ -212,7 +212,7 @@ const VideoCall = ({ route }) => {
       if (message.type === "offer") {
         try {
           const remoteDesc = new RTCSessionDescription(message.offer);
-          await pcRef.current.setRemoteDescription(remoteDesc);
+          await pcRef.current?.setRemoteDescription(remoteDesc);
 
           const answer = await pcRef.current.createAnswer();
           await pcRef.current.setLocalDescription(answer);
@@ -225,7 +225,7 @@ const VideoCall = ({ route }) => {
       if (message.type === "answer") {
         try {
           const desc = new RTCSessionDescription(message.answer);
-          await pcRef.current.setRemoteDescription(desc);
+          await pcRef.current?.setRemoteDescription(desc);
         } catch (e) {
           console.error(e);
         }
@@ -283,6 +283,13 @@ const VideoCall = ({ route }) => {
   const endCall = () => {
     try {
       pcRef.current?.close();
+      pcRef.current = new RTCPeerConnection({
+        iceServers: [
+          {
+            urls: "stun:stun.l.google.com:19302",
+          },
+        ],
+      });
 
       if (localStreamRef.current) {
         localStreamRef.current.getTracks().forEach((track) => track.stop());
