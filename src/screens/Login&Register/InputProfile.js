@@ -93,18 +93,6 @@ const InputProfile = (props) => {
     }
   };
 
-  const openImagePicker = () => {
-    return new Promise((resolve, reject) => {
-      const options = {
-        mediaType: "photo",
-        cameraType: "back",
-      };
-      launchImageLibrary(options, (response) => {
-        resolve(response);
-      });
-    });
-  };
-
   const hanldPressGoBack = () => {
     navigation.navigate("InputPass");
   };
@@ -138,6 +126,14 @@ const InputProfile = (props) => {
       return;
     }
 
+    console.log({
+      fullname: name,
+      ismale: gender,
+      birthday: birthday.toString(0, 10),
+      urlavatar: avatarImage,
+      idNewUser,
+    });
+
     try {
       const res = await api.updateInfo(idNewUser, {
         fullname: name,
@@ -145,6 +141,8 @@ const InputProfile = (props) => {
         birthday: birthday.toString(0, 10),
         urlavatar: avatarImage,
       });
+
+      console.log(res);
       Alert.alert("Đăng ký thành công");
       await storeData("user-phone", idNewUser);
       navigation.navigate("Home", { phone: idNewUser });

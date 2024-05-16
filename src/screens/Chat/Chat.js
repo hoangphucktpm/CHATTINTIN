@@ -1,5 +1,5 @@
 import React, { memo, useEffect, useState, useCallback } from "react";
-import { StatusBar, View } from "react-native";
+import { StatusBar, Text, View } from "react-native";
 import styles from "./StyleChat";
 import Header from "./Header/Header";
 import Body from "./Body/Body";
@@ -23,6 +23,7 @@ const Chat = memo(({ route }) => {
   const dispatch = useDispatch();
 
   const [messageData, setMessageData] = useState([]);
+  const [isBlocked, setIsBlocked] = useState(false);
 
   const fetchMessages = useCallback(async () => {
     try {
@@ -61,10 +62,12 @@ const Chat = memo(({ route }) => {
     });
 
     socket.on("receive_message", handleReceiveMessage);
+    socket.emit("get_block_friend", { userID: user.ID, friendID: ID });
 
     return () => {
       socket.off("new_group_conversation");
       socket.off("receive_message", handleReceiveMessage);
+      socket.off("get_block_friend");
     };
   }, [handleReceiveMessage, user.ID]);
 
@@ -81,9 +84,12 @@ const Chat = memo(({ route }) => {
       });
     });
 
+    socket.on("get_block_friend_server", (data) => setIsBlocked(data.isBlock));
+
     dispatch(setLoadingUpload(false));
     return () => {
       socket.off("changeStateMessage");
+      socket.off("get_block_friend_server");
     };
   }, [dispatch]);
 
@@ -104,7 +110,32 @@ const Chat = memo(({ route }) => {
         messageData={messageData}
       />
       <ViewImageFullScreen />
-      <Footer IDConversation={IDConversation} />
+      {!isBlocked ? (
+        <Footer IDConversation={IDConversation} />
+      ) : (
+        <View
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            textAlign: "center",
+            backgroundColor: "#ddd",
+            opacity: 0.5,
+            padding: 2,
+          }}
+        >
+          <Text
+            style={{
+              textAlign: "center",
+              fontStyle: "italic",
+              fontWeight: 600,
+              fontSize: 20,
+              color: "red",
+            }}
+          >
+            Bạn đã bị chặn
+          </Text>
+        </View>
+      )}
       <PopUpOptions setMessageData={setMessageData} />
       <ForwardModal />
     </View>

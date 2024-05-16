@@ -217,7 +217,18 @@ function DrawerChatGroup({ navigation }) {
     setDataResearch(data.filter((item) => !item.isOwner));
   };
 
-  const handleChangeOwner = () => {};
+  const handleChangeOwner = () => {
+    const data = {
+      IDConversation: groupDetails.IDConversation,
+      IDUser: user.ID,
+      IDNewOwner: isUserSelected,
+    };
+    socket.emit("change_owner_group", data);
+    setIsUserSelected(null);
+    handleCloseModal();
+    handleLeaveGroup();
+    navigation.navigate("Home");
+  };
   const handleDeleteGroup = async () => {
     if (groupDetails.rules.IDOwner !== user.ID) return;
 

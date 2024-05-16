@@ -36,6 +36,7 @@ const ForgotPassword = () => {
     setLoading(true);
     try {
       const confirm = await auth().verifyPhoneNumber(phone);
+      console.log(confirm);
       setConfirm(confirm);
       setShowOtp(true);
     } catch (error) {
@@ -59,7 +60,6 @@ const ForgotPassword = () => {
     try {
       setLoading(true);
       const res = await api.getUserByPhone(phone);
-      console.log(res.data);
       if (res.data?.ID || !res.data.message === "User not found") {
         await getOtp();
         setShowOtp(true);

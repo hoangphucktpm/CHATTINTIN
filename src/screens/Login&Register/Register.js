@@ -27,7 +27,7 @@ if (!firebase.apps.length) {
 }
 
 const Register = () => {
-  const [phone, setPhone] = useState("+84");
+  const [phone, setPhone] = useState("84");
   const [confirm, setConfirm] = useState(null);
   const [showOtp, setShowOtp] = useState(false);
   const [otp, setOtp] = useState(Array(6).fill(""));
@@ -45,6 +45,7 @@ const Register = () => {
     setLoading(true);
     try {
       const confirm = await auth().verifyPhoneNumber(phone);
+      console.log(confirm);
       setConfirm(confirm);
       setShowOtp(true);
     } catch (error) {
@@ -61,7 +62,7 @@ const Register = () => {
       console.log("otp", otp.join(""));
       const credential = auth.PhoneAuthProvider.credential(
         confirm.verificationId,
-        otp.join(""),
+        otp.join("")
       );
 
       console.log(credential);
@@ -83,6 +84,7 @@ const Register = () => {
   };
 
   const onRegister = async () => {
+    // return  navigation.navigate("InputPass", { phoneNumber: phone });
     if (!phone) {
       Alert.alert("Vui lòng nhập số điện thoại");
       return;

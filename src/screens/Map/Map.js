@@ -60,7 +60,7 @@ const Map = () => {
           setErrorMsg("Quyền truy cập vị trí đã bị từ chối");
           return;
         }
-  
+
         let location = await Location.getCurrentPositionAsync({});
         console.log("current location", location);
         setLocation(location);
@@ -71,17 +71,15 @@ const Map = () => {
           latitudeDelta: 0.0922,
           longitudeDelta: 0.0421,
         });
-        
       } catch (error) {
         console.log(error);
         setErrorMsg("Không thể lấy vị trí hiện tại");
       }
     };
-  
+
     fetchLocation();
     getLocations();
   }, []);
-  
 
   const getLocations = async () => {
     try {
@@ -90,10 +88,10 @@ const Map = () => {
         setLocations(res.data);
         setOriginalLocations(res.data);
       } else {
-        console.error('Failed to fetch locations', res);
+        console.error("Failed to fetch locations", res);
       }
     } catch (error) {
-      console.error('Failed to fetch locations', error);
+      console.error("Failed to fetch locations", error);
     }
   };
 
@@ -108,11 +106,11 @@ const Map = () => {
       if (res.status === 200) {
         // Alert.alert("Cập nhật vị trí thành công");
       } else {
-        console.error('Failed to update location', res);
+        console.error("Failed to update location", res);
         Alert.alert("Cập nhật vị trí thất bại");
       }
     } catch (error) {
-      console.error('Failed to update location', error);
+      console.error("Failed to update location", error);
       Alert.alert("Cập nhật vị trí thất bại");
     }
   };
@@ -130,17 +128,21 @@ const Map = () => {
       return;
     }
 
-    try {
-      const res = await api.checkRequestExists(phone, friendPhoneNumber);
-      if (res.data.code === 0 || res.data.code === 2) {
-        Alert.alert("Thông báo", "Đã là bạn bè không thể gữi lời mời kết bạn");
-        return;
-      }
-    } catch (error) {
-      console.error("API error:", error);
-      Alert.alert("Thông báo", "Có lỗi xảy ra khi kiểm tra tình trạng bạn bè");
-      return;
-    }
+    console.log(1);
+
+    // try {
+    //   const res = await api.checkRequestExists(user?.ID, friendPhoneNumber);
+    //   if (res.data.code === 0 || res.data.code === 2) {
+    //     Alert.alert("Thông báo", "Đã là bạn bè không thể gữi lời mời kết bạn");
+    //     return;
+    //   }
+    // } catch (error) {
+    //   console.log("API error:", error);
+    //   Alert.alert("Thông báo", "Có lỗi xảy ra khi kiểm tra tình trạng bạn bè");
+    //   return;
+    // } finally {
+    //   setPointSelected(null);
+    // }
 
     socket.emit("new friend request client", {
       senderId: phone,
@@ -184,7 +186,6 @@ const Map = () => {
       longitudeDelta: 0.0421,
     });
   };
-  
 
   const handleChangeText = (text) => {
     setSearchTerm(text);
@@ -222,40 +223,84 @@ const Map = () => {
         <View style={styles.container}>
           {location ? (
             <Mapbox.MapView
-            style={{
-              flex: 1,
-              width: ScreenWidth,
-              height: ScreenHeight,
-            }}
-            onPress={() => setPointSelected(null)}
-          >
+              style={{
+                flex: 1,
+                width: ScreenWidth,
+                height: ScreenHeight,
+              }}
+              onPress={() => setPointSelected(null)}
+            >
               <Mapbox.Camera
-    zoomLevel={8}
-    centerCoordinate={[location.coords.longitude, location.coords.latitude]}
-  />
+                zoomLevel={15}
+                centerCoordinate={[
+                  location.coords.longitude,
+                  location.coords.latitude,
+                ]}
+              />
               {locations.map((userLocation, index) => {
                 const getUser = async () => {
-                  let userdata = await getUserByPhone(userLocation.properties.IDUser);
-                  if (userLocation.geometry.coordinates[1] === location.coords.latitude) return null;
+                  let userdata = await getUserByPhone(
+                    userLocation.properties.IDUser
+                  );
+                  if (
+                    userLocation.geometry.coordinates[1] ===
+                    location.coords.latitude
+                  )
+                    return (
+                      <Mapbox.MarkerView
+                        key={index}
+                        coordinate={[
+                          userLocation.geometry.coordinates[0],
+                          userLocation.geometry.coordinates[1],
+                        ]}
+                        title={userdata ? userdata.fullname : "123"}
+                      >
+                        <TouchableOpacity
+                          onPress={() =>
+                            setPointSelected(userdata?.ID ? userdata : null)
+                          }
+                        >
+                          <Image
+                            source={{
+                              uri: user?.urlavatar,
+                            }}
+                            style={{ width: 40, height: 40, borderRadius: 20 }}
+                          />
+                        </TouchableOpacity>
+                      </Mapbox.MarkerView>
+                    );
                   return (
                     <Mapbox.MarkerView
                       key={index}
-                      coordinate={[userLocation.geometry.coordinates[0], userLocation.geometry.coordinates[1]]}
+                      coordinate={[
+                        userLocation.geometry.coordinates[0],
+                        userLocation.geometry.coordinates[1],
+                      ]}
                       title={userdata ? userdata.fullname : "123"}
-                      onPress={() => setPointSelected(userdata?.ID ? userdata : null)}
                     >
-                      <Image
-                        source={{ uri: userdata?.icon || "https://cdn-icons-png.flaticon.com/512/9204/9204285.png" }}
-                        style={{ width: 40, height: 40 }}
-                      />
+                      <TouchableOpacity
+                        onPress={() =>
+                          setPointSelected(userdata?.ID ? userdata : null)
+                        }
+                      >
+                        <Image
+                          source={{
+                            uri: "https://cdn-icons-png.flaticon.com/512/9204/9204285.png",
+                          }}
+                          style={{ width: 40, height: 40 }}
+                        />
+                      </TouchableOpacity>
                     </Mapbox.MarkerView>
                   );
                 };
-                return getUser();
+                if (userLocation?.ID?.length < 12) return getUser();
               })}
               {selectedPlace && (
                 <Mapbox.MarkerView
-                  coordinate={[selectedPlace.center[0], selectedPlace.center[1]]}
+                  coordinate={[
+                    selectedPlace.center[0],
+                    selectedPlace.center[1],
+                  ]}
                   title={selectedPlace.place_name}
                 />
               )}

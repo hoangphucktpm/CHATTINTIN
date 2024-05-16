@@ -35,6 +35,7 @@ const AddFriends = (props) => {
 
   const Search = async () => {
     try {
+      
       const res = await api.getUserByPhone(phoneNumber);
       if (res.data) {
         setSearchData([res.data]);

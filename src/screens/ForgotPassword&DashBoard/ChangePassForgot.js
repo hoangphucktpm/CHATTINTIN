@@ -22,8 +22,6 @@ function ChangePassForgot(props) {
   const navigation = useNavigation();
   const { phoneNumber } = props?.route?.params;
 
-  console.log(phoneNumber);
-
   const handlePressDashboard = () => {
     navigation.goBack();
   };
@@ -58,11 +56,11 @@ function ChangePassForgot(props) {
   const handleChangePassword = async () => {
     if (passWord === "") {
       Alert.alert("Thông báo", "Mời bạn nhập mật khẩu mới");
-    } else if (!validatePassword(passWord)) {
-      Alert.alert(
-        "Thông báo",
-        "Mật khẩu không đáp ứng yêu cầu. Vui lòng kiểm tra lại."
-      );
+      // } else if (!validatePassword(passWord)) {
+      //   Alert.alert(
+      //     "Thông báo",
+      //     "Mật khẩu không đáp ứng yêu cầu. Vui lòng kiểm tra lại."
+      //   );
     } else if (passWord !== passWordAgain) {
       Alert.alert(
         "Thông báo",
