@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import {
   Image,
   SafeAreaView,
@@ -19,15 +19,30 @@ import { setBadge, setCurrentScreen } from "../../redux/appSlice";
 function DashBoard() {
   const navigation = useNavigation();
   const dispatch = useDispatch();
+  const [phone, setPhone] = useState();
+
+  useMemo(() => {
+    if (!phone) return;
+    console.log('process connect socket');
+    socket.on("connect", () => {
+      console.log("Socket status: Connected");
+      socket.emit("new user connect", { phone });
+    });
+    
+    socket.on("disconnect", () => {
+      console.log("Socket status: Disconnected");
+    });
+  }, [phone]);
 
   const checkUserLogined = useCallback(async () => {
     const phone = await getData("user-phone");
     if (phone) {
+      setPhone(phone);
       try {
         const res = await api.getUserByPhone(phone);
         const allFriendRequests = await api.getAllFriendRequests(phone);
 
-        socket.emit("new user connect", { phone });
+        // socket.emit("new user connect", { phone });
         socket.emit("load_conversations", { IDUser: phone });
 
         dispatch(setBadge(allFriendRequests.data.length));

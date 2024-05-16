@@ -262,16 +262,10 @@ const VideoCall = ({ route }) => {
   }, []);
 
   const hanldeEndCall = () => {
-    if (state === CALL_CONNECTED) {
-      socket.emit("pre-offer-single-answer", {
-        ...route.params.data,
-        preOfferAnswer: "CALL_REJECTED",
-      });
-
-      setTimeout(() => {
-        navigation.goBack();
-      }, 1000);
-    }
+    socket.emit("pre-offer-single-answer", {
+      ...route.params,
+      preOfferAnswer: "CALL_REJECTED",
+    });
 
     setTimeout(() => {
       navigation.navigate("Home");
