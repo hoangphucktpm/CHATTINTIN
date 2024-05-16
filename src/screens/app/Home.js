@@ -42,7 +42,6 @@ const Home = (props) => {
   useFocusEffect(
     useCallback(() => {
       if (phone) {
-        console.log("load_conversations", phone);
         socket.emit("load_conversations", { IDUser: phone });
       }
       socket.emit("load_conversations_server", (data) => {
@@ -54,7 +53,6 @@ const Home = (props) => {
 
   useEffect(() => {
     const handleLoadConversationsServer = (data) => {
-      console.log("get cdata");
       setConversations(data);
       dispatch(setConversation(data));
     };
