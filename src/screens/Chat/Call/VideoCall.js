@@ -374,9 +374,7 @@ const VideoCall = ({ route }) => {
               <Image
                 style={styles.avatar}
                 source={{
-                  uri: callOut
-                    ? route.params?.image
-                    : route.params?.urlavatar || "https://i.pravatar.cc/100",
+                  uri: route.params?.image || "https://i.pravatar.cc/100",
                 }}
               />
               <Text style={styles.callerName}>{fullname}</Text>
