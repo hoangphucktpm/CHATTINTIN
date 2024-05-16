@@ -39,8 +39,6 @@ const Home = (props) => {
     }
   }, [conversation]);
 
-  console.log(conversation);
-
   useFocusEffect(
     useCallback(() => {
       if (phone) {
@@ -82,21 +80,20 @@ const Home = (props) => {
       }
     };
 
-    socket.on("get_block_friend_server", (data) => console.log(data));
-
-    socket.on("webRTC-signaling", (data) => console.log("data123", data));
+    // socket.on("webRTC-signaling", (data) => console.log("data123"));
     socket.on("pre-offer-single", handlePhoneCome);
     socket.on("load_conversations_server", handleLoadConversationsServer);
     socket.on("new_group_conversation", handleLoadConversation);
     socket.on("load_member_of_group_server", handleLoadConversation);
+    socket.on("changeStateMessage", handleLoadConversation);
     socket.on("un_block_friend_server", handleLoadConversation);
-    socket.on("block_friend_server", handleLoadConversation);
+    // socket.on("block_friend_server", handleLoadConversation);
     socket.on("new friend request server", handleNewFriendRequest);
 
     return () => {
       socket.off("new_group_conversation", handleLoadConversation);
       socket.off("load_member_of_group_server", handleLoadConversation);
-      socket.off("pre-offer-single", handlePhoneCome);
+      // socket.off("pre-offer-single", handlePhoneCome);
     };
   }, [phone, dispatch]);
 

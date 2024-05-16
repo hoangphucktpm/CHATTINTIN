@@ -38,6 +38,8 @@ function Contacts() {
   const [selectedButton, setSelectedButton] = useState(null);
   const [receiverId, setReceiverId] = useState(null);
   const [listFriends, setListFriends] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [dataResearch, setDataResearch] = useState([]);
 
   const phone = user?.phone;
   const groupLists = useMemo(() => {
@@ -103,12 +105,19 @@ function Contacts() {
     navigation.navigate("AddFriends", { phone: phone });
   };
 
+  const searchData = useMemo(() => {
+    if (!searchQuery) return listFriends;
+    return listFriends.filter((item) => {
+      return item?.fullname?.toLowerCase().includes(searchQuery?.toLowerCase());
+    });
+  }, [searchQuery]);
+
   const renderList = () => {
     switch (selectedButton) {
       case "friends":
         return (
           <FlatList
-            data={listFriends}
+            data={searchData}
             renderItem={renderFriendItem}
             keyExtractor={(item, i) => {
               return `${item.ID} ${i.toString()}`;
@@ -205,7 +214,7 @@ function Contacts() {
   };
 
   const renderFriendItem = ({ item }) => {
-    const isBlocked = conversation.find(
+    const isBlocked = conversation?.find(
       (con) => con?.Receiver?.ID === item?.ID
     )?.isBlock;
     if (isBlocked) return;
@@ -340,6 +349,7 @@ function Contacts() {
             style={styles.searchInput}
             placeholder="Tìm kiếm"
             placeholderTextColor="white"
+            onChangeText={(text) => setSearchQuery(text)}
           />
         </View>
         <View style={styles.containerIconRight}>

@@ -10,11 +10,12 @@ import {
 } from "react-native";
 import { Ionicons, Feather, FontAwesome5, AntDesign } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
-import auth from '@react-native-firebase/auth';
+import auth from "@react-native-firebase/auth";
 import { api } from "../../apis/api";
-// import { firebaseConfig } from "../../../config";
+import { firebaseConfig } from "../../../config";
 import "firebase/compat/auth";
 import styles from "./StyleForgotPassword";
+import { FirebaseRecaptchaVerifierModal } from "expo-firebase-recaptcha";
 
 const ForgotPassword = () => {
   const navigation = useNavigation();
@@ -79,8 +80,13 @@ const ForgotPassword = () => {
 
   const confirmCode = async () => {
     try {
-      const credential = auth.PhoneAuthProvider.credential(confirm.verificationId, code);
-      const userCredential =  await auth().currentUser.linkWithCredential(credential);
+      const credential = auth.PhoneAuthProvider.credential(
+        confirm.verificationId,
+        code
+      );
+      const userCredential = await auth().currentUser.linkWithCredential(
+        credential
+      );
       console.log(userCredential);
       navigation.navigate("ChangePassForgot", {
         phoneNumber: phone,
@@ -112,10 +118,10 @@ const ForgotPassword = () => {
             : "Vui lòng nhập số điện thoại để lấy lại mật khẩu"}
         </Text>
       </View>
-      {/* <FirebaseRecaptchaVerifierModal
+      <FirebaseRecaptchaVerifierModal
         ref={recaptchaVerifier}
         firebaseConfig={firebaseConfig}
-      /> */}
+      />
       {showOtp ? (
         <>
           <View style={styles.containerInput}>

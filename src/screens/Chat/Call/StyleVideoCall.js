@@ -2,9 +2,39 @@ import { StyleSheet, Dimensions } from "react-native";
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "white",
+    backgroundColor: "lightgrey",
   },
-
+  rtcView: {
+    width: '100%', //dimensions.width,
+    height: '50%', //dimensions.height / 2,
+    backgroundColor: 'gray',
+  },
+  rtcViewCall: {
+    width: 0,
+    height: 0,
+  },
+  callerInfo: {
+    flexDirection: "column", // Change this line
+    alignItems: "center",
+    padding: 50,
+    justifyContent: "center",
+  },
+  callerName: {
+    fontSize: 18,
+    fontWeight: "bold",
+  },
+  countTime: {
+    fontSize: 16,
+    fontWeight: "600",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  avatar: {
+    width: 70,
+    height: 70,
+    borderRadius: 35,
+    // Remove marginRight
+  },
   localVideo: {
     width: Dimensions.get("window").width / 2,
     height: Dimensions.get("window").height / 2,
@@ -15,7 +45,8 @@ const styles = StyleSheet.create({
 
   iconLabel: {
     textAlign: "center",
-    fontSize: 12,
+    fontSize: 16,
+    fontWeight: "600",
     color: "#000",
   },
 
@@ -35,14 +66,20 @@ const styles = StyleSheet.create({
     justifyContent: "space-around",
   },
 
+  buttonContainer: {
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "lightgrey",
+  },
+
   button: {
     // backgroundColor: "rgba(255, 255, 255, 0.3)",
-    backgroundColor: "#4CAF50", // Màu xanh
+    marginBottom: "5%",
     width: 60,
     height: 60,
     justifyContent: "center",
     alignItems: "center",
-    borderRadius: 30, // Để biến button thành hình tròn
+    borderRadius: 30, // Để biến button thành hình tròn,
   },
 
   buttonend: {

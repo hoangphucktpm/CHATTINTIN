@@ -21,15 +21,17 @@ const ItemFriend = React.memo(({ navigation }) => {
   const [data, setdata] = useState([]);
   const user = useSelector((state) => state.auth.user);
 
-  useEffect(() => {
-    if (!conversation || !conversation?.length) {
-      user && socket.emit("load_conversations", { IDUser: user.ID });
-    }
-  }, [conversation]);
+  // useEffect(() => {
+  //   if (!conversation || !conversation?.length) {
+  //     user && socket.emit("load_conversations", { IDUser: user.ID });
+  //   }
+  //   console.log(2);
+  // }, [conversation]);
 
-  useEffect(() => {
-    setdata(conversation);
-  }, [conversation]);
+  // useEffect(() => {
+  //   console.log(1);
+  //   setdata(conversation);
+  // }, [conversation]);
 
   const dispatch = useDispatch();
 
@@ -153,7 +155,7 @@ const ItemFriend = React.memo(({ navigation }) => {
 
   return (
     <FlatList
-      data={data || conversation}
+      data={conversation}
       renderItem={renderItem}
       keyExtractor={(item, index) => index.toString()}
     />

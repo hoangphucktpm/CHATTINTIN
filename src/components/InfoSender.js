@@ -26,8 +26,6 @@ const InfoSender = memo(
 
     if (!sender) return children;
 
-    console.log("sender", sender);
-
     const haneleViewProfile = () =>
       navigation.navigate("FriendProfile", sender);
 

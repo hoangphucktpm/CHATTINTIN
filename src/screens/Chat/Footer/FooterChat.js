@@ -73,6 +73,7 @@ function FooterChat({ IDConversation }) {
 
   // send image
   const pickImage = async () => {
+    dispatch(setLoadingUpload(true));
     try {
       let result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -82,7 +83,6 @@ function FooterChat({ IDConversation }) {
       });
 
       if (!result.canceled) {
-        dispatch(setLoadingUpload(true));
         const image = result.assets.flatMap((img) =>
           Buffer.from(img.base64, "base64")
         );
@@ -97,10 +97,12 @@ function FooterChat({ IDConversation }) {
         socket.emit("send_message", data);
       } else {
         console.log("Image selection cancelled");
+        dispatch(setLoadingUpload(false));
       }
     } catch (error) {
       console.error("Error picking image:", error);
       alert("Không thể chọn ảnh");
+      dispatch(setLoadingUpload(false));
     }
   };
 

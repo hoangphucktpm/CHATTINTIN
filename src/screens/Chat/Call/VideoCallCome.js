@@ -38,6 +38,7 @@ const VideoCallCome = ({ route }) => {
 
     navigation.navigate("VideoCall", {
       ...route.params.data,
+      callOut: false,
     })
   };
 

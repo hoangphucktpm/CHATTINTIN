@@ -78,11 +78,12 @@ function Header({ fullname, id, image, isGroup, IDConversation, isBlock }) {
             size={23}
             color="white"
             onPress={() =>
-              navigation.navigate("Call", {
+              navigation.navigate("VideoCall", {
                 fullname,
                 id,
                 image,
                 callOut: true,
+                callType: "SOUND_PERSONAL",
               })
             }
           />
@@ -92,14 +93,13 @@ function Header({ fullname, id, image, isGroup, IDConversation, isBlock }) {
             name="video"
             size={26}
             color="white"
-            onPress={() =>
-              navigation.navigate("VideoCall", {
-                fullname,
-                id,
-                image,
-                callOut: true,
-              })
-            }
+            onPress={() => navigation.navigate("VideoCall", {
+              fullname,
+              id,
+              image,
+              callOut: true,
+              callType: "VIDEO_PERSONAL",
+            })}
           />
         </View>
         <TouchableOpacity

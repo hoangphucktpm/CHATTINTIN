@@ -242,7 +242,8 @@ function FriendProfile({ route }) {
                       fullname: fullname,
                       image: urlavatar,
                       IDConversation: conversation?.find(
-                        (con) => !con?.isGrounp && con?.Receiver?.ID === phone
+                        (con) =>
+                          !con?.isGrounp && con?.Receiver?.ID === (phone || ID)
                       ).IDConversation,
                     })
                   }

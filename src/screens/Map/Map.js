@@ -9,6 +9,7 @@ import {
   Image,
   FlatList,
   TouchableOpacity,
+  Dimensions,
 } from "react-native";
 import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
 import { EvilIcons } from "@expo/vector-icons";
@@ -20,9 +21,14 @@ import Footer from "../Footer/Footer";
 import { Avatar, Button, Card, Modal } from "@ui-kitten/components";
 import socket from "../../services/socket";
 import { useNavigation } from "@react-navigation/native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import Mapbox from "@rnmapbox/maps";
 
 const ScreenHeight = 9999;
 const ScreenWidth = 999;
+Mapbox.setAccessToken(
+  "pk.eyJ1IjoidHJhbmxvYzJrMyIsImEiOiJjbHZxYnR2bDYwYmppMmpwNnRnemlhaHA5In0.Fn9lSoYFUZ96simIJs9s4g"
+);
 
 const Map = () => {
   const navigation = useNavigation();
@@ -44,12 +50,14 @@ const Map = () => {
     const fetchLocation = async () => {
       try {
         let { status } = await Location.requestForegroundPermissionsAsync();
+        console.log("location status", status);
         if (status !== "granted") {
           setErrorMsg("Permission to access location was denied");
           return;
         }
 
         let location = await Location.getCurrentPositionAsync({});
+        console.log("current location", location);
         setLocation(location);
         updateCurrentLocation(location);
       } catch (error) {
@@ -136,6 +144,7 @@ const Map = () => {
         `https://api.mapbox.com/geocoding/v5/mapbox.places/${term}.json?country=VN&access_token=pk.eyJ1IjoidHJhbmxvYzJrMyIsImEiOiJjbHZxYnR2bDYwYmppMmpwNnRnemlhaHA5In0.Fn9lSoYFUZ96simIJs9s4g`
       );
       const data = await response.json();
+      console.log("search result", data);
       setSearchResult(data.features);
       setShowMap(false);
     } catch (error) {
@@ -190,7 +199,7 @@ const Map = () => {
         </View>
         <View style={styles.container}>
           {location ? (
-            <MapView
+            <Mapbox.MapView
               showsUserLocation={true}
               showsMyLocationButton={true}
               followsUserLocation={true}
@@ -199,7 +208,11 @@ const Map = () => {
               zoomEnabled={true}
               pitchEnabled={true}
               rotateEnabled={true}
-              style={{ flex: 1 }}
+              style={{
+                flex: 1,
+                width: Dimensions.get("window").width,
+                height: Dimensions.get("window").height,
+              }}
               provider={PROVIDER_GOOGLE}
               onPress={() => setPointSelected(null)}
               initialRegion={{
@@ -256,7 +269,7 @@ const Map = () => {
                   title={selectedPlace.place_name}
                 />
               )}
-            </MapView>
+            </Mapbox.MapView>
           ) : (
             <ActivityIndicator />
           )}

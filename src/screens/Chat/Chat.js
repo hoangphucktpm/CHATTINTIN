@@ -17,6 +17,9 @@ const Chat = memo(({ route }) => {
   const { ID, fullname, urlavatar, IDSender } =
     route.params.Receiver ?? route.params;
 
+  const { conversation } = useSelector((state) => state.conversation);
+  const popupOptions = useSelector((state) => state.chat.popup);
+
   const dispatch = useDispatch();
 
   const [messageData, setMessageData] = useState([]);
@@ -37,7 +40,7 @@ const Chat = memo(({ route }) => {
       console.error("Error fetching messages:", error);
       // Handle error
     }
-  }, [IDConversation, dispatch]);
+  }, [IDConversation, dispatch, conversation, popupOptions.show]);
 
   const user = useSelector((state) => state.auth.user);
 
