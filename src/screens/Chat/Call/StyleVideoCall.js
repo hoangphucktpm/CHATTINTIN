@@ -2,61 +2,61 @@ import { StyleSheet, Dimensions } from "react-native";
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "lightgrey",
+    backgroundColor: "#f2f2f2",
   },
   rtcView: {
-    width: '100%', //dimensions.width,
-    height: '50%', //dimensions.height / 2,
-    backgroundColor: 'gray',
+    width: "100%",
+    height: "50%",
+    backgroundColor: "gray",
   },
   rtcViewCall: {
     width: 0,
     height: 0,
   },
   callerInfo: {
-    flexDirection: "column", // Change this line
+    flexDirection: "column",
     alignItems: "center",
     padding: 50,
     justifyContent: "center",
   },
   callerName: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: "bold",
+    color: "#4CAF50",
   },
   countTime: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: "600",
-    alignItems: "center",
-    justifyContent: "center",
+    color: "#4CAF50",
   },
   avatar: {
-    width: 70,
-    height: 70,
-    borderRadius: 35,
-    // Remove marginRight
+    width: 80,
+    height: 80,
+    borderRadius: 40,
   },
   localVideo: {
     width: Dimensions.get("window").width / 2,
     height: Dimensions.get("window").height / 2,
     margin: 16,
-    borderWidth: 1,
-    borderColor: "black",
+    borderWidth: 2,
+    borderColor: "#4CAF50",
   },
-
   iconLabel: {
     textAlign: "center",
-    fontSize: 16,
+    fontSize: 11,
     fontWeight: "600",
-    color: "#000",
+    color: "#4CAF50",
+    fontStyle: "Bold",
   },
-
+  cameraPaused: {
+    opacity: 0.5,
+  },
   remoteVideo: {
     width: Dimensions.get("window").width,
     height: Dimensions.get("window").height - 100,
-    borderWidth: 1,
-    borderColor: "black",
+    borderWidth: 2,
+    borderColor: "#4CAF50",
   },
-
   buttons: {
     position: "absolute",
     bottom: 20,
@@ -65,43 +65,42 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-around",
   },
-
   buttonContainer: {
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "lightgrey",
+    position: "absolute", // make the buttons overlay on the video
+    bottom: 0, // position it at the bottom
+    width: "100%", // make sure it spans the full width
+    flexDirection: "row", // keep the buttons in a row
+    justifyContent: "space-around", // distribute buttons evenly
+    backgroundColor: "#f2f2f2", // keep the existing background color
+    padding: 10, // keep the existing padding
   },
-
   button: {
-    // backgroundColor: "rgba(255, 255, 255, 0.3)",
     marginBottom: "5%",
-    width: 60,
-    height: 60,
+    width: 50, // reduce button width
+    height: 50, // reduce button height
     justifyContent: "center",
     alignItems: "center",
-    borderRadius: 30, // Để biến button thành hình tròn,
+    borderRadius: 25, // adjust border radius to keep it circular
+    backgroundColor: "#4CAF50",
   },
-
   buttonend: {
-    // backgroundColor: "rgba(255, 255, 255, 0.3)",
-    // màu đỏ
-    backgroundColor: "red",
-    width: 60,
-    height: 60,
+    backgroundColor: "#f44336",
+    width: 50, // reduce button width
+    height: 50, // reduce button height
     justifyContent: "center",
     alignItems: "center",
-    borderRadius: 30, // Để biến button thành hình tròn
+    borderRadius: 25, // adjust border radius to keep it circular
   },
-
   header: {
     flexDirection: "row",
     justifyContent: "space-between",
     padding: 10,
+    backgroundColor: "#4CAF50",
   },
-
   buttonText: {
-    color: "black",
+    color: "white",
     padding: 10,
+    fontSize: 18,
   },
 });
 

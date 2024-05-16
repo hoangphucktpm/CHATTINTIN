@@ -55,7 +55,7 @@ const VideoCallCome = ({ route }) => {
                 : route.params?.urlavatar || "https://i.pravatar.cc/100",
             }}
           />
-          <Text style={styles.callerName}>Caller Name</Text>
+          
           {!route.params?.callOut ? (
             <Text style={styles.callerName}>{route.params?.fullname}</Text>
           ) : (

@@ -14,6 +14,7 @@ import styles from "./StyleItemFriend";
 import AvatarCustomer from "../../components/AvatarCustomer";
 import socket from "../../services/socket";
 import { format, formatDistanceToNow } from "date-fns";
+import { vi } from "date-fns/locale";
 
 const ItemFriend = React.memo(({ navigation }) => {
   const { conversation } = useSelector((state) => state.conversation);
@@ -96,9 +97,9 @@ const ItemFriend = React.memo(({ navigation }) => {
                   </Text>
                   <Text>
                     {formatDistanceToNow(
-                      new Date(item?.lastChange || item?.dateTime)
+                      new Date(item?.lastChange || item?.dateTime),
+                      { addSuffix: true, locale: vi }
                     )}{" "}
-                    ago
                   </Text>
                 </View>
                 <Text style={styles.itemFriend_content}>
