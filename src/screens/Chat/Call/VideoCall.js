@@ -119,7 +119,7 @@ const VideoCall = ({ route }) => {
     setLocalStream(stream);
     localStreamRef.current = stream;
     stream.getTracks().forEach((track) => {
-      pcRef.current.addTrack(track, stream);
+      pcRef.current?.addTrack(track, stream);
     });
   };
 
@@ -128,7 +128,7 @@ const VideoCall = ({ route }) => {
       offerToReceiveAudio: true,
       offerToReceiveVideo: callType === "VIDEO_PERSONAL",
     });
-    await pcRef.current.setLocalDescription(offer);
+    await pcRef.current?.setLocalDescription(offer);
     signalingFunc("offer", { offer });
   };
 
@@ -215,7 +215,7 @@ const VideoCall = ({ route }) => {
           await pcRef.current?.setRemoteDescription(remoteDesc);
 
           const answer = await pcRef.current.createAnswer();
-          await pcRef.current.setLocalDescription(answer);
+          await pcRef.current?.setLocalDescription(answer);
           signalingFunc("answer", { answer });
         } catch (e) {
           console.error(e);
@@ -235,15 +235,9 @@ const VideoCall = ({ route }) => {
         try {
           const candidate = new RTCIceCandidate(message.candidate);
           // Kiểm tra pcRef.current trước khi gọi addIceCandidate()
+          // Kiểm tra PeerConnectionObserver trước khi gọi getPeerConnection()
           if (pcRef.current) {
-            // Kiểm tra PeerConnectionObserver trước khi gọi getPeerConnection()
-            if (pcRef.current.getPeerConnection()) {
-              await pcRef.current
-                .getPeerConnection()
-                .addIceCandidate(candidate);
-            } else {
-              console.error("PeerConnectionObserver is not available.");
-            }
+            await pcRef.current.addIceCandidate(candidate);
           } else {
             console.error("Peer connection is not available.");
           }
