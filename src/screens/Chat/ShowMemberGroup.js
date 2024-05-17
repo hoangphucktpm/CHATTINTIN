@@ -159,7 +159,7 @@ function MemberGroup() {
               <Text style={styles.memberRole}>
                 (
                 {item.ID === groupDetails.rules.IDOwner
-                  ? "Admin"
+                  ? "Trưởng nhóm"
                   : item.isCoOwner
                   ? "Phó nhóm"
                   : "Thành viên"}
