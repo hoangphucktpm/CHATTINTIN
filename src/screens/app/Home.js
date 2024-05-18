@@ -5,7 +5,6 @@ import { useSelector, useDispatch } from "react-redux";
 import { api } from "../../apis/api";
 import socket from "../../services/socket";
 import { getData } from "../../utils/localStorageConfig";
-import { setUser } from "../../redux/authSclice";
 import { setConversation } from "../../redux/conversationSlice";
 import Search from "../Search/Search";
 import ListFriend from "../ListFriend/ListFriend";
@@ -34,7 +33,7 @@ const Home = (props) => {
   }, []);
 
   useEffect(() => {
-    if (!conversation || !conversation?.length) {
+    if (!conversation) {
       user && socket.emit("load_conversations", { IDUser: user.ID });
     }
   }, [conversation]);
@@ -73,26 +72,40 @@ const Home = (props) => {
     const handlePhoneCome = async (data) => {
       if (data.IDCallee === phone) {
         const res = await api.getUserByPhone(data.IDCaller);
-        const obj = { ...res.data, data: {...data, image: res.data?.urlavatar, fullname: res.data?.fullname } };
-        console.log("call come", obj);
-        res.data &&
-          props.navigation.navigate("VideoCallCome", obj);
+        const obj = {
+          ...res.data,
+          data: {
+            ...data,
+            image: res.data?.urlavatar,
+            fullname: res.data?.fullname,
+          },
+        };
+        // console.log("call come", obj);
+        res.data && props.navigation.navigate("VideoCallCome", obj);
+      }
+    };
+
+    const handleReload = () => {
+      if (user) {
+        socket.emit("load_conversations", { IDUser: user.ID });
       }
     };
 
     // socket.on("webRTC-signaling", (data) => console.log("data123"));
+    socket.on("message_from_server", (data) => alert(data));
     socket.on("pre-offer-single", handlePhoneCome);
     socket.on("load_conversations_server", handleLoadConversationsServer);
-    socket.on("new_group_conversation", handleLoadConversation);
-    socket.on("load_member_of_group_server", handleLoadConversation);
+    socket.on("new_group_conversation", handleReload);
+    socket.on("load_member_of_group_server", handleReload);
+    socket.on("receive_message", handleReload);
     socket.on("changeStateMessage", handleLoadConversation);
     socket.on("un_block_friend_server", handleLoadConversation);
     // socket.on("block_friend_server", handleLoadConversation);
     socket.on("new friend request server", handleNewFriendRequest);
 
     return () => {
-      socket.off("new_group_conversation", handleLoadConversation);
-      socket.off("load_member_of_group_server", handleLoadConversation);
+      socket.off("new_group_conversation");
+      socket.off("load_member_of_group_server");
       // socket.off("pre-offer-single", handlePhoneCome);
     };
   }, [phone, dispatch]);

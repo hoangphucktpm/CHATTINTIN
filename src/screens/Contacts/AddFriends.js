@@ -35,7 +35,6 @@ const AddFriends = (props) => {
 
   const Search = async () => {
     try {
-      
       const res = await api.getUserByPhone(phoneNumber);
       if (res.data) {
         setSearchData([res.data]);
@@ -117,7 +116,7 @@ const AddFriends = (props) => {
       Alert.alert("Thông báo", "Bạn không thể tự kết bạn với chính mình");
       return; // Ngăn việc gửi yêu cầu kết bạn nếu số điện thoại là của chính mình
     }
-  
+
     try {
       const res = await api.checkRequestExists(phone, phoneNumber);
       if (res.data.code === 0 || res.data.code === 2) {
@@ -125,11 +124,11 @@ const AddFriends = (props) => {
         return;
       }
     } catch (error) {
-      console.error('API error:', error); // Log the error
+      console.error("API error:", error); // Log the error
       Alert.alert("Thông báo", "Có lỗi xảy ra khi kiểm tra tình trạng bạn bè");
       return;
     }
-  
+
     // Emit a 'new friend request client' event to the server with the senderId and receiverId
     socket.emit("new friend request client", {
       senderId: phone,
@@ -179,7 +178,7 @@ const AddFriends = (props) => {
                 padding: 10,
               }}
             >
-              <Text style={{ fontSize: 24, marginRight: 20 }}>+84</Text>
+              <Text style={{ fontSize: 24, marginRight: 20 }}>84</Text>
               <TextInput
                 // value={phoneNumber.substring(3)} // Lấy phần tử từ index 3 đến hết để loại bỏ 84
                 onChangeText={(text) => setPhoneNumber(`84${text}`)} // Thêm 84 vào đầu chuỗi số điện thoại
@@ -207,7 +206,7 @@ const AddFriends = (props) => {
         />
       </View>
 
-      <View
+      {/* <View
         style={{
           position: "absolute",
           bottom: 0,
@@ -220,7 +219,7 @@ const AddFriends = (props) => {
         <Button title="Hủy" onPress={hanldPressHuy} color="#808080" />
         <View style={{ width: 20 }} />
         <Button title="Kết bạn" onPress={hanldPressAdd} />
-      </View>
+      </View> */}
     </View>
   );
 };

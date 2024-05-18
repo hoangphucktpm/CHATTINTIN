@@ -58,7 +58,7 @@ const Chat = memo(({ route }) => {
 
   useEffect(() => {
     socket.on("new_group_conversation", () => {
-      socket.emit("load_conversations", { IDUser: user.ID });
+      socket.emit("load_conversations", { IDUser: user?.ID });
     });
 
     socket.on("receive_message", handleReceiveMessage);
@@ -108,6 +108,7 @@ const Chat = memo(({ route }) => {
         id={IDConversation}
         dataSender={route.params.Receiver}
         messageData={messageData}
+        isGroup={isGroup}
       />
       <ViewImageFullScreen />
       {!isBlocked ? (

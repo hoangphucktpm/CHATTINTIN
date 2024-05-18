@@ -5,23 +5,15 @@ import React, {
   useRef,
   useState,
 } from "react";
-import {
-  Text,
-  View,
-  TouchableOpacity,
-  StyleSheet,
-  ActivityIndicator,
-  Button,
-  Alert,
-} from "react-native";
+import { Text, View, TouchableOpacity, StyleSheet, Alert } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useNavigation } from "@react-navigation/native";
 import { useDispatch, useSelector } from "react-redux";
 import { api } from "../../apis/api";
-import { Avatar, Card, Modal } from "@ui-kitten/components";
+import { Card, Modal } from "@ui-kitten/components";
 import { setGroupDetails, setMemberGroups } from "../../redux/groupSlice";
-import BottomSheet, {
+import {
   BottomSheetModal,
   BottomSheetModalProvider,
   BottomSheetView,
@@ -140,6 +132,9 @@ function MemberGroup() {
   };
 
   const renderItem = () => {
+    const handleViewProfile = (item) => {
+      navigation.navigate("FriendProfile", item);
+    };
     return (
       <View>
         <Text>Thành viên ({members.length})</Text>
@@ -147,6 +142,7 @@ function MemberGroup() {
           {members.map((item, index) => (
             <TouchableOpacity
               onLongPress={() => handlePresentModalPress(item)}
+              onPress={() => handleViewProfile(item)}
               key={index}
               style={styles.memberItem}
             >

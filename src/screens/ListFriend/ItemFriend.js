@@ -13,7 +13,7 @@ import { setForward, setPopup, setReply } from "../../redux/chatSlice";
 import styles from "./StyleItemFriend";
 import AvatarCustomer from "../../components/AvatarCustomer";
 import socket from "../../services/socket";
-import { format, formatDistanceToNow } from "date-fns";
+import { formatDistanceToNow } from "date-fns";
 import { vi } from "date-fns/locale";
 
 const ItemFriend = React.memo(({ navigation }) => {
@@ -57,8 +57,14 @@ const ItemFriend = React.memo(({ navigation }) => {
       IDSender: user.ID,
       IDReceiver: item?.Receiver?.ID,
     };
+    const data2 = {
+      IDConversation1: item.IDConversation,
+      IDSender: item?.Receiver?.ID,
+      IDReceiver: user.ID,
+    };
 
     socket.emit("un_block_friend", data);
+    socket.emit("un_block_friend", data2);
     navigation.navigate("Home");
   };
 

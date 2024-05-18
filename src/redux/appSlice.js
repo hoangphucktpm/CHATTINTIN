@@ -3,6 +3,7 @@ import { createSlice } from "@reduxjs/toolkit";
 const initialState = {
   currentScreen: "Home",
   badge: 0,
+  isLoading: false,
 };
 
 export const homeSlice = createSlice({
@@ -15,9 +16,13 @@ export const homeSlice = createSlice({
     setBadge: (state, action) => {
       state.badge = action.payload;
     },
+    setLoadingGlobals: (state, action) => {
+      state.isLoading = action.payload;
+    },
   },
 });
 
-export const { setCurrentScreen, setBadge } = homeSlice.actions;
+export const { setCurrentScreen, setBadge, setLoadingGlobals } =
+  homeSlice.actions;
 
 export default homeSlice.reducer;

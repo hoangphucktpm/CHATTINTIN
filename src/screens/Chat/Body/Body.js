@@ -16,6 +16,8 @@ function Body({ messageData, dataSender, isGroup }) {
     data: null,
   });
 
+  console.log(dataSender);
+
   return (
     <View style={{ flex: 1, position: "relative" }}>
       <FlatList
@@ -31,7 +33,7 @@ function Body({ messageData, dataSender, isGroup }) {
               IDSender={item.IDSender}
               isSelf={isSelf}
               key={item.IDConversation}
-              dataSender={dataSender}
+              dataSender={isGroup ? item : dataSender}
             >
               <ReplyMessage messages={messageData} item={item} isSelf={isSelf}>
                 <MessageReact

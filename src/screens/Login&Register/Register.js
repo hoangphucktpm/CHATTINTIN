@@ -31,7 +31,7 @@ const Register = () => {
   const [confirm, setConfirm] = useState(null);
   const [showOtp, setShowOtp] = useState(false);
   const [otp, setOtp] = useState(Array(6).fill(""));
-  const regexPhone = /^\+84\d{9}$/;
+  const regexPhone = /^\84\d{9}$/;
   const navigation = useNavigation();
   const [loading, setLoading] = useState(false);
   const otpInputs = useRef([]);
@@ -239,7 +239,7 @@ const Register = () => {
               <TextInput
                 onChangeText={(x) => setPhone(x)}
                 value={phone}
-                defaultValue="+84"
+                defaultValue="84"
                 placeholder="Vui lòng nhập số điện thoại"
                 style={{
                   marginRight: 15,

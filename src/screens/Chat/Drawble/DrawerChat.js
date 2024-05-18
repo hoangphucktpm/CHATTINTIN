@@ -143,12 +143,16 @@ function DrawerChat({ navigation, route }) {
       IDSender: user.ID,
       IDReceiver: phone,
     };
+    const data2 = {
+      IDConversation1: IDConversation,
+      IDSender: phone,
+      IDReceiver: user.ID,
+    };
 
     socket.emit("block_friend", data);
+    socket.emit("block_friend", data2);
     navigation.navigate("Home");
   };
-
-  console.log("isBlock", isBlock);
 
   return (
     <Provider>

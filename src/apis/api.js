@@ -1,6 +1,6 @@
 import axios from "axios";
 
-export const myIP = "192.168.1.6";
+export const myIP = "10.68.1.178";
 // export const myIP = "192.168.1.7";
 
 export const http = axios.create({

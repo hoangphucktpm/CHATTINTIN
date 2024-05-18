@@ -34,8 +34,6 @@ import VideoCall from "./src/screens/Chat/Call/VideoCall";
 import VideoCallCome from "./src/screens/Chat/Call/VideoCallCome";
 import Map from "./src/screens/Map/Map";
 
-
-
 import { Provider } from "react-redux";
 import { store } from "./store";
 import SourcesMessage from "./src/screens/Chat/SourcesMessage";
@@ -128,5 +126,3 @@ const styles = StyleSheet.create({
   },
 });
 export default App;
-
-

@@ -8,6 +8,7 @@ import {
   Switch,
   TextInput,
   Alert,
+  ActivityIndicator,
 } from "react-native";
 import { Button, Dialog, Portal, Provider } from "react-native-paper";
 import { Ionicons } from "@expo/vector-icons";
@@ -32,7 +33,6 @@ import {
 import { setGroupDetails, setMemberGroups } from "../../../redux/groupSlice";
 import socket from "../../../services/socket";
 import * as ImagePicker from "expo-image-picker";
-import { Buffer } from "buffer";
 import AvatarCustomer from "../../../components/AvatarCustomer";
 
 function DrawerChatGroup({ navigation }) {
@@ -49,6 +49,7 @@ function DrawerChatGroup({ navigation }) {
   const [imageSelected, setImageSelected] = useState(null);
   const [newNameGroup, setNewNameGroup] = useState(null);
   const [isEditNameGroup, seTisEditNameGroup] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const { conversation } = useSelector((state) => state.conversation);
   const groupDetails = useSelector((state) => state.group.groupDetails);
@@ -86,6 +87,7 @@ function DrawerChatGroup({ navigation }) {
   }, [user.ID, conversation]);
 
   const pickImage = async () => {
+    setIsLoading(true);
     try {
       const result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -96,6 +98,7 @@ function DrawerChatGroup({ navigation }) {
 
       if (result.cancelled) {
         console.log("Image selection cancelled");
+        setIsLoading(false);
         return;
       }
 
@@ -107,9 +110,6 @@ function DrawerChatGroup({ navigation }) {
         type: "image/jpeg",
         name: "avatar.jpg",
       });
-
-      // log groupavatar form
-      console.log("GroupAvatar form:", formData.getAll());
 
       await updateGroupInfo(formData, "Đổi ảnh đại diện nhóm thành công");
       setImageSelected(`data:image/jpeg;base64,${result.assets[0].base64}`);
@@ -131,6 +131,8 @@ function DrawerChatGroup({ navigation }) {
         console.error("Request setup error:", error.message);
       }
       Alert.alert("Không thể chọn ảnh");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -224,6 +226,8 @@ function DrawerChatGroup({ navigation }) {
       IDNewOwner: isUserSelected,
     };
     socket.emit("change_owner_group", data);
+    socket.emit("load_conversations", { IDUser: isUserSelected });
+    socket.emit("load_conversations", { IDUser: user.ID });
     setIsUserSelected(null);
     handleCloseModal();
     handleLeaveGroup();
@@ -345,7 +349,11 @@ function DrawerChatGroup({ navigation }) {
                       style={styles.containerBody_Top_Icon_Icon}
                     >
                       <View style={styles.containerBody_Top_Icon_IconItem}>
-                        <FontAwesome5 name="brush" size={20} color="black" />
+                        {isLoading ? (
+                          <ActivityIndicator />
+                        ) : (
+                          <FontAwesome5 name="brush" size={20} color="black" />
+                        )}
                       </View>
                       <View style={styles.containerBody_Top_Icon_IconText}>
                         <Text style={{ color: "#4F4F4F", textAlign: "center" }}>

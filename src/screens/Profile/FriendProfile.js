@@ -3,7 +3,6 @@ import {
   View,
   Text,
   TouchableOpacity,
-  Image,
   ImageBackground,
   Alert,
   ActivityIndicator,
@@ -13,27 +12,36 @@ import styles from "./StyleFriendProfile";
 import { useNavigation } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
 import { api } from "../../apis/api";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import socket from "../../services/socket";
 import AvatarCustomer from "../../components/AvatarCustomer";
+import { setBadge, setCurrentScreen } from "../../redux/appSlice";
 
 function FriendProfile({ route }) {
   const { phone, fullname, urlavatar, ID } = route.params;
   const navigation = useNavigation();
+  const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
   const { conversation } = useSelector((state) => state.conversation);
 
   const [isAdd, setIsAdd] = useState(false);
   const [add, setAdd] = useState("Kết bạn");
   const [isRequest, setIsRequest] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [allFriendsRequest, setAllFriendsRequest] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
+      if (!user) {
+        navigation.navigate("Login");
+        return;
+      }
+
       try {
         const allFriendsRequest = await api.getAllFriendRequests(user.ID);
-        const hasRequested = allFriendsRequest.data?.find(
-          (rq) => rq.ID === phone || ID
+        setAllFriendsRequest(allFriendsRequest.data);
+        const hasRequested = allFriendsRequest.data?.some(
+          (rq) => rq.ID === phone || rq.ID === ID
         );
         setIsRequest(!!hasRequested);
 
@@ -46,29 +54,28 @@ function FriendProfile({ route }) {
           receiverId: user.ID,
         });
 
-        const isSelfRequested = checkRequestFromSelf.data?.code === 2;
-        const isFriendRequested = checkRequestFromFriend.data?.code === 2;
+        const isSelfRequested = checkRequestFromSelf.data;
+        const isFriendRequested = checkRequestFromFriend.data;
 
-        setIsAdd(isSelfRequested || isFriendRequested);
-        setAdd(isFriendRequested ? "Hủy lời mời" : "");
+        console.log({ isSelfRequested, isFriendRequested });
+        if (+isFriendRequested?.code === 0) setAdd("Hủy lời mời");
+        if (isFriendRequested?.code === 2 || isSelfRequested?.code === 2)
+          setIsAdd(true);
+        if (isSelfRequested?.code === 0) setIsRequest(true);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
       setIsLoading(false);
     };
-    if (!user) {
-      navigation.navigate("Login");
-      return;
-    }
 
     fetchData();
-  }, [user, navigation, ID, phone]);
+  }, [user, ID, phone]);
 
   useEffect(() => {
     socket.on("send friend request server", (data) => {
-      setAdd("Hủy lời mời");
       if (data?.code === 1) {
         Alert.alert("Gửi lời mời kết bạn", "Đã gửi lời mời kết bạn thành công");
+        setAdd("Hủy lời mời");
       } else if (data?.code === 0) {
         Alert.alert(
           "Gửi lời mời kết bạn",
@@ -78,16 +85,45 @@ function FriendProfile({ route }) {
         Alert.alert("Gửi lời mời kết bạn", "Đã có trong danh sách bạn bè");
       }
     });
+
+    return () => {
+      socket.off("send friend request server");
+    };
   }, []);
 
-  const hanldPressGoBack = () => {
-    navigation.goBack();
+  const handleRequest = async (type) => {
+    const id = allFriendsRequest.find(
+      (item) => item?.sender?.ID === ID || phone
+    )?.id;
+
+    await api
+      .handleFriendRequest({ id, type })
+      .then((res) => {
+        // setReceiverId(ID || phone);
+        if (res?.data?.code === 1) {
+          socket.emit("load_conversations", {
+            IDUser: user?.ID,
+          });
+          socket.emit("load_conversations", {
+            IDUser: ID || phone,
+          });
+        }
+        dispatch(setCurrentScreen("Contacts"));
+        // dispatch(setBadge(0));
+        // navigation.goBack();
+        navigation.navigate("Contacts");
+      })
+      .catch((err) => {
+        Alert.alert("Lỗi", "Không thể thực hiện yêu cầu");
+      });
   };
 
-  const handelPress = () => {
+  const handleAddFriend = async () => {
     if (isAdd) {
       setAdd("Kết bạn");
       setIsAdd(false);
+    } else if (add === "Hủy lời mời") {
+      await handleRequest("DENIED");
     } else {
       try {
         socket.emit("new friend request client", {
@@ -99,17 +135,6 @@ function FriendProfile({ route }) {
       }
     }
   };
-  const handleRequest = (type) => {
-    api
-      .handleFriendRequest({ id: ID, type })
-      .then((res) => {
-        // Alert.alert(res.data.message);
-        setReceiverId(ID);
-      })
-      .catch((err) => {
-        Alert.alert("Lỗi", "Không thể thực hiện yêu cầu");
-      });
-  };
 
   return isLoading ? (
     <ActivityIndicator />
@@ -117,7 +142,7 @@ function FriendProfile({ route }) {
     <View style={styles.container}>
       <View style={styles.containerTabBar}>
         <TouchableOpacity
-          onPress={hanldPressGoBack}
+          onPress={() => navigation.goBack()}
           style={{
             paddingLeft: 10,
             paddingRight: 10,
@@ -166,7 +191,7 @@ function FriendProfile({ route }) {
           </ImageBackground>
           <View style={styles.containerBody_Mid}>
             <View style={styles.containerBody_Mid_Bottom}>
-              {!isRequest ? null : (
+              {isAdd || !isRequest ? null : (
                 <View
                   style={{
                     display: "flex",
@@ -215,10 +240,10 @@ function FriendProfile({ route }) {
                 </View>
               )}
               <View style={styles.containerBody_Mid_Bottom_Item}>
-                {isAdd ? null : (
+                {isAdd || isRequest ? null : (
                   <View style={{ marginRight: 10 }}>
                     <TouchableOpacity
-                      onPress={handelPress}
+                      onPress={handleAddFriend}
                       style={styles.bottom}
                     >
                       <Text

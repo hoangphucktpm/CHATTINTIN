@@ -19,7 +19,7 @@ import styles from "./StyleForgotPassword";
 
 const ForgotPassword = () => {
   const navigation = useNavigation();
-  const [phone, setPhone] = useState("+84");
+  const [phone, setPhone] = useState("84");
   const [code, setCode] = useState("");
   const [confirm, setConfirm] = useState(null);
   const [showOtp, setShowOtp] = useState(false);

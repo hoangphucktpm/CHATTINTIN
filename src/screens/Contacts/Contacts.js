@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useEffect } from "react";
+import React, { useMemo, useState, useEffect, useCallback } from "react";
 import {
   Text,
   View,
@@ -10,7 +10,7 @@ import {
   FlatList,
 } from "react-native";
 import styles from "./StyleContacts";
-import { useNavigation } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Icon from "react-native-vector-icons/Ionicons";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
@@ -19,14 +19,12 @@ import { Ionicons, EvilIcons, Octicons } from "@expo/vector-icons";
 import { useDispatch, useSelector } from "react-redux";
 import { setForward, setPopup, setReply } from "../../redux/chatSlice";
 import { setGroupDetails } from "../../redux/groupSlice";
-import { setConversation } from "../../redux/conversationSlice";
 
 import Footer from "../Footer/Footer";
 import socket from "../../services/socket";
 import { api } from "../../apis/api";
 import AvatarCustomer from "../../components/AvatarCustomer";
 import { setBadge } from "../../redux/appSlice";
-import { isBlock } from "typescript";
 
 function Contacts() {
   const navigation = useNavigation();
@@ -39,7 +37,7 @@ function Contacts() {
   const [receiverId, setReceiverId] = useState(null);
   const [listFriends, setListFriends] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
-  const [dataResearch, setDataResearch] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   const phone = user?.phone;
   const groupLists = useMemo(() => {
@@ -49,11 +47,11 @@ function Contacts() {
   // Thêm một state mới để lưu trữ danh sách lời mời kết bạn
   const [friendRequests, setFriendRequests] = useState([]);
 
-  const getFriendRequests = async () => {
+  const getFriendRequests = useCallback(async () => {
     const allFriendRequests = await api.getAllFriendRequests(user.ID);
     setFriendRequests(allFriendRequests.data);
     dispatch(setBadge(allFriendRequests.data.length));
-  };
+  }, [conversation]);
   useEffect(() => {
     socket.on("new friend request server", (data) => {
       if (data.code === 1) {
@@ -64,20 +62,24 @@ function Contacts() {
     return () => {
       socket.off("new friend request server");
     };
-  }, []);
+  }, [conversation]);
 
-  useEffect(() => {
-    if (!user) return navigation.navigate("Login");
-    const getFriendRequests = async () => {
-      const [allFriendRequests, allFriends] = await Promise.all([
-        api.getAllFriendRequests(user.ID),
-        api.getAllFriends(user.ID),
-      ]);
-      setFriendRequests(allFriendRequests.data);
-      setListFriends(allFriends.data);
-    };
-    getFriendRequests();
-  }, [user, receiverId]);
+  useFocusEffect(
+    useCallback(() => {
+      if (!user) return navigation.navigate("Login");
+      const getFriendRequests = async () => {
+        const [allFriendRequests, allFriends] = await Promise.all([
+          api.getAllFriendRequests(user.ID),
+          api.getAllFriends(user.ID),
+        ]);
+        dispatch(setBadge(allFriendRequests.data.length));
+        setFriendRequests(allFriendRequests.data);
+        setListFriends(allFriends.data);
+        setIsLoading(false);
+      };
+      getFriendRequests();
+    }, [user, receiverId])
+  );
 
   const handleRequest = (id, type) => {
     api
@@ -110,7 +112,7 @@ function Contacts() {
     return listFriends.filter((item) => {
       return item?.fullname?.toLowerCase().includes(searchQuery?.toLowerCase());
     });
-  }, [searchQuery]);
+  }, [searchQuery, listFriends]);
 
   const renderList = () => {
     switch (selectedButton) {
@@ -294,14 +296,7 @@ function Contacts() {
         underlayColor={"#E6E6FA"}
         style={styles.touchHightLight}
         onPress={() => {
-          navigation.navigate("Chat", {
-            id: item.id,
-            name: item.name,
-            image: imageItem,
-            lastMessage: item.lastMessage,
-            time: item.time,
-            isFriendRequest: true,
-          });
+          navigation.navigate("Chat", item?.sender);
         }}
       >
         <View style={styles.containerItem}>
