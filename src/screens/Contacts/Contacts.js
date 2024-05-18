@@ -137,7 +137,6 @@ function Contacts() {
           />
         );
       case "loimoi":
-        // Lời mời kết bạn kèm theo chức năng chấp nhận hoặc từ chối, hiện icon chấp nhận và từ chối ra trong mỗi item
         return (
           <FlatList
             data={friendRequests}
@@ -148,7 +147,6 @@ function Contacts() {
           />
         );
       case "block":
-        // Lời mời kết bạn kèm theo chức năng chấp nhận hoặc từ chối, hiện icon chấp nhận và từ chối ra trong mỗi item
         return (
           <FlatList
             data={
@@ -313,25 +311,33 @@ function Contacts() {
             <Text style={{ fontSize: 20, color: "#000" }}>
               {item.sender.fullname}
             </Text>
+            <Text style={{ fontSize: 15, color: "#000" }}>
+              Muốn kết bạn !
+            </Text>
           </View>
           <View style={styles.itemFriend_actions}>
             <TouchableOpacity
-              style={styles.acceptButton}
-              onPress={() => handleRequest(item.id, "ACCEPTED")}
+              style={[styles.button, styles.rejectButton]}
+              onPress={() => handleRequest(item.id, "DENIED")}
+              activeOpacity={0.6}
             >
-              <FontAwesome name="check" size={24} color="green" />
+              <Text style={{ color: "black", fontWeight: "bold" }}>
+                Từ chối
+              </Text>
             </TouchableOpacity>
             <TouchableOpacity
-              style={styles.rejectButton}
-              onPress={() => handleRequest(item.id, "DENIED")}
+              style={[styles.button, styles.acceptButton]}
+              onPress={() => handleRequest(item.id, "ACCEPTED")}
+              activeOpacity={0.6}
             >
-              <FontAwesome name="times" size={20} color="red" />
+              <Text style={{ color: "blue", fontWeight: "bold" }}>Đồng ý</Text>
             </TouchableOpacity>
           </View>
         </View>
       </TouchableHighlight>
     );
   };
+
 
   return (
     <SafeAreaView style={styles.container}>
@@ -411,7 +417,7 @@ function Contacts() {
             onPress={() => handleButtonPress("loimoi")}
             style={[
               styles.containerBody_Row,
-              selectedButton === "loimoi" && { backgroundColor: "#BFEFFF" }, // Sử dụng điều kiện để chỉ định màu cho mục đã chọn
+              selectedButton === "loimoi" && { backgroundColor: "#BFEFFF" },
             ]}
           >
             <Icon name="person-circle-outline" size={42} color="blue" />
@@ -420,7 +426,7 @@ function Contacts() {
                 Lời mời kết bạn
               </Text>
               <Text style={{ fontSize: 18, marginLeft: 5, color: "red" }}>
-                [{friendRequests.length}]
+                ({friendRequests.length})
               </Text>
             </View>
           </TouchableOpacity>
