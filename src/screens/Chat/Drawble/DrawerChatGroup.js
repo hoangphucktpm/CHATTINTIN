@@ -50,6 +50,7 @@ function DrawerChatGroup({ navigation }) {
   const [newNameGroup, setNewNameGroup] = useState(null);
   const [isEditNameGroup, seTisEditNameGroup] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isLeaveGroup, setIsLeaveGroup] = useState(false);
 
   const { conversation } = useSelector((state) => state.conversation);
   const groupDetails = useSelector((state) => state.group.groupDetails);
@@ -74,6 +75,7 @@ function DrawerChatGroup({ navigation }) {
   );
 
   useEffect(() => {
+    console.log("reload gr");
     const fetchMembers = async () => {
       const res = await api.getMembers({
         IDConversation: groupDetails.IDConversation,
@@ -123,12 +125,6 @@ function DrawerChatGroup({ navigation }) {
         console.error("Server Error:", error.response.data);
         console.error("Status Code:", error.response.status);
         console.error("Headers:", error.response.headers);
-      } else if (error.request) {
-        // The request was made but no response was received
-        console.error("No response from server:", error.request);
-      } else {
-        // Something happened in setting up the request that triggered an Error
-        console.error("Request setup error:", error.message);
       }
       Alert.alert("Không thể chọn ảnh");
     } finally {
@@ -187,17 +183,20 @@ function DrawerChatGroup({ navigation }) {
   };
 
   const handleLeaveGroup = async () => {
-    if (groupDetails.rules.IDOwner === user.ID) {
-      setIsLeave(false);
-      return handlePresentModalPress();
-    }
     try {
+      console.log("leave group");
       await api.leaveGroup({
         IDConversation: groupDetails.IDConversation,
         IDSender: user.ID,
       });
+      if (user) {
+        console.log("check user to leave group");
+        socket.emit("load_conversations", { IDUser: user.ID });
+        socket.on("load_conversations_server", (data) => {
+          navigation.navigate("Home");
+        });
+      }
       setIsLeave(false);
-      navigation.navigate("Home");
     } catch (error) {
       console.error("Error leaving group:", error);
     }
@@ -226,18 +225,25 @@ function DrawerChatGroup({ navigation }) {
       IDNewOwner: isUserSelected,
     };
     socket.emit("change_owner_group", data);
+
+    setIsUserSelected(null);
+    if (!isLeaveGroup) handleLeaveGroup();
+    else {
+      alert("Chuyển quyền nhóm trưởng thành công");
+      navigation.navigate("Home");
+    }
     socket.emit("load_conversations", { IDUser: isUserSelected });
     socket.emit("load_conversations", { IDUser: user.ID });
-    setIsUserSelected(null);
     handleCloseModal();
-    handleLeaveGroup();
-    navigation.navigate("Home");
   };
   const handleDeleteGroup = async () => {
     if (groupDetails.rules.IDOwner !== user.ID) return;
 
+    const IDConversation = groupDetails.IDConversation;
+    if (!IDConversation) return;
+
     const data = {
-      IDConversation: groupDetails.IDConversation,
+      IDConversation: IDConversation,
       IDUser: user.ID,
     };
     socket.emit("delete_group", data);
@@ -629,6 +635,10 @@ function DrawerChatGroup({ navigation }) {
                 </TouchableOpacity>
                 <TouchableOpacity
                   style={styles.containerBody_Mid_ChangeName_Item}
+                  onPress={() => {
+                    setIsLeaveGroup(true);
+                    handlePresentModalPress();
+                  }}
                 >
                   <Entypo
                     name="swap"
@@ -819,8 +829,8 @@ function DrawerChatGroup({ navigation }) {
                 >
                   <Text style={{ textAlign: "center", color: "white" }}>
                     Chuyển quyền cho{" "}
-                    {members.find((mem) => mem.ID === isUserSelected)?.fullname}{" "}
-                    và rời nhóm
+                    {members.find((mem) => mem.ID === isUserSelected)?.fullname}
+                    {!isLeaveGroup && "  và rời nhóm"}
                   </Text>
                 </TouchableOpacity>
               ) : (
@@ -884,7 +894,10 @@ function DrawerChatGroup({ navigation }) {
                 borderRadius: 10,
                 backgroundColor: "red",
               }}
-              onPress={handleLeaveGroup}
+              onPress={() => {
+                setIsLeave(false);
+                handlePresentModalPress();
+              }}
             >
               <Text
                 style={{

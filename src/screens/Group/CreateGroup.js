@@ -19,7 +19,6 @@ import { api } from "../../apis/api";
 import Checkbox from "expo-checkbox";
 import { Buffer } from "buffer";
 import socket from "../../services/socket";
-import { Avatar } from "@ui-kitten/components";
 import AvatarCustomer from "../../components/AvatarCustomer";
 function CreateGroup({ route }) {
   const navigation = useNavigation();
@@ -71,7 +70,7 @@ function CreateGroup({ route }) {
 
   const toggleItem = (item) => {
     if (isChecked(item.ID)) {
-      setCheckedItems(checkedItems.filter((item) => item.ID !== item.ID));
+      setCheckedItems(checkedItems.filter((i) => i.ID !== item.ID));
     } else {
       setCheckedItems([...checkedItems, item]);
     }
@@ -170,8 +169,12 @@ function CreateGroup({ route }) {
     try {
       socket.emit("create_group_conversation", data);
 
-      Alert.alert("Thành công", "Tạo nhóm thành công");
-      navigation.goBack();
+      socket.on("new_group_conversation", () => {
+        socket.emit("load_conversations", { IDUser: user.ID });
+
+        Alert.alert("Thành công", "Tạo nhóm thành công");
+        navigation.goBack();
+      });
     } catch (error) {
       console.log(error);
       Alert.alert("Thất bại", "Tạo nhóm thất bại");

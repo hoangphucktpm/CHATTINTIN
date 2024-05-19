@@ -16,7 +16,7 @@ function Body({ messageData, dataSender, isGroup }) {
     data: null,
   });
 
-  console.log(dataSender);
+  // console.log(dataSender);
 
   return (
     <View style={{ flex: 1, position: "relative" }}>

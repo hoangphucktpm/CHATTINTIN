@@ -5,7 +5,7 @@ export const myIP = "192.168.1.15";
 
 export const http = axios.create({
   // timeout: 30000,
-  baseURL: `http://${myIP}:8080`,
+  baseURL: `https://tranloc.id.vn`,
 });
 
 export const api = {
@@ -81,4 +81,5 @@ export const api = {
   updateLocation: (data) => http.post("map/update-location", data),
 
   getAllLocation: () => http.get("map/get-all-location"),
+
 };
