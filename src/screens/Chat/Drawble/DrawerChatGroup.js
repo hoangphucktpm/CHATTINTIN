@@ -123,12 +123,6 @@ function DrawerChatGroup({ navigation }) {
         console.error("Server Error:", error.response.data);
         console.error("Status Code:", error.response.status);
         console.error("Headers:", error.response.headers);
-      } else if (error.request) {
-        // The request was made but no response was received
-        console.error("No response from server:", error.request);
-      } else {
-        // Something happened in setting up the request that triggered an Error
-        console.error("Request setup error:", error.message);
       }
       Alert.alert("Không thể chọn ảnh");
     } finally {
@@ -236,8 +230,11 @@ function DrawerChatGroup({ navigation }) {
   const handleDeleteGroup = async () => {
     if (groupDetails.rules.IDOwner !== user.ID) return;
 
+    const IDConversation = groupDetails.IDConversation;
+    if (!IDConversation) return;
+
     const data = {
-      IDConversation: groupDetails.IDConversation,
+      IDConversation: IDConversation,
       IDUser: user.ID,
     };
     socket.emit("delete_group", data);

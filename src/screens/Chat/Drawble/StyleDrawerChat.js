@@ -5,7 +5,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#DCDCDC",
   },
 
-
   containerTabBar: {
     flexDirection: "row",
     alignContent: "center",
@@ -65,6 +64,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     height: 60,
     padding: 10,
+    alignItems: "center",
   },
   containerBody_Mid_ChangeName_Item_Text: {
     display: "flex",

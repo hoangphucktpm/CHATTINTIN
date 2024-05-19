@@ -87,6 +87,7 @@ const Home = (props) => {
 
     const handleReload = () => {
       if (user) {
+        console.log("load_conversations");
         socket.emit("load_conversations", { IDUser: user.ID });
       }
     };
@@ -94,10 +95,12 @@ const Home = (props) => {
     // socket.on("webRTC-signaling", (data) => console.log("data123"));
     socket.on("message_from_server", (data) => alert(data));
     socket.on("pre-offer-single", handlePhoneCome);
-    socket.on("load_conversations_server", handleLoadConversationsServer);
+
     socket.on("new_group_conversation", handleReload);
     socket.on("load_member_of_group_server", handleReload);
     socket.on("receive_message", handleReload);
+
+    socket.on("load_conversations_server", handleLoadConversationsServer);
     socket.on("changeStateMessage", handleLoadConversation);
     socket.on("un_block_friend_server", handleLoadConversation);
     // socket.on("block_friend_server", handleLoadConversation);

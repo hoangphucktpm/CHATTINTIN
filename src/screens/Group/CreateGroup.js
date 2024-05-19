@@ -19,7 +19,6 @@ import { api } from "../../apis/api";
 import Checkbox from "expo-checkbox";
 import { Buffer } from "buffer";
 import socket from "../../services/socket";
-import { Avatar } from "@ui-kitten/components";
 import AvatarCustomer from "../../components/AvatarCustomer";
 function CreateGroup({ route }) {
   const navigation = useNavigation();
@@ -71,7 +70,7 @@ function CreateGroup({ route }) {
 
   const toggleItem = (item) => {
     if (isChecked(item.ID)) {
-      setCheckedItems(checkedItems.filter((item) => item.ID !== item.ID));
+      setCheckedItems(checkedItems.filter((i) => i.ID !== item.ID));
     } else {
       setCheckedItems([...checkedItems, item]);
     }

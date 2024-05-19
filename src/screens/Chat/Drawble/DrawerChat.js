@@ -456,10 +456,13 @@ function DrawerChat({ navigation, route }) {
                   name="filter"
                   size={24}
                   color="#828282"
-                  style={{ width: "15%", height: "100%" }}
+                  style={{
+                    width: "15%",
+                    height: "100%",
+                  }}
                 />
                 <View style={styles.containerBody_Mid_ChangeName_Item_Text}>
-                  <View style={{ marginBottom: 15 }}>
+                  <View>
                     <Text style={{ fontSize: 20, color: "black" }}>
                       Phân loại
                     </Text>
@@ -544,7 +547,7 @@ function DrawerChat({ navigation, route }) {
                   style={{ width: "15%", height: "100%" }}
                 />
                 <View style={styles.containerBody_Mid_ChangeName_Item_Text}>
-                  <View style={{ marginBottom: 15 }}>
+                  <View>
                     <Text style={{ fontSize: 20, color: "black" }}>
                       Tin nhắn tự xóa
                     </Text>

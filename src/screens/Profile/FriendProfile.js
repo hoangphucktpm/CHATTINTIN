@@ -123,7 +123,7 @@ function FriendProfile({ route }) {
       setAdd("Kết bạn");
       setIsAdd(false);
     } else if (add === "Hủy lời mời") {
-      await handleRequest("DENIED");
+      // await handleRequest("DENIED");
     } else {
       try {
         socket.emit("new friend request client", {
