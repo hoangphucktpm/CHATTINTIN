@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "104641576786",
-    "project_id": "chat-6bcfa",
-    "storage_bucket": "chat-6bcfa.appspot.com"
+    "project_number": "167058820950",
+    "project_id": "chatotp-64366",
+    "storage_bucket": "chatotp-64366.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:104641576786:android:63e3be73ce4bed9d43048b",
+        "mobilesdk_app_id": "1:167058820950:android:55022bb643151fe74dd0f7",
         "android_client_info": {
           "package_name": "com.hoangphucktpm.AppTinTin"
         }
@@ -15,7 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyBTw5J9ksJI2vMAMPhEROTpfpU3S8wKLyk"
+          "current_key": "AIzaSyCwQqEsaDSApyTIE6LhwwPGINojzSab9zc"
         }
       ],
       "services": {
