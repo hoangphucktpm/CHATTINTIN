@@ -1,11 +1,12 @@
 import axios from "axios";
 
-export const myIP = "192.168.1.15";
-// export const myIP = "192.168.1.7";
+// export const myIP = "192.168.1.15";
+export const myIP = "192.168.1.7";
+export const apiURL = "https://tranloc.id.vn";
 
 export const http = axios.create({
   // timeout: 30000,
-  baseURL: `https://tranloc.id.vn`,
+  baseURL: apiURL,
 });
 
 export const api = {
@@ -42,7 +43,7 @@ export const api = {
   checkRequest: ({ senderId, receiverId }) =>
     http.post(`friend-request/check-request-exists`, { senderId, receiverId }),
 
-  checkRequestExists: async (senderId, receiverId) => {
+  checkRequestExists: (senderId, receiverId) => {
     return http.post(`/friend-request/check-request-exists`, {
       senderId,
       receiverId,
@@ -81,5 +82,4 @@ export const api = {
   updateLocation: (data) => http.post("map/update-location", data),
 
   getAllLocation: () => http.get("map/get-all-location"),
-
 };

@@ -8,6 +8,8 @@ import {
   TouchableHighlight,
   Alert,
   FlatList,
+  ScrollView,
+  LogBox,
 } from "react-native";
 import styles from "./StyleContacts";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
@@ -52,6 +54,7 @@ function Contacts() {
     setFriendRequests(allFriendRequests.data);
     dispatch(setBadge(allFriendRequests.data.length));
   }, [conversation]);
+
   useEffect(() => {
     socket.on("new friend request server", (data) => {
       if (data.code === 1) {
@@ -63,6 +66,10 @@ function Contacts() {
       socket.off("new friend request server");
     };
   }, [conversation]);
+
+  useEffect(() => {
+    LogBox.ignoreLogs(["VirtualizedLists should never be nested"]);
+  }, []);
 
   useFocusEffect(
     useCallback(() => {
@@ -311,9 +318,7 @@ function Contacts() {
             <Text style={{ fontSize: 20, color: "#000" }}>
               {item.sender.fullname}
             </Text>
-            <Text style={{ fontSize: 15, color: "#000" }}>
-              Muốn kết bạn !
-            </Text>
+            <Text style={{ fontSize: 15, color: "#000" }}>Muốn kết bạn !</Text>
           </View>
           <View style={styles.itemFriend_actions}>
             <TouchableOpacity
@@ -337,7 +342,6 @@ function Contacts() {
       </TouchableHighlight>
     );
   };
-
 
   return (
     <SafeAreaView style={styles.container}>
@@ -373,9 +377,7 @@ function Contacts() {
         </View>
       </View>
       <View style={[styles.containerBody, { backgroundColor: "white" }]}>
-        <View
-          style={{ flex: 0.3, marginLeft: 5, marginRight: 5, marginTop: 10 }}
-        >
+        <View style={{ marginLeft: 5, marginRight: 5, marginTop: 10 }}>
           <TouchableOpacity
             onPress={() => handleButtonPress("friends")}
             style={[
@@ -447,9 +449,9 @@ function Contacts() {
           </TouchableOpacity> */}
         </View>
 
-        <View style={{ flex: 0.8, backgroundColor: "white" }}>
+        <ScrollView style={{ flex: 0.8, backgroundColor: "white" }}>
           {renderList()}
-        </View>
+        </ScrollView>
       </View>
 
       <Footer />

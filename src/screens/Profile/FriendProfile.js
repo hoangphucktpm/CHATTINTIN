@@ -31,41 +31,49 @@ function FriendProfile({ route }) {
   const [allFriendsRequest, setAllFriendsRequest] = useState([]);
 
   useEffect(() => {
-    const fetchData = async () => {
-      if (!user) {
-        navigation.navigate("Login");
-        return;
-      }
+    if (!user) {
+      navigation.navigate("Login");
+      return;
+    }
 
+    const fetchData = async () => {
       try {
-        const allFriendsRequest = await api.getAllFriendRequests(user.ID);
-        setAllFriendsRequest(allFriendsRequest.data);
-        const hasRequested = allFriendsRequest.data?.some(
+        console.log(1);
+        const { data: friendsRequestData } = await api.getAllFriendRequests(
+          user.ID
+        );
+
+        setAllFriendsRequest(friendsRequestData);
+
+        const hasRequested = friendsRequestData?.some(
           (rq) => rq.ID === phone || rq.ID === ID
         );
         setIsRequest(!!hasRequested);
+        console.log({ senderId: user.ID, receiverId: phone || ID });
+        const [checkRequestFromSelf, checkRequestFromFriend] =
+          await Promise.all([
+            api.checkRequestExists({
+              senderId: user.ID,
+              receiverId: phone || ID,
+            }),
+            api.checkRequestExists({
+              senderId: phone || ID,
+              receiverId: user.ID,
+            }),
+          ]);
+        console.log({ checkRequestFromSelf, checkRequestFromFriend });
+        const { code: selfRequestCode } = checkRequestFromSelf.data;
+        const { code: friendRequestCode } = checkRequestFromFriend.data;
 
-        const checkRequestFromSelf = await api.checkRequest({
-          senderId: user.ID,
-          receiverId: phone || ID,
-        });
-        const checkRequestFromFriend = await api.checkRequest({
-          senderId: phone || ID,
-          receiverId: user.ID,
-        });
-
-        const isSelfRequested = checkRequestFromSelf.data;
-        const isFriendRequested = checkRequestFromFriend.data;
-
-        console.log({ isSelfRequested, isFriendRequested });
-        if (+isFriendRequested?.code === 0) setAdd("Hủy lời mời");
-        if (isFriendRequested?.code === 2 || isSelfRequested?.code === 2)
-          setIsAdd(true);
-        if (isSelfRequested?.code === 0) setIsRequest(true);
+        if (friendRequestCode === 0) setAdd("Hủy lời mời");
+        if (friendRequestCode === 2 || selfRequestCode === 2) setIsAdd(true);
+        if (selfRequestCode === 0) setIsRequest(true);
+        console.log(4);
       } catch (error) {
         console.error("Error fetching data:", error);
+      } finally {
+        setIsLoading(false);
       }
-      setIsLoading(false);
     };
 
     fetchData();

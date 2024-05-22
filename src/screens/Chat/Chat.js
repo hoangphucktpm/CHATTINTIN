@@ -1,5 +1,5 @@
 import React, { memo, useEffect, useState, useCallback } from "react";
-import { StatusBar, Text, View } from "react-native";
+import { StatusBar, Text, TouchableOpacity, View } from "react-native";
 import styles from "./StyleChat";
 import Header from "./Header/Header";
 import Body from "./Body/Body";
@@ -19,11 +19,13 @@ const Chat = memo(({ route }) => {
 
   const { conversation } = useSelector((state) => state.conversation);
   const popupOptions = useSelector((state) => state.chat.popup);
+  const user = useSelector((state) => state.auth.user);
 
   const dispatch = useDispatch();
 
   const [messageData, setMessageData] = useState([]);
   const [isBlocked, setIsBlocked] = useState(false);
+  const [isBlock, setIsBlock] = useState(isBlock);
 
   const fetchMessages = useCallback(async () => {
     try {
@@ -43,10 +45,9 @@ const Chat = memo(({ route }) => {
     }
   }, [IDConversation, dispatch, conversation, popupOptions.show]);
 
-  const user = useSelector((state) => state.auth.user);
-
   useEffect(() => {
     fetchMessages();
+    if (route?.params?.isBlock) setIsBlock(route?.params?.isBlock);
   }, [fetchMessages]);
 
   const handleReceiveMessage = (data) => {
@@ -62,7 +63,13 @@ const Chat = memo(({ route }) => {
     });
 
     socket.on("receive_message", handleReceiveMessage);
-    socket.emit("get_block_friend", { userID: user.ID, friendID: ID });
+    socket.emit("get_block_friend", {
+      IDConversation1: IDConversation,
+      IDSender: user?.ID,
+      IDReceiver: IDSender || ID,
+    });
+
+    socket.on("get_block_friend_server", (data) => setIsBlocked(data));
 
     return () => {
       socket.off("new_group_conversation");
@@ -84,14 +91,25 @@ const Chat = memo(({ route }) => {
       });
     });
 
-    socket.on("get_block_friend_server", (data) => setIsBlocked(data.isBlock));
-
     dispatch(setLoadingUpload(false));
     return () => {
       socket.off("changeStateMessage");
       socket.off("get_block_friend_server");
     };
-  }, [dispatch]);
+  }, [dispatch, isBlock]);
+
+  const handleUnBlock = () => {
+    const data = {
+      IDConversation1: IDConversation,
+      IDSender: user?.ID,
+      IDReceiver: IDSender || ID,
+    };
+
+    socket.emit("un_block_friend", data);
+    socket.on("un_block_friend_server", () => {
+      setIsBlock(false);
+    });
+  };
 
   return (
     <View style={styles.container}>
@@ -113,7 +131,7 @@ const Chat = memo(({ route }) => {
       <ViewImageFullScreen />
       {!isBlocked ? (
         <Footer IDConversation={IDConversation} />
-      ) : (
+      ) : !isBlock ? (
         <View
           style={{
             display: "flex",
@@ -136,6 +154,28 @@ const Chat = memo(({ route }) => {
             Bạn đã bị chặn
           </Text>
         </View>
+      ) : (
+        <TouchableOpacity
+          onPress={handleUnBlock}
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            textAlign: "center",
+            backgroundColor: "#ddd",
+            opacity: 0.5,
+            padding: 10,
+          }}
+        >
+          <Text
+            style={{
+              textAlign: "center",
+              fontWeight: 600,
+              fontSize: 20,
+            }}
+          >
+            Bỏ chặn người này
+          </Text>
+        </TouchableOpacity>
       )}
       <PopUpOptions setMessageData={setMessageData} />
       <ForwardModal />

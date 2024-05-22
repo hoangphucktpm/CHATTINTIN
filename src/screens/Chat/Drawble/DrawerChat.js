@@ -150,7 +150,7 @@ function DrawerChat({ navigation, route }) {
     };
 
     socket.emit("block_friend", data);
-    socket.emit("block_friend", data2);
+    // socket.emit("block_friend", data2);
     navigation.navigate("Home");
   };
 
