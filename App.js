@@ -3,6 +3,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import Register from "./src/screens/Login&Register/Register";
 import Login from "./src/screens/Login&Register/Login";
 import {
+  LogBox,
   SafeAreaView,
   StyleSheet,
   Text,
@@ -72,6 +73,8 @@ const App = () => {
   const videoCall = "VideoCall";
   const videoCallCome = "VideoCallCome";
   const map = "Map";
+  // LogBox.ignoreLogs(["new NativeEventEmitter"]);
+  // LogBox.ignoreAllLogs();
 
   return (
     <Provider store={store}>

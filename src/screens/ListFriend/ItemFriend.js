@@ -38,8 +38,6 @@ const ItemFriend = React.memo(({ navigation }) => {
 
   const handleChat = useCallback(
     (item) => {
-      if (item?.isBlock) return;
-      // console.log(item);
       dispatch(setReply({ show: false, data: null }));
       dispatch(setGroupDetails(item));
       dispatch(setForward({ show: false, data: null }));
@@ -50,23 +48,6 @@ const ItemFriend = React.memo(({ navigation }) => {
   );
 
   const isSended = (id) => id === user.ID;
-
-  const handleUnBlock = (item) => {
-    const data = {
-      IDConversation1: item.IDConversation,
-      IDSender: user.ID,
-      IDReceiver: item?.Receiver?.ID,
-    };
-    const data2 = {
-      IDConversation1: item.IDConversation,
-      IDSender: item?.Receiver?.ID,
-      IDReceiver: user.ID,
-    };
-
-    socket.emit("un_block_friend", data);
-    socket.emit("un_block_friend", data2);
-    navigation.navigate("Home");
-  };
 
   const renderItem = useCallback(
     ({ item }) => {
@@ -120,29 +101,6 @@ const ItemFriend = React.memo(({ navigation }) => {
                     ? "Video"
                     : item?.MessageDetail?.content}
                 </Text>
-
-                {item?.isBlock && (
-                  <TouchableOpacity
-                    onPress={() => handleUnBlock(item)}
-                    style={{
-                      paddingHorizontal: 5,
-                      borderRadius: 50,
-                      backgroundColor: "#ddd",
-                      opacity: 0.5,
-                      width: 100,
-                    }}
-                  >
-                    <Text
-                      style={{
-                        color: "red",
-                        textAlign: "center",
-                        fontWeight: 600,
-                      }}
-                    >
-                      Bỏ chặn
-                    </Text>
-                  </TouchableOpacity>
-                )}
               </View>
             </View>
           </View>

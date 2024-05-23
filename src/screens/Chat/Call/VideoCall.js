@@ -72,7 +72,6 @@ const VideoCall = ({ route }) => {
     };
   }, [state]);
 
-
   useEffect(() => {
     setTimeout(() => {
       startVideoCall();
@@ -154,6 +153,9 @@ const VideoCall = ({ route }) => {
       if (data.preOfferAnswer === "CALL_REJECTED") {
         Alert.alert("Thông báo", "Cuộc gọi đã kết thúc");
         setTimeout(() => {
+          // turn off the mic, cam
+          setIsCameraMuted(true);
+          setIsMicMuted(true);
           navigation.navigate("Home");
         }, 1000);
       }
@@ -173,7 +175,7 @@ const VideoCall = ({ route }) => {
         }
       }
     });
-    
+
     socket.on("pre-offer-single", (data) => {
       if (data.callType === "VIDEO_PERSONAL") {
         if (state === CALL_RINGING_STATE) {
@@ -184,7 +186,6 @@ const VideoCall = ({ route }) => {
           initiateCall();
         }
       }
-
     });
 
     return () => {
@@ -192,7 +193,6 @@ const VideoCall = ({ route }) => {
       socket.off("pre-offer-single");
 
       endCall();
-      
     };
   }, []);
 
@@ -410,7 +410,7 @@ const VideoCall = ({ route }) => {
           flexDirection: "row",
           justifyContent: "space-around",
           backgroundColor: "#f2f2f2",
-          position: "absolute", 
+          position: "absolute",
           bottom: 0,
           width: "100%",
         }}

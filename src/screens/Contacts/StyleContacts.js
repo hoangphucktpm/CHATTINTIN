@@ -83,7 +83,8 @@ const styles = StyleSheet.create({
   containerBody_Row: {
     display: "flex",
     flexDirection: "row",
-    flex: 0.5,
+    height: 50,
+    zIndex: 10,
     alignItems: "center",
     // khung bao ngoai hinh chu nhat
     borderColor: "#ccc",

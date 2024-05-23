@@ -61,7 +61,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   containerBodySearchItem: {
-    flex: 0.7,
     backgroundColor: "#DDDDDD",
     marginLeft: 10,
     marginRight: 10,
@@ -69,6 +68,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     borderRadius: 20,
     alignItems: "center",
+    height: 40,
   },
   flatList: {
     flex: 0.65,
@@ -77,7 +77,6 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   buttonCreate: {
-    flex: 0.1,
     marginTop: "auto",
     display: "flex",
     flexDirection: "row",
