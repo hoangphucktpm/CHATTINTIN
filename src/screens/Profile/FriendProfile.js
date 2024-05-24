@@ -3,6 +3,7 @@ import {
   View,
   Text,
   TouchableOpacity,
+  Image,
   ImageBackground,
   Alert,
   ActivityIndicator,
@@ -12,78 +13,62 @@ import styles from "./StyleFriendProfile";
 import { useNavigation } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
 import { api } from "../../apis/api";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import socket from "../../services/socket";
 import AvatarCustomer from "../../components/AvatarCustomer";
-import { setBadge, setCurrentScreen } from "../../redux/appSlice";
 
 function FriendProfile({ route }) {
   const { phone, fullname, urlavatar, ID } = route.params;
   const navigation = useNavigation();
-  const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
   const { conversation } = useSelector((state) => state.conversation);
 
   const [isAdd, setIsAdd] = useState(false);
   const [add, setAdd] = useState("Kết bạn");
   const [isRequest, setIsRequest] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-  const [allFriendsRequest, setAllFriendsRequest] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const allFriendsRequest = await api.getAllFriendRequests(user.ID);
+        const hasRequested = allFriendsRequest.data?.find(
+          (rq) => rq.ID === phone || ID
+        );
+        setIsRequest(!!hasRequested);
+
+        const checkRequestFromSelf = await api.checkRequest({
+          senderId: user.ID,
+          receiverId: phone || ID,
+        });
+        const checkRequestFromFriend = await api.checkRequest({
+          senderId: phone || ID,
+          receiverId: user.ID,
+        });
+
+        const isSelfRequested = checkRequestFromSelf.data?.code === 2;
+        const isFriendRequested = checkRequestFromFriend.data?.code === 2;
+
+        setIsAdd(isSelfRequested || isFriendRequested);
+        setAdd(isFriendRequested ? "Hủy lời mời" : "");
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+      setIsLoading(false);
+    };
     if (!user) {
       navigation.navigate("Login");
       return;
     }
 
-    const fetchData = async () => {
-      try {
-        console.log(1);
-        const { data: friendsRequestData } = await api.getAllFriendRequests(
-          user.ID
-        );
-
-        setAllFriendsRequest(friendsRequestData);
-
-        const hasRequested = friendsRequestData?.some(
-          (rq) => rq.ID === phone || rq.ID === ID
-        );
-        setIsRequest(!!hasRequested);
-        console.log({ senderId: user.ID, receiverId: phone || ID });
-        const [checkRequestFromSelf, checkRequestFromFriend] =
-          await Promise.all([
-            api.checkRequestExists({
-              senderId: user.ID,
-              receiverId: phone || ID,
-            }),
-            api.checkRequestExists({
-              senderId: phone || ID,
-              receiverId: user.ID,
-            }),
-          ]);
-        console.log({ checkRequestFromSelf, checkRequestFromFriend });
-        const { code: selfRequestCode } = checkRequestFromSelf.data;
-        const { code: friendRequestCode } = checkRequestFromFriend.data;
-
-        if (friendRequestCode === 0) setAdd("Hủy lời mời");
-        if (friendRequestCode === 2 || selfRequestCode === 2) setIsAdd(true);
-        if (selfRequestCode === 0) setIsRequest(true);
-        console.log(4);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
     fetchData();
-  }, [user, ID, phone]);
+  }, [user, navigation, ID, phone]);
 
   useEffect(() => {
     socket.on("send friend request server", (data) => {
+      setAdd("Hủy lời mời");
       if (data?.code === 1) {
         Alert.alert("Gửi lời mời kết bạn", "Đã gửi lời mời kết bạn thành công");
-        setAdd("Hủy lời mời");
       } else if (data?.code === 0) {
         Alert.alert(
           "Gửi lời mời kết bạn",
@@ -93,45 +78,16 @@ function FriendProfile({ route }) {
         Alert.alert("Gửi lời mời kết bạn", "Đã có trong danh sách bạn bè");
       }
     });
-
-    return () => {
-      socket.off("send friend request server");
-    };
   }, []);
 
-  const handleRequest = async (type) => {
-    const id = allFriendsRequest.find(
-      (item) => item?.sender?.ID === ID || phone
-    )?.id;
-
-    await api
-      .handleFriendRequest({ id, type })
-      .then((res) => {
-        // setReceiverId(ID || phone);
-        if (res?.data?.code === 1) {
-          socket.emit("load_conversations", {
-            IDUser: user?.ID,
-          });
-          socket.emit("load_conversations", {
-            IDUser: ID || phone,
-          });
-        }
-        dispatch(setCurrentScreen("Contacts"));
-        // dispatch(setBadge(0));
-        // navigation.goBack();
-        navigation.navigate("Contacts");
-      })
-      .catch((err) => {
-        Alert.alert("Lỗi", "Không thể thực hiện yêu cầu");
-      });
+  const hanldPressGoBack = () => {
+    navigation.goBack();
   };
 
-  const handleAddFriend = async () => {
+  const handelPress = () => {
     if (isAdd) {
       setAdd("Kết bạn");
       setIsAdd(false);
-    } else if (add === "Hủy lời mời") {
-      // await handleRequest("DENIED");
     } else {
       try {
         socket.emit("new friend request client", {
@@ -143,6 +99,17 @@ function FriendProfile({ route }) {
       }
     }
   };
+  const handleRequest = (type) => {
+    api
+      .handleFriendRequest({ id: ID, type })
+      .then((res) => {
+        // Alert.alert(res.data.message);
+        setReceiverId(ID);
+      })
+      .catch((err) => {
+        Alert.alert("Lỗi", "Không thể thực hiện yêu cầu");
+      });
+  };
 
   return isLoading ? (
     <ActivityIndicator />
@@ -150,7 +117,7 @@ function FriendProfile({ route }) {
     <View style={styles.container}>
       <View style={styles.containerTabBar}>
         <TouchableOpacity
-          onPress={() => navigation.goBack()}
+          onPress={hanldPressGoBack}
           style={{
             paddingLeft: 10,
             paddingRight: 10,
@@ -199,7 +166,7 @@ function FriendProfile({ route }) {
           </ImageBackground>
           <View style={styles.containerBody_Mid}>
             <View style={styles.containerBody_Mid_Bottom}>
-              {isAdd || !isRequest ? null : (
+              {!isRequest ? null : (
                 <View
                   style={{
                     display: "flex",
@@ -248,10 +215,10 @@ function FriendProfile({ route }) {
                 </View>
               )}
               <View style={styles.containerBody_Mid_Bottom_Item}>
-                {isAdd || isRequest ? null : (
+                {isAdd ? null : (
                   <View style={{ marginRight: 10 }}>
                     <TouchableOpacity
-                      onPress={handleAddFriend}
+                      onPress={handelPress}
                       style={styles.bottom}
                     >
                       <Text
