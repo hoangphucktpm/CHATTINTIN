@@ -6,7 +6,6 @@ import { useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 
 
-
 // Import FireBase
 const OTP = (props) => {
   const [phone, setPhone] = useState("");

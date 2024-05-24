@@ -59,11 +59,11 @@ function InputPass(props) {
       );
     } else if (passWord == "" || passWordAgain == "") {
       Alert.alert("Thông báo", "Mời bạn nhập mật khẩu");
-      // } else if (!validatePassword(passWord)) {
-      //   Alert.alert(
-      //     "Thông báo",
-      //     "Mật khẩu không đáp ứng yêu cầu. Mật khẩu cần có ít nhất một ký tự viết hoa, một ký tự viết thường, một số, một ký tự đặc biệt và có ít nhất 8 ký tự."
-      //   );
+      } else if (!validatePassword(passWord)) {
+        Alert.alert(
+          "Thông báo",
+          "Mật khẩu không đáp ứng yêu cầu. Mật khẩu cần có ít nhất một ký tự viết hoa, một ký tự viết thường, một số, một ký tự đặc biệt và có ít nhất 8 ký tự."
+        );
     } else {
       try {
         const res = await api.register({

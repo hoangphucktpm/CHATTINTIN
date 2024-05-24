@@ -8,7 +8,7 @@ export default StyleSheet.create({
   containerTabBar: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#3b5998",
+    backgroundColor: "#1C86EE",
     paddingVertical: 15,
     paddingHorizontal: 10,
   },
@@ -24,7 +24,7 @@ export default StyleSheet.create({
     marginVertical: 20,
   },
   bottom: {
-    backgroundColor: "#3b5998",
+    backgroundColor: "#1C86EE",
     paddingVertical: 15,
     paddingHorizontal: 30,
     borderRadius: 25,

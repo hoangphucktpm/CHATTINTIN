@@ -21,6 +21,8 @@ import { Avatar, Button, Card, Modal } from "@ui-kitten/components";
 import socket from "../../services/socket";
 import { useNavigation } from "@react-navigation/native";
 import Mapbox, { MarkerView } from "@rnmapbox/maps";
+import { map } from "eva";
+import { set } from "date-fns";
 
 Mapbox.setAccessToken(
   "pk.eyJ1IjoidHJhbmxvYzJrMyIsImEiOiJjbHZxYnR2bDYwYmppMmpwNnRnemlhaHA5In0.Fn9lSoYFUZ96simIJs9s4g"
@@ -50,6 +52,100 @@ const Map = () => {
     latitudeDelta: 20,
     longitudeDelta: 10,
   });
+
+  const [fakeLocations, setFakeLocations] = useState([
+    {
+      id: 1,
+      longitude: 105.85293806048128,
+      latitude: 21.021486442448733,
+      label: "Hải Nam",
+    },
+    {
+      id: 2,
+      longitude: 105.86293806048128,
+      latitude: 21.031486442448733,
+      label: "Thu Trang",
+    },
+    {
+      id: 3,
+      longitude: 105.86308522378465,
+      latitude: 21.00723018751215,
+      label: "Hoang Anh",
+    },
+    {
+      id: 4,
+      longitude: 105.81281929267271,
+      latitude: 20.99477155850326,
+      label: "Kiến Anh",
+    },
+    {
+      id: 5,
+      longitude: 105.77233869926602,
+      latitude: 21.052073983323623,
+      label: "Minh Thuận ",
+    },
+    {
+      id: 6,
+      longitude: 105.89467506276839,
+      latitude: 21.050830039005902,
+      label: "Hoàng Tân",
+    },
+    {
+      id: 7,
+      longitude: 105.85018544256542,
+      latitude: 21.024255368448323,
+      label: "Đăng Khôi",
+    },
+    {
+      id: 8,
+      longitude: 105.82749794723486,
+      latitude: 21.0225940379213,
+      label: "Đại Phát",
+    },
+    {
+      id: 9,
+      longitude: 105.80525652114363,
+      latitude: 21.025085338941764,
+      label: "Kiến Thức",
+    },
+    // Thêm các tài khoản giả mạo khác vào đây ở Thành phố Hồ Chí Minh
+    {
+      id: 10,
+      longitude: 106.6885099841316,
+      latitude: 10.825116770849391,
+      label: "Hải Nam",
+    },
+    {
+      id: 11,
+      longitude: 106.68971161376982,
+      latitude: 10.824410729607493,
+      label: "Thu Trang",
+    },
+    {
+      id: 12,
+      longitude: 106.69022659790136,
+      latitude: 10.82249281813506,
+      label: "Hoang Anh",
+    },
+    {
+      id: 13,
+      longitude: 106.68911079895133,
+      latitude: 10.823241015829112,
+      label: "Kiến Anh",
+    },
+    {
+      id: 14,
+      longitude: 106.69050554763828,
+      latitude: 10.822292595899839,
+      label: "Minh Thuận ",
+    },
+    {
+      id: 15,
+      longitude: 106.68912152778688,
+      latitude: 10.82342016147875,
+      label: "Hoàng Tân",
+    },
+  ]);
 
   useEffect(() => {
     const fetchLocation = async () => {
@@ -86,7 +182,7 @@ const Map = () => {
       const res = await api.getAllLocation();
       if (res.status === 200) {
         setLocations(res.data);
-        setOriginalLocations(res.data);
+        // setOriginalLocations(res.data);
       } else {
         console.error("Failed to fetch locations", res);
       }
@@ -229,72 +325,64 @@ const Map = () => {
                 height: ScreenHeight,
               }}
               onPress={() => setPointSelected(null)}
+              
             >
               <Mapbox.Camera
-                zoomLevel={15}
+                zoomLevel={10}
                 centerCoordinate={[
-                  location.coords.longitude,
-                  location.coords.latitude,
+                  mapRegion.longitude,
+                  mapRegion.latitude,
                 ]}
               />
-              {locations.map((userLocation, index) => {
-                const getUser = async () => {
-                  let userdata = await getUserByPhone(
-                    userLocation.properties.IDUser
-                  );
-                  if (
-                    userLocation.geometry.coordinates[1] ===
-                    location.coords.latitude
-                  )
-                    return (
-                      <Mapbox.MarkerView
-                        key={index}
-                        coordinate={[
-                          userLocation.geometry.coordinates[0],
-                          userLocation.geometry.coordinates[1],
-                        ]}
-                        title={userdata ? userdata.fullname : "123"}
-                      >
-                        <TouchableOpacity
-                          onPress={() =>
-                            setPointSelected(userdata?.ID ? userdata : null)
-                          }
-                        >
-                          <Image
-                            source={{
-                              uri: user?.urlavatar,
-                            }}
-                            style={{ width: 40, height: 40, borderRadius: 20 }}
-                          />
-                        </TouchableOpacity>
-                      </Mapbox.MarkerView>
-                    );
-                  return (
-                    <Mapbox.MarkerView
-                      key={index}
-                      coordinate={[
-                        userLocation.geometry.coordinates[0],
-                        userLocation.geometry.coordinates[1],
-                      ]}
-                      title={userdata ? userdata.fullname : "123"}
-                    >
-                      <TouchableOpacity
-                        onPress={() =>
-                          setPointSelected(userdata?.ID ? userdata : null)
-                        }
-                      >
-                        <Image
-                          source={{
-                            uri: "https://cdn-icons-png.flaticon.com/512/9204/9204285.png",
-                          }}
-                          style={{ width: 40, height: 40 }}
-                        />
-                      </TouchableOpacity>
-                    </Mapbox.MarkerView>
-                  );
-                };
-                if (userLocation?.ID?.length < 12) return getUser();
-              })}
+              {locations.map((userLocation, index) => (
+                <Mapbox.MarkerView
+                  key={index}
+                  coordinate={[
+                    userLocation.geometry.coordinates[0],
+                    userLocation.geometry.coordinates[1],
+                  ]}
+                  title={userLocation.properties.label}
+                >
+                  <TouchableOpacity
+                    onPress={() => setPointSelected(userLocation)}
+                  >
+                    <Image
+                      source={{
+                        uri: userLocation.properties.avatarUrl,
+                      }}
+                      style={{ width: 40, height: 40, borderRadius: 20 }}
+                    />
+                  </TouchableOpacity>
+                </Mapbox.MarkerView>
+              ))}
+              {/* Display fake locations */}
+              {fakeLocations.map((fakeLocation, index) => (
+                <Mapbox.MarkerView
+                  key={`fake-${index}`}
+                  coordinate={[fakeLocation.longitude, fakeLocation.latitude]}
+                  title={fakeLocation.label}
+                >
+                  <TouchableOpacity
+                    onPress={() =>
+                      setPointSelected({
+                        fullname: fakeLocation.label,
+                        urlavatar:
+                          "https://cdn-icons-png.flaticon.com/512/9204/9204285.png",
+                        phone: `fake-${fakeLocation.id}`,
+                        ID: `fake-${fakeLocation.id}`,
+                        friendList: [],
+                      })
+                    }
+                  >
+                    <Image
+                      source={{
+                        uri: "https://cdn-icons-png.flaticon.com/512/9204/9204285.png",
+                      }}
+                      style={{ width: 40, height: 40 }}
+                    />
+                  </TouchableOpacity>
+                </Mapbox.MarkerView>
+              ))}
               {selectedPlace && (
                 <Mapbox.MarkerView
                   coordinate={[

@@ -131,11 +131,16 @@ const AddMembers = () => {
         <TopNavigation
           accessoryLeft={() => (
             <TouchableOpacity onPress={() => navigation.goBack()}>
-              <AntDesign name="arrowleft" size={32} color="black" />
+              <AntDesign name="arrowleft" size={30} color="white" />
             </TouchableOpacity>
           )}
           alignment="center"
-          title="Thêm thành viên"
+          title={(evaProps) => (
+            <Text {...evaProps} style={{ color: "white", fontSize: 22 }}>
+              Thêm thành viên
+            </Text>
+          )}
+          backgroundColor="#0091ff"
         />
         <View style={styles.containerBodySearch}>
           <View style={styles.containerBodySearchItem}>
@@ -166,13 +171,13 @@ const AddMembers = () => {
           </View>
         </View>
         <ScrollView style={styles.flatList}>
-          {searchData.map((item) => {
+          {searchData.map((item, index) => {
             if (
               members.some((mem) => mem.ID === item.ID) ||
               item.ID === user.ID
             )
               return null;
-            return renderItem({ item });
+            return renderItem({ item, index });
           })}
         </ScrollView>
         <View style={styles.buttonCreate}>

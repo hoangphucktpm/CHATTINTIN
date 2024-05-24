@@ -15,7 +15,6 @@ import { api } from "../../apis/api";
 import { firebaseConfig } from "../../../config";
 import "firebase/compat/auth";
 import styles from "./StyleForgotPassword";
-// import { FirebaseRecaptchaVerifierModal } from "expo-firebase-recaptcha";
 
 const ForgotPassword = () => {
   const navigation = useNavigation();
@@ -24,28 +23,11 @@ const ForgotPassword = () => {
   const [confirm, setConfirm] = useState(null);
   const [showOtp, setShowOtp] = useState(false);
   const [loading, setLoading] = useState(false);
-  const recaptchaVerifier = useRef(null);
-
   const sdtRegex = /^\84\d{9}$/;
+  const otpInputs = useRef([]);
 
   const hanldPressDashBoard = () => {
     navigation.navigate("Login");
-  };
-
-  const getOtp = async () => {
-    setLoading(true);
-    try {
-      const confirm = await auth().verifyPhoneNumber(phone);
-      console.log(confirm);
-      setConfirm(confirm);
-      setShowOtp(true);
-    } catch (error) {
-      console.error(error);
-      Alert.alert("Failed to send OTP. Please try again.");
-      setShowOtp(false);
-    } finally {
-      setLoading(false);
-    }
   };
 
   const hanldPressLinkResert = async () => {
@@ -53,22 +35,21 @@ const ForgotPassword = () => {
       Alert.alert("Vui lòng nhập số điện thoại");
       return;
     }
-    // if (!sdtRegex.test(phone)) {
-    //   Alert.alert("Số điện thoại không đúng định dạng");
-    //   return;
-    // }
+    if (!sdtRegex.test(phone)) {
+      Alert.alert("Số điện thoại không đúng định dạng");
+      return;
+    }
     try {
       setLoading(true);
       const res = await api.getUserByPhone(phone);
       if (res.data?.ID || !res.data.message === "User not found") {
-        await getOtp();
         setShowOtp(true);
       } else {
         Alert.alert("Số điện thoại không tồn tại");
       }
     } catch (error) {
       if (error.response && error.response.status === 404) {
-        await getOtp();
+        setShowOtp(true);
       } else {
         Alert.alert("Lỗi", "Không thể thực hiện yêu cầu");
         setShowOtp(false);
@@ -78,19 +59,13 @@ const ForgotPassword = () => {
     }
   };
 
-  const confirmCode = async () => {
-    try {
-      const credential = auth.PhoneAuthProvider.credential(
-        confirm.verificationId,
-        code
-      );
-      console.log(credential);
+  const confirmCode = () => {
+    if (code.length === 6) {
       navigation.navigate("ChangePassForgot", {
         phoneNumber: phone,
       });
-    } catch (error) {
-      console.log(error);
-      Alert.alert("Invalid OTP. Please try again.");
+    } else {
+      Alert.alert("Mã OTP không hợp lệ. Vui lòng nhập 6 chữ số.");
     }
   };
 
@@ -104,7 +79,7 @@ const ForgotPassword = () => {
         >
           <Ionicons name="arrow-back" size={30} color="#fff" />
         </TouchableOpacity>
-        <Text style={{ color: "white", fontWeight: 600, fontSize: 22 }}>
+        <Text style={{ color: "white", fontWeight: "600", fontSize: 22 }}>
           Lấy lại mật khẩu
         </Text>
       </View>
@@ -115,41 +90,61 @@ const ForgotPassword = () => {
             : "Vui lòng nhập số điện thoại để lấy lại mật khẩu"}
         </Text>
       </View>
-      {/* <FirebaseRecaptchaVerifierModal
-        ref={recaptchaVerifier}
-        firebaseConfig={firebaseConfig}
-      /> */}
       {showOtp ? (
         <>
           <View style={styles.containerInput}>
-            <View
-              style={{
-                display: "flex",
-                justifyContent: "center",
-                flexDirection: "row",
-                alignItems: "center",
-              }}
-            >
-              <Feather name="phone" size={32} color="black" />
-              <TextInput
-                onChangeText={(x) => setCode(x)}
-                value={code}
-                placeholder="Vui lòng nhập mã OTP"
-                style={{ height: 50, fontSize: 22, flex: 0.7 }}
-                keyboardType="numeric"
-                maxLength={6}
-              />
-            </View>
-            <View style={styles.inputContainer}>
-              <FontAwesome5 name="keyboard" size={24} color="black" />
-              <TextInput
-                onChangeText={setCode}
-                value={code}
-                placeholder="Vui lòng nhập mã OTP"
-                style={styles.textInput}
-                keyboardType="numeric"
-                maxLength={6}
-              />
+            <View style={{ flexDirection: "row", justifyContent: "center" }}>
+              {[...Array(6)].map((_, index) => (
+                <View key={index} style={{ marginHorizontal: 5 }}>
+                  <View style={{ borderBottomWidth: 1 }}>
+                    <TextInput
+                      onChangeText={(text) => {
+                        let tempCode = [...code]; // Sao chép mã OTP hiện tại
+                        tempCode[index] = text; // Cập nhật số trong ô hiện tại
+                        setCode(tempCode.join("")); // Cập nhật mã OTP mới
+                        if (text === "" && index > 0) {
+                          // Nếu người dùng xóa số và đang ở ô không phải là ô đầu tiên
+                          // Di chuyển về ô trước đó
+                          otpInputs.current[index - 1].focus();
+                        } else if (text !== "" && index < 5) {
+                          // Nếu người dùng nhập số mới và không phải ở ô cuối cùng
+                          // Di chuyển tới ô tiếp theo
+                          otpInputs.current[index + 1].focus();
+                        }
+                      }}
+                      value={code[index] || ""}
+                      placeholder=""
+                      style={{
+                        height: 50,
+                        fontSize: 22,
+                        textAlign: "center",
+                        width: 40,
+                      }}
+                      keyboardType="numeric"
+                      maxLength={1}
+                      returnKeyType="next"
+                      blurOnSubmit={false}
+                      onSubmitEditing={() => {
+                        // Focus the next input
+                        if (index < 5) {
+                          otpInputs.current[index + 1].focus();
+                        }
+                      }}
+                      onKeyPress={({ nativeEvent: { key } }) => {
+                        // Xử lý sự kiện khi ấn nút Backspace
+                        if (key === "Backspace" && !code[index] && index > 0) {
+                          let tempCode = [...code]; // Sao chép mã OTP hiện tại
+                          tempCode[index - 1] = ""; // Xóa số ở ô trước đó
+                          setCode(tempCode.join("")); // Cập nhật mã OTP mới
+                          // Di chuyển về ô trước đó
+                          otpInputs.current[index - 1].focus();
+                        }
+                      }}
+                      ref={(ref) => (otpInputs.current[index] = ref)}
+                    />
+                  </View>
+                </View>
+              ))}
             </View>
           </View>
           <View style={[styles.containerBottom, styles.centered]}>

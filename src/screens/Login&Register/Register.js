@@ -14,14 +14,11 @@ import styles from "./StyleRegister";
 import { StatusBar } from "expo-status-bar";
 import { useNavigation } from "@react-navigation/native";
 import { api } from "../../apis/api";
-// import { FirebaseRecaptchaVerifierModal } from "expo-firebase-recaptcha";
-import auth from "@react-native-firebase/auth";
 import firebase from "firebase/compat/app";
-import "firebase/compat/auth"; // Ensure that you import auth
+import "firebase/compat/auth";
 
 import { firebaseConfig } from "../../../config";
 
-// Initialize Firebase
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
@@ -35,56 +32,41 @@ const Register = () => {
   const navigation = useNavigation();
   const [loading, setLoading] = useState(false);
   const otpInputs = useRef([]);
-  const recaptchaVerifier = useRef(null);
 
-  const hanldPressDashBoard = () => {
+  const handlePressDashBoard = () => {
     navigation.navigate("DashBoard");
   };
 
   const getOtp = async () => {
-    setLoading(true);
-    try {
-      const confirm = await auth().verifyPhoneNumber(phone);
-      console.log(confirm);
-      setConfirm(confirm);
-      setShowOtp(true);
-    } catch (error) {
-      console.error(error);
-      Alert.alert("Failed to send OTP. Please try again.");
-      setShowOtp(false);
-    } finally {
-      setLoading(false);
-    }
+    setShowOtp(true);
+    setLoading(false);
   };
 
   const confirmCode = async () => {
-    try {
-      console.log("otp", otp.join(""));
-      const credential = auth.PhoneAuthProvider.credential(
-        confirm.verificationId,
-        otp.join("")
-      );
-
-      console.log(credential);
-      navigation.navigate("InputPass", { phoneNumber: phone });
-    } catch (error) {
-      console.log(error);
-      Alert.alert("Invalid OTP. Please try again.");
-    }
+    navigation.navigate("InputPass", { phoneNumber: phone });
   };
 
-  const handleOTPChange = (value, index) => {
+  // hàm tiến tới khi nhập OTP
+  const handleOTPChange = (text, index) => {
+    if (isNaN(text)) return;
     const updatedOTP = [...otp];
-    updatedOTP[index] = value;
+    updatedOTP[index] = text;
     setOtp(updatedOTP);
-    if (value && index < otp.length - 1) {
-      // Focus the next input
+    if (index < otp.length - 1 && text) {
       otpInputs.current[index + 1].focus();
     }
   };
 
+  // Hàm xóa lùi khi nhấn nút xóa
+  const handleBackspace = (index) => {
+    if (index === 0) return;
+    const updatedOTP = [...otp];
+    updatedOTP[index] = "";
+    setOtp(updatedOTP);
+    otpInputs.current[index - 1].focus();
+  };
+
   const onRegister = async () => {
-    // return  navigation.navigate("InputPass", { phoneNumber: phone });
     if (!phone) {
       Alert.alert("Vui lòng nhập số điện thoại");
       return;
@@ -117,7 +99,7 @@ const Register = () => {
       <View style={{ height: StatusBar.currentHeight }}></View>
       <View style={styles.containerTabBar}>
         <TouchableOpacity
-          onPress={hanldPressDashBoard}
+          onPress={handlePressDashBoard}
           style={{
             paddingLeft: 10,
             paddingRight: 10,
@@ -133,15 +115,11 @@ const Register = () => {
           <Text style={{ fontSize: 22, color: "white" }}>Đăng Ký</Text>
         </View>
       </View>
-      {/* <FirebaseRecaptchaVerifierModal
-        ref={recaptchaVerifier}
-        firebaseConfig={firebaseConfig}
-      /> */}
       {showOtp ? (
         <>
           <View style={styles.containerText}>
             <Text style={{ fontSize: 18, textAlign: "center" }}>
-              Vui lòng nhập mã OTP để xác thực số điện
+              Vui lòng nhập mã OTP để xác thực số điện thoại
             </Text>
           </View>
           <View style={styles.containerInput}>
@@ -201,9 +179,13 @@ const Register = () => {
                       returnKeyType="next"
                       blurOnSubmit={false}
                       onSubmitEditing={() => {
-                        // Focus the next input
                         if (index < otp.length - 1) {
                           otpInputs.current[index + 1].focus();
+                        }
+                      }}
+                      onKeyPress={({ nativeEvent: { key } }) => {
+                        if (key === "Backspace") {
+                          handleBackspace(index);
                         }
                       }}
                     />
@@ -251,9 +233,8 @@ const Register = () => {
                 id="phonenumber"
               />
             </View>
-
             <TouchableOpacity
-              onPress={(hanldPressLogin) => {
+              onPress={(handlePressLogin) => {
                 navigation.navigate("Login");
               }}
               style={{ marginTop: 25, alignItems: "center", width: "100%" }}

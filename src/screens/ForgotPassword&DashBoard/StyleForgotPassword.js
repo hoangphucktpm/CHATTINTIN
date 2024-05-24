@@ -4,6 +4,12 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#fff",
   },
+  bottomText: {
+    color: "#fff",
+    fontSize: 20,
+    fontWeight: "bold",
+    textAlign: "center",
+  },
 
   containerTabBar: {
     height: "8%",
@@ -20,18 +26,23 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
+  centered: {
+    alignItems: "center",
+  },
 
   containerBottom: {
     display: "flex",
     flexDirection: "row",
     justifyContent: "space-between",
-    paddingRight: 15,
+    paddingRight: 10,
     paddingTop: 60,
+    paddingLeft: 100,
   },
   bottom: {
     padding: 20,
     backgroundColor: "#1C86EE",
     borderRadius: 100,
+    alignItems: "center",
   },
 });
 

@@ -1,3 +1,5 @@
+console.disableYellowBox = true;
+
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import Register from "./src/screens/Login&Register/Register";
@@ -75,6 +77,14 @@ const App = () => {
   const map = "Map";
   // LogBox.ignoreLogs(["new NativeEventEmitter"]);
   // LogBox.ignoreAllLogs();
+
+  LogBox.ignoreLogs([
+    '`new NativeEventEmitter()` was called with a non-null argument without the required `addListener` method.',
+    '`new NativeEventEmitter()` was called with a non-null argument without the required `removeListeners` method.',
+    'Warning: MeasureElement: Support for defaultProps will be removed from function components in a future major release. Use JavaScript default parameters instead.'
+  ]);
+
+  LogBox.ignoreAllLogs();
 
   return (
     <Provider store={store}>
